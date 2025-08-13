@@ -169,13 +169,13 @@
 
   <div class="social-links">
     <a href="https://search.google.com/local/writereview?placeid=ChIJaSn0O7o-yhQRjjiw9hjH4vk" target="_blank">
-      👉 Google Yorum Sayfamız
+      Google Yorum Sayfamız
     </a>
     <br>
     <a href="instagram://user?username=manco.caferestoran" 
        onclick="window.location='https://instagram.com/manco.caferestoran'" 
        style="color: #E1306C;">
-       👉 Instagram Sayfamız
+       Instagram Sayfamız
     </a>
   </div>
 
@@ -197,6 +197,8 @@
       "Tabldot",
       "Süt Helvası",
       "Karışık Meze Tabağı",
+      "%5 İndirim",
+      "%10 İndirim"
     ];
     let cevrildi = false;
 
@@ -249,7 +251,7 @@
         const sektor = Math.floor((360 - (derece % 360)) / (360 / hediyeler.length)) % hediyeler.length;
         const kazanan = hediyeler[sektor];
         
-        document.getElementById("sonuc").textContent = `🎉 Tebrikler! Kazandığınız: ${kazanan}`;
+        document.getElementById("sonuc").textContent = `Tebrikler! ${kazanan} Kazandınız`;
         cevrildi = true;
         
         // Kazanma animasyonu
