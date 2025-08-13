@@ -1,333 +1,282 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Çarkıfelek</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --wheel-size: min(80vw, 600px);
-            --slice-angle: calc(360deg / var(--slice-count));
-        }
-        
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background: radial-gradient(circle at center, #2c3e50, #1a1a2e);
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            perspective: 1000px;
-        }
-        
-        .arena {
-            position: relative;
-            width: calc(var(--wheel-size) + 200px);
-            height: calc(var(--wheel-size) + 200px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .wheel-3d {
-            width: var(--wheel-size);
-            height: var(--wheel-size);
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 5s cubic-bezier(0.17, 0.84, 0.44, 1);
-        }
-        
-        .wheel-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            backface-visibility: visible;
-            transform-origin: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
-            border: 15px solid #3d3d3d;
-            background: conic-gradient(
-                #ff2e63, #ff9a3c, #ffcc29, 
-                #1fbfb8, #05716c, 
-                #1978a5, #2541b2, 
-                #3a0ca3, #7209b7, #f72585
-            );
-        }
-        
-        .wheel-stand {
-            position: absolute;
-            width: 40px;
-            height: 150px;
-            background: linear-gradient(to right, #bdc3c7, #2c3e50);
-            transform: translateY(calc(var(--wheel-size)/2 + 20px)) rotateX(80deg);
-            z-index: -1;
-            border-radius: 5px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-        
-        .pointer {
-            position: absolute;
-            top: -5%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 25px solid transparent;
-            border-right: 25px solid transparent;
-            border-top: 60px solid #ff2e63;
-            filter: drop-shadow(0 0 10px rgba(255, 46, 99, 0.7));
-            z-index: 10;
-        }
-        
-        .pointer::after {
-            content: '';
-            position: absolute;
-            top: -70px;
-            left: -15px;
-            width: 30px;
-            height: 30px;
-            background: #ff2e63;
-            border-radius: 50%;
-            box-shadow: 0 0 15px rgba(255, 46, 99, 0.8);
-        }
-        
-        .slice {
-            position: absolute;
-            width: 50%;
-            height: 50%;
-            transform-origin: bottom right;
-            left: 0;
-            top: 0;
-            clip-path: polygon(0 0, 100% 0, 100% 100%);
-        }
-        
-        .slice-label {
-            position: absolute;
-            transform: rotate(calc(var(--slice-angle)/2)) translateY(-120px);
-            transform-origin: bottom center;
-            color: white;
-            font-size: 1.2rem;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
-            font-weight: bold;
-            text-align: center;
-            width: 80px;
-        }
-        
-        .spin-btn {
-            position: absolute;
-            bottom: 10%;
-            background: linear-gradient(135deg, #ff2e63, #f72585);
-            border: none;
-            color: white;
-            padding: 18px 40px;
-            font-size: 1.5rem;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), 
-                        inset 0 2px 5px rgba(255, 255, 255, 0.2);
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            z-index: 20;
-        }
-        
-        .spin-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-        }
-        
-        .spin-btn:active {
-            transform: translateY(0);
-        }
-        
-        .particles {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 5;
-        }
-        
-        @keyframes confetti {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(500px) rotate(360deg); opacity: 0; }
-        }
-        
-        .result-display {
-            position: absolute;
-            top: 85%;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px 40px;
-            border-radius: 50px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-            opacity: 0;
-            transition: opacity 0.5s;
-            z-index: 30;
-        }
-        
-        .light-beam {
-            position: absolute;
-            width: calc(var(--wheel-size) * 1.5);
-            height: calc(var(--wheel-size) * 1.5);
-            background: radial-gradient(circle at center, rgba(255,215,0,0.3) 0%, transparent 70%);
-            pointer-events: none;
-            animation: pulse 3s infinite alternate;
-        }
-        
-        @keyframes pulse {
-            0% { opacity: 0.3; }
-            100% { opacity: 0.7; }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hediye Çarkı</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(135deg, #f8f9fa, #e0e0e0);
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+      color: #333;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    a {
+      color: #007bff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    input[type="password"], button {
+      font-size: 16px;
+      padding: 12px;
+      margin: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      width: 80%;
+      max-width: 300px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #cak {
+      display: none;
+      margin-top: 30px;
+    }
+
+    .wheel-container {
+      position: relative;
+      width: 280px;
+      height: 280px;
+      margin: 0 auto 30px;
+    }
+
+    .wheel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 8px solid #fff;
+      box-shadow: 0 0 0 10px #2c3e50, 0 10px 30px rgba(0,0,0,0.3);
+      position: relative;
+      overflow: hidden;
+      transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+      transform: rotate(0deg);
+    }
+
+    .wheel-slice {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      transform-origin: bottom right;
+      left: 0;
+      top: 0;
+      clip-path: polygon(0 0, 100% 0, 100% 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slice-label {
+      transform: rotate(45deg);
+      color: white;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+      font-size: 14px;
+      width: 80px;
+      text-align: center;
+      margin-left: 40px;
+    }
+
+    .pointer {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-top: 40px solid #e74c3c;
+      z-index: 10;
+      filter: drop-shadow(0 0 5px rgba(0,0,0,0.3));
+    }
+
+    .pointer:after {
+      content: '';
+      position: absolute;
+      top: -50px;
+      left: -10px;
+      width: 20px;
+      height: 20px;
+      background: #e74c3c;
+      border-radius: 50%;
+    }
+
+    #cevirBtn {
+      margin-top: 20px;
+      padding: 15px 30px;
+      font-size: 18px;
+      border-radius: 50px;
+      background: linear-gradient(135deg, #ff416c, #ff4b2b);
+      box-shadow: 0 5px 15px rgba(255, 75, 43, 0.4);
+      transition: all 0.3s;
+    }
+
+    #cevirBtn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(255, 75, 43, 0.6);
+    }
+
+    #cevirBtn:active {
+      transform: translateY(1px);
+    }
+
+    #sonuc {
+      margin-top: 25px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #27ae60;
+      background: rgba(39, 174, 96, 0.1);
+      padding: 15px;
+      border-radius: 10px;
+      display: inline-block;
+      min-width: 250px;
+    }
+
+    @media (max-width: 500px) {
+      h1 { font-size: 1.5rem; }
+      input, button { font-size: 15px; width: 90%; }
+      .wheel-container { width: 250px; height: 250px; }
+      .slice-label { font-size: 12px; width: 70px; margin-left: 30px; }
+    }
+  </style>
 </head>
 <body>
-    <div class="arena">
-        <div class="light-beam"></div>
-        <div class="wheel-3d" id="wheel">
-            <div class="wheel-face"></div>
-            <!-- Dilimler JS ile eklenecek -->
-        </div>
-        <div class="wheel-stand"></div>
-        <div class="pointer"></div>
-        <button class="spin-btn" id="spinBtn">ÇEVİR</button>
-        <div class="result-display" id="result"></div>
-        <div class="particles" id="particles"></div>
+  <h1>Hediye Çarkına Hoş Geldin</h1>
+
+  <p>
+    <a href="https://search.google.com/local/writereview?placeid=ChIJaSn0O7o-yhQRjjiw9hjH4vk" target="_blank">
+      👉 Google Yorum Sayfasına Git
+    </a>
+  </p>
+
+  <p>
+    <a href="instagram://user?username=manco.caferestoran" 
+       onclick="window.location='https://instagram.com/manco.caferestoran'" 
+       style="font-weight: bold; color: #E1306C;">
+       👉 Instagram Sayfamızı Takip Et
+    </a>
+  </p>
+
+  <h3>Şifreyi gir:</h3>
+  <input type="password" id="sifre" placeholder="Şifre" />
+  <button onclick="kontrolEt()">Çarka Git</button>
+
+  <div id="cak">
+    <div class="wheel-container">
+      <div class="wheel" id="wheel">
+        <!-- Çark dilimleri JS ile eklenecek -->
+      </div>
+      <div class="pointer"></div>
     </div>
+    <button id="cevirBtn" onclick="cevir()">🎁 Çarkı Çevir</button>
+    <p id="sonuc"></p>
+  </div>
 
-    <audio id="spinSound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3" preload="auto"></audio>
-    <audio id="winSound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" preload="auto"></audio>
-    <audio id="tickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3" preload="auto"></audio>
+  <script>
+    const dogruSifre = "1234";
+    const hediyeler = [
+      "Anahtarlık 🔑",
+      "Çakmak 🔥",
+      "Kalem ✒️",
+      "Not Defteri 📓"
+    ];
+    let cevrildi = false;
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const wheel = document.getElementById('wheel');
-            const spinBtn = document.getElementById('spinBtn');
-            const result = document.getElementById('result');
-            const particles = document.getElementById('particles');
-            const spinSound = document.getElementById('spinSound');
-            const winSound = document.getElementById('winSound');
-            const tickSound = document.getElementById('tickSound');
-            
-            const prizes = [
-                "10.000 TL", "Araba", 
-                "50.000 TL", "Tekrar Çevir", 
-                "100 TL", "TV", 
-                "1.000 TL", "Telefon"
-            ];
-            
-            const colors = [
-                "#FF2E63", "#FF9A3C", 
-                "#FFCC29", "#1FBFB8", 
-                "#05716C", "#1978A5", 
-                "#2541B2", "#7209B7"
-            ];
-            
-            document.documentElement.style.setProperty('--slice-count', prizes.length);
-            
-            // 3D Çark oluştur
-            function createWheel() {
-                const angle = 360 / prizes.length;
-                
-                prizes.forEach((prize, i) => {
-                    const slice = document.createElement('div');
-                    slice.className = 'slice';
-                    slice.style.transform = `rotate(${i * angle}deg)`;
-                    slice.style.backgroundColor = colors[i];
-                    
-                    const label = document.createElement('div');
-                    label.className = 'slice-label';
-                    label.textContent = prize;
-                    
-                    wheel.appendChild(slice);
-                    wheel.appendChild(label);
-                });
-            }
-            
-            createWheel();
-            
-            let isSpinning = false;
-            let currentRotation = 0;
-            
-            // Konfeti efekti
-            function createConfetti() {
-                particles.innerHTML = '';
-                for (let i = 0; i < 150; i++) {
-                    const confetti = document.createElement('div');
-                    confetti.style.position = 'absolute';
-                    confetti.style.width = '10px';
-                    confetti.style.height = '10px';
-                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.left = `${Math.random() * 100}%`;
-                    confetti.style.top = '-10px';
-                    confetti.style.borderRadius = '50%';
-                    confetti.style.animation = `confetti ${Math.random() * 3 + 2}s linear forwards`;
-                    particles.appendChild(confetti);
-                }
-            }
-            
-            // Çarkı döndür
-            spinBtn.addEventListener('click', () => {
-                if (isSpinning) return;
-                
-                isSpinning = true;
-                result.style.opacity = '0';
-                spinBtn.disabled = true;
-                
-                // Dönüş parametreleri
-                const spinDegrees = 1800 + Math.floor(Math.random() * 3600);
-                currentRotation += spinDegrees;
-                
-                // Ses efektleri
-                spinSound.currentTime = 0;
-                spinSound.play();
-                
-                // Tık sesi efekti (dönüş sırasında)
-                const tickInterval = setInterval(() => {
-                    tickSound.currentTime = 0;
-                    tickSound.play();
-                }, 300);
-                
-                // 3D dönüş efekti
-                wheel.style.transform = `rotateX(15deg) rotate(${currentRotation}deg)`;
-                
-                // Dönüş tamamlandığında
-                setTimeout(() => {
-                    clearInterval(tickInterval);
-                    isSpinning = false;
-                    spinBtn.disabled = false;
-                    
-                    // Kazananı belirle
-                    const normalizedRotation = currentRotation % 360;
-                    const winningIndex = Math.floor((360 - normalizedRotation) / (360 / prizes.length)) % prizes.length;
-                    const winningPrize = prizes[winningIndex];
-                    
-                    // Sonucu göster
-                    result.textContent = `TEBRİKLER! ${winningPrize} KAZANDINIZ!`;
-                    result.style.opacity = '1';
-                    
-                    // Kazanma efektleri
-                    winSound.currentTime = 0;
-                    winSound.play();
-                    createConfetti();
-                    
-                    // Işık efekti
-                    const beam = document.querySelector('.light-beam');
-                    beam.style.animation = 'pulse 0.5s 5 alternate';
-                    setTimeout(() => {
-                        beam.style.animation = 'pulse 3s infinite alternate';
-                    }, 2500);
-                    
-                }, 5000);
-            });
-        });
-    </script>
+    function kontrolEt() {
+      const sifre = document.getElementById("sifre").value;
+      if (sifre === dogruSifre) {
+        document.getElementById("cak").style.display = "block";
+        createWheel();
+      } else {
+        alert("Şifre hatalı. Lütfen işletmeden tekrar isteyin.");
+      }
+    }
+
+    function createWheel() {
+      const wheel = document.getElementById("wheel");
+      wheel.innerHTML = '';
+      
+      const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12'];
+      const angle = 360 / hediyeler.length;
+      
+      hediyeler.forEach((hediye, index) => {
+        const slice = document.createElement('div');
+        slice.className = 'wheel-slice';
+        slice.style.transform = `rotate(${index * angle}deg)`;
+        slice.style.backgroundColor = colors[index];
+        
+        const label = document.createElement('div');
+        label.className = 'slice-label';
+        label.textContent = hediye;
+        
+        slice.appendChild(label);
+        wheel.appendChild(slice);
+      });
+    }
+
+    function cevir() {
+      if (cevrildi) {
+        alert("Çark sadece bir kez çevrilebilir!");
+        return;
+      }
+
+      const wheel = document.getElementById("wheel");
+      const derece = 1800 + Math.floor(Math.random() * 1800) + Math.floor(Math.random() * 360);
+      wheel.style.transform = `rotate(${derece}deg)`;
+
+      const sektor = Math.floor((360 - (derece % 360)) / (360 / hediyeler.length)) % hediyeler.length;
+      const kazanan = hediyeler[sektor];
+
+      setTimeout(() => {
+        document.getElementById("sonuc").textContent =
+          "🎉 Tebrikler! Kazandığınız: " + kazanan;
+        document.getElementById("cevirBtn").disabled = true;
+        cevrildi = true;
+        
+        // Kazanma animasyonu
+        const result = document.getElementById("sonuc");
+        result.style.animation = 'none';
+        setTimeout(() => {
+          result.style.animation = 'bounce 0.5s 3';
+        }, 10);
+      }, 4000);
+    }
+
+    // Animasyon tanımı
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+        40% {transform: translateY(-15px);}
+        60% {transform: translateY(-7px);}
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
 </body>
 </html>
