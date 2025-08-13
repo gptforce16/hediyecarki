@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profesyonel Çark Oyunu</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        .wheel-container {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            border: 15px solid #333;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.7), 
+                        inset 0 0 20px rgba(0, 0, 0, 0.5);
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            transform: rotate(0deg);
+            background: #fff;
+        }
+        
+        .wheel-item {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: bottom right;
+            left: 0;
+            top: 0;
+            display: flex;
+            align-items: center;
+            padding-left: 50px;
+            box-sizing: border-box;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+        }
+        
+        .pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            z-index: 10;
+        }
+        
+        .pointer:before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 40px solid #ff3333;
+            filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+        }
+        
+        .spin-btn {
+            position: absolute;
+            z-index: 20;
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .spin-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .spin-btn:active {
+            transform: translateY(1px);
+        }
+        
+        .spin-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .result {
+            position: absolute;
+            bottom: -60px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        @keyframes tick {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="wheel-container">
+        <div class="wheel" id="wheel">
+            <!-- Çark öğeleri JavaScript ile eklenecek -->
+        </div>
+        <div class="pointer"></div>
+        <button class="spin-btn" id="spinBtn">Çevir</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <audio id="wheelSound" src="https://assets.mixkit.co/sfx/preview/mixkit-spinning-wheel-1082.mp3" preload="auto"></audio>
+    <audio id="winSound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" preload="auto"></audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const wheel = document.getElementById('wheel');
+            const spinBtn = document.getElementById('spinBtn');
+            const result = document.getElementById('result');
+            const wheelSound = document.getElementById('wheelSound');
+            const winSound = document.getElementById('winSound');
+            
+            // Çark öğeleri ve renkleri
+            const items = [
+                { text: "10% İndirim", color: "#FF6384" },
+                { text: "Ücretsiz Kargo", color: "#36A2EB" },
+                { text: "50 TL Hediye", color: "#FFCE56" },
+                { text: "20% İndirim", color: "#4BC0C0" },
+                { text: "Tekrar Çevir", color: "#9966FF" },
+                { text: "100 TL Hediye", color: "#FF9F40" },
+                { text: "Bedava Ürün", color: "#8AC249" },
+                { text: "5% İndirim", color: "#EA5F89" }
+            ];
+            
+            // Çarkı oluştur
+            function createWheel() {
+                const sliceAngle = 360 / items.length;
+                
+                items.forEach((item, index) => {
+                    const slice = document.createElement('div');
+                    slice.className = 'wheel-item';
+                    slice.textContent = item.text;
+                    slice.style.backgroundColor = item.color;
+                    slice.style.transform = `rotate(${index * sliceAngle}deg)`;
+                    
+                    // Metni dikey hale getir
+                    const textSpan = document.createElement('span');
+                    textSpan.textContent = item.text;
+                    textSpan.style.transform = `rotate(${sliceAngle / 2}deg)`;
+                    textSpan.style.display = 'inline-block';
+                    textSpan.style.transformOrigin = '0 0';
+                    textSpan.style.marginLeft = '10px';
+                    
+                    slice.innerHTML = '';
+                    slice.appendChild(textSpan);
+                    
+                    wheel.appendChild(slice);
+                });
+            }
+            
+            createWheel();
+            
+            let isSpinning = false;
+            let currentRotation = 0;
+            
+            // Çarkı döndür
+            spinBtn.addEventListener('click', function() {
+                if (isSpinning) return;
+                
+                isSpinning = true;
+                result.style.opacity = '0';
+                spinBtn.disabled = true;
+                
+                // Rastgele dönüş açısı (5-10 tam tur + rastgele bölüm)
+                const spinDegrees = 1800 + Math.floor(Math.random() * 360) + (360 / items.length * Math.floor(Math.random() * items.length));
+                currentRotation += spinDegrees;
+                
+                // Ses efekti
+                wheelSound.currentTime = 0;
+                wheelSound.play();
+                
+                // Dönme animasyonu
+                wheel.style.transform = `rotate(${currentRotation}deg)`;
+                
+                // Dönme bittiğinde
+                setTimeout(() => {
+                    isSpinning = false;
+                    spinBtn.disabled = false;
+                    wheelSound.pause();
+                    
+                    // Kazananı belirle
+                    const winningSlice = Math.floor(items.length - (currentRotation % 360) / (360 / items.length)) % items.length;
+                    const winningText = items[winningSlice].text;
+                    
+                    // Sonucu göster
+                    result.textContent = `Tebrikler: ${winningText}`;
+                    result.style.opacity = '1';
+                    
+                    // Kazanma sesi
+                    winSound.currentTime = 0;
+                    winSound.play();
+                    
+                    // Sonuç animasyonu
+                    result.style.animation = 'tick 0.5s 3';
+                    setTimeout(() => {
+                        result.style.animation = '';
+                    }, 1500);
+                }, 4000);
+            });
+        });
+    </script>
+</body>
+</html>
