@@ -13,56 +13,39 @@
       padding: 20px;
       margin: 0;
       color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     h1 {
-      font-size: 1.8rem;
-      margin-bottom: 10px;
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: #2c3e50;
     }
 
     a {
       color: #007bff;
       text-decoration: none;
       font-weight: bold;
+      margin: 10px 0;
+      display: inline-block;
     }
 
     a:hover {
       text-decoration: underline;
     }
 
-    input[type="password"], button {
-      font-size: 16px;
-      padding: 12px;
-      margin: 8px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      width: 80%;
-      max-width: 300px;
-      box-sizing: border-box;
-    }
-
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    button:hover {
-      background-color: #0056b3;
-    }
-
-    #cak {
-      display: none;
-      margin-top: 30px;
+    .social-links {
+      margin: 20px 0;
     }
 
     .wheel-container {
       position: relative;
       width: 280px;
       height: 280px;
-      margin: 0 auto 30px;
+      margin: 20px auto;
     }
 
     .wheel {
@@ -127,11 +110,14 @@
     }
 
     #cevirBtn {
-      margin-top: 20px;
+      margin: 20px 0;
       padding: 15px 30px;
       font-size: 18px;
       border-radius: 50px;
       background: linear-gradient(135deg, #ff416c, #ff4b2b);
+      color: white;
+      border: none;
+      cursor: pointer;
       box-shadow: 0 5px 15px rgba(255, 75, 43, 0.4);
       transition: all 0.3s;
     }
@@ -145,90 +131,97 @@
       transform: translateY(1px);
     }
 
+    #cevirBtn:disabled {
+      background: #95a5a6;
+      cursor: not-allowed;
+    }
+
     #sonuc {
-      margin-top: 25px;
+      margin: 25px 0;
       font-size: 20px;
       font-weight: bold;
       color: #27ae60;
       background: rgba(39, 174, 96, 0.1);
-      padding: 15px;
+      padding: 15px 25px;
       border-radius: 10px;
       display: inline-block;
       min-width: 250px;
     }
 
+    .logo {
+      max-width: 150px;
+      margin-bottom: 20px;
+    }
+
     @media (max-width: 500px) {
       h1 { font-size: 1.5rem; }
-      input, button { font-size: 15px; width: 90%; }
       .wheel-container { width: 250px; height: 250px; }
       .slice-label { font-size: 12px; width: 70px; margin-left: 30px; }
+      #sonuc { font-size: 18px; padding: 12px 20px; }
     }
   </style>
 </head>
 <body>
-  <h1>Hediye Çarkına Hoş Geldin</h1>
+  <!-- Logo eklemek isterseniz -->
+  <!-- <img src="logo.png" alt="Logo" class="logo"> -->
+  
+  <h1>Hediye Çarkına Hoş Geldiniz</h1>
 
-  <p>
+  <div class="social-links">
     <a href="https://search.google.com/local/writereview?placeid=ChIJaSn0O7o-yhQRjjiw9hjH4vk" target="_blank">
       👉 Google Yorum Sayfasına Git
     </a>
-  </p>
-
-  <p>
+    <br>
     <a href="instagram://user?username=manco.caferestoran" 
        onclick="window.location='https://instagram.com/manco.caferestoran'" 
-       style="font-weight: bold; color: #E1306C;">
+       style="color: #E1306C;">
        👉 Instagram Sayfamızı Takip Et
     </a>
-  </p>
-
-  <h3>Şifreyi gir:</h3>
-  <input type="password" id="sifre" placeholder="Şifre" />
-  <button onclick="kontrolEt()">Çarka Git</button>
-
-  <div id="cak">
-    <div class="wheel-container">
-      <div class="wheel" id="wheel">
-        <!-- Çark dilimleri JS ile eklenecek -->
-      </div>
-      <div class="pointer"></div>
-    </div>
-    <button id="cevirBtn" onclick="cevir()">🎁 Çarkı Çevir</button>
-    <p id="sonuc"></p>
   </div>
 
+  <div class="wheel-container">
+    <div class="wheel" id="wheel">
+      <!-- Çark dilimleri JS ile eklenecek -->
+    </div>
+    <div class="pointer"></div>
+  </div>
+  
+  <button id="cevirBtn" onclick="cevir()">🎁 Çarkı Çevir</button>
+  <p id="sonuc"></p>
+
   <script>
-    const dogruSifre = "1234";
     const hediyeler = [
       "Anahtarlık 🔑",
       "Çakmak 🔥",
       "Kalem ✒️",
-      "Not Defteri 📓"
+      "Not Defteri 📓",
+      "Kupa ☕",
+      "Şapka 🧢",
+      "Çikolata 🍫",
+      "Hediye Çeki 💳"
     ];
     let cevrildi = false;
 
-    function kontrolEt() {
-      const sifre = document.getElementById("sifre").value;
-      if (sifre === dogruSifre) {
-        document.getElementById("cak").style.display = "block";
-        createWheel();
-      } else {
-        alert("Şifre hatalı. Lütfen işletmeden tekrar isteyin.");
-      }
-    }
+    // Sayfa yüklendiğinde çarkı oluştur
+    window.onload = function() {
+      createWheel();
+    };
 
     function createWheel() {
       const wheel = document.getElementById("wheel");
       wheel.innerHTML = '';
       
-      const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12'];
+      const colors = [
+        '#e74c3c', '#3498db', '#2ecc71', '#f39c12',
+        '#9b59b6', '#1abc9c', '#e67e22', '#34495e'
+      ];
       const angle = 360 / hediyeler.length;
       
       hediyeler.forEach((hediye, index) => {
         const slice = document.createElement('div');
         slice.className = 'wheel-slice';
         slice.style.transform = `rotate(${index * angle}deg)`;
-        slice.style.backgroundColor = colors[index];
+        slice.style.backgroundColor = colors[index % colors.length];
         
         const label = document.createElement('div');
         label.className = 'slice-label';
@@ -246,16 +239,19 @@
       }
 
       const wheel = document.getElementById("wheel");
+      const btn = document.getElementById("cevirBtn");
+      btn.disabled = true;
+      
+      // 3-5 tam tur + rastgele açı
       const derece = 1800 + Math.floor(Math.random() * 1800) + Math.floor(Math.random() * 360);
       wheel.style.transform = `rotate(${derece}deg)`;
 
-      const sektor = Math.floor((360 - (derece % 360)) / (360 / hediyeler.length)) % hediyeler.length;
-      const kazanan = hediyeler[sektor];
-
+      // Dönüş bittiğinde kazananı belirle
       setTimeout(() => {
-        document.getElementById("sonuc").textContent =
-          "🎉 Tebrikler! Kazandığınız: " + kazanan;
-        document.getElementById("cevirBtn").disabled = true;
+        const sektor = Math.floor((360 - (derece % 360)) / (360 / hediyeler.length)) % hediyeler.length;
+        const kazanan = hediyeler[sektor];
+        
+        document.getElementById("sonuc").textContent = `🎉 Tebrikler! Kazandığınız: ${kazanan}`;
         cevrildi = true;
         
         // Kazanma animasyonu
