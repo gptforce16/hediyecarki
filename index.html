@@ -162,9 +162,6 @@
   </style>
 </head>
 <body>
-  <!-- Logo eklemek isterseniz -->
-  <!-- <img src="logo.png" alt="Logo" class="logo"> -->
-  
   <h1>ÇARKI ÇEVİR FIRSATI YAKALA</h1>
 
   <div class="social-links">
@@ -215,12 +212,12 @@
         '#e74c3c', '#3498db', '#2ecc71', '#f39c12',
         '#9b59b6', '#1abc9c', '#e67e22', '#34495e'
       ];
-      const angle = 360 / hediyeler.length;
+      const dilimAcisi = 360 / hediyeler.length;
       
       hediyeler.forEach((hediye, index) => {
         const slice = document.createElement('div');
         slice.className = 'wheel-slice';
-        slice.style.transform = `rotate(${index * angle}deg)`;
+        slice.style.transform = `rotate(${index * dilimAcisi}deg)`;
         slice.style.backgroundColor = colors[index % colors.length];
         
         const label = document.createElement('div');
@@ -242,20 +239,22 @@
       const btn = document.getElementById("cevirBtn");
       btn.disabled = true;
       
-      // 3-5 tam tur + rastgele açı
-      const randomDegree = Math.floor(Math.random() * 360);
-      const derece = 1800 + randomDegree; // 5 tam tur (1800 derece) + rastgele açı
-      wheel.style.transform = `rotate(${derece}deg)`;
+      // 3-5 tam tur (1080-1800 derece) + rastgele açı (0-360)
+      const tamTur = 1080 + Math.floor(Math.random() * 721); // 1080-1800 arası
+      const rastgeleAci = Math.floor(Math.random() * 360);
+      const toplamDerece = tamTur + rastgeleAci;
+      
+      wheel.style.transform = `rotate(${toplamDerece}deg)`;
 
       // Dönüş bittiğinde kazananı belirle
       setTimeout(() => {
-        // Çarkın durduğu açıyı hesapla (mod 360)
-        const durduguAci = derece % 360;
-        // Her bir dilimin açısını hesapla
+        // Çarkın durduğu açı (mod 360)
+        const durduguAci = toplamDerece % 360;
+        // Her bir dilimin açısı
         const dilimAcisi = 360 / hediyeler.length;
-        // Hangi dilimin seçildiğini hesapla (ters yönde olduğu için 360'dan çıkarıyoruz)
-        const sektor = Math.floor((360 - durduguAci) / dilimAcisi) % hediyeler.length;
-        const kazanan = hediyeler[sektor];
+        // Hangi dilimin seçildiği (ters yönde olduğu için 360'dan çıkarıyoruz)
+        const sektor = Math.floor((360 - durduguAci) / dilimAcisi);
+        const kazanan = hediyeler[sektor % hediyeler.length];
         
         document.getElementById("sonuc").textContent = `Tebrikler! ${kazanan} Kazandınız`;
         cevrildi = true;
