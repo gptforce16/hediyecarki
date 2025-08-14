@@ -1,279 +1,181 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Hediye Çarkı</title>
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Quicksand', sans-serif;
-      background: linear-gradient(135deg, #f8f9fa, #e0e0e0);
-      text-align: center;
-      padding: 20px;
-      margin: 0;
-      color: #333;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 20px;
-      color: #2c3e50;
-    }
-
-    a {
-      color: #007bff;
-      text-decoration: none;
-      font-weight: bold;
-      margin: 10px 0;
-      display: inline-block;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
-    .social-links {
-      margin: 20px 0;
-    }
-
-    .wheel-container {
-      position: relative;
-      width: 280px;
-      height: 280px;
-      margin: 20px auto;
-    }
-
-    .wheel {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      border: 8px solid #fff;
-      box-shadow: 0 0 0 10px #2c3e50, 0 10px 30px rgba(0,0,0,0.3);
-      position: relative;
-      overflow: hidden;
-      transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-      transform: rotate(0deg);
-    }
-
-    .wheel-slice {
-      position: absolute;
-      width: 50%;
-      height: 50%;
-      transform-origin: bottom right;
-      left: 0;
-      top: 0;
-      clip-path: polygon(0 0, 100% 0, 100% 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .slice-label {
-      transform: rotate(45deg);
-      color: white;
-      font-weight: bold;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-      font-size: 14px;
-      width: 80px;
-      text-align: center;
-      margin-left: 40px;
-    }
-
-    .pointer {
-      position: absolute;
-      top: -20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 20px solid transparent;
-      border-right: 20px solid transparent;
-      border-top: 40px solid #e74c3c;
-      z-index: 10;
-      filter: drop-shadow(0 0 5px rgba(0,0,0,0.3));
-    }
-
-    .pointer:after {
-      content: '';
-      position: absolute;
-      top: -50px;
-      left: -10px;
-      width: 20px;
-      height: 20px;
-      background: #e74c3c;
-      border-radius: 50%;
-    }
-
-    #cevirBtn {
-      margin: 20px 0;
-      padding: 15px 30px;
-      font-size: 18px;
-      border-radius: 50px;
-      background: linear-gradient(135deg, #ff416c, #ff4b2b);
-      color: white;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 5px 15px rgba(255, 75, 43, 0.4);
-      transition: all 0.3s;
-    }
-
-    #cevirBtn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(255, 75, 43, 0.6);
-    }
-
-    #cevirBtn:active {
-      transform: translateY(1px);
-    }
-
-    #cevirBtn:disabled {
-      background: #95a5a6;
-      cursor: not-allowed;
-    }
-
-    #sonuc {
-      margin: 25px 0;
-      font-size: 20px;
-      font-weight: bold;
-      color: #27ae60;
-      background: rgba(39, 174, 96, 0.1);
-      padding: 15px 25px;
-      border-radius: 10px;
-      display: inline-block;
-      min-width: 250px;
-      animation: none;
-    }
-
-    .logo {
-      max-width: 150px;
-      margin-bottom: 20px;
-    }
-
-    @keyframes bounce {
-      0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-      40% {transform: translateY(-15px);}
-      60% {transform: translateY(-7px);}
-    }
-
-    @media (max-width: 500px) {
-      h1 { font-size: 1.5rem; }
-      .wheel-container { width: 250px; height: 250px; }
-      .slice-label { font-size: 12px; width: 70px; margin-left: 30px; }
-      #sonuc { font-size: 18px; padding: 12px 20px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hediye Çarkı</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  body {
+    font-family: 'Quicksand', sans-serif;
+    background: linear-gradient(135deg, #f8f9fa, #e0e0e0);
+    margin: 0; padding: 20px;
+    display: flex; flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    color: #333;
+    text-align: center;
+  }
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #2c3e50;
+  }
+  .wheel-container {
+    position: relative;
+    width: 300px; height: 300px;
+  }
+  .wheel {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    border: 8px solid #fff;
+    box-shadow: 0 0 0 10px #2c3e50, 0 10px 30px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+    transition: transform 4s cubic-bezier(.17,.67,.12,.99);
+  }
+  .wheel-slice {
+    position: absolute;
+    width: 50%; height: 50%;
+    transform-origin: bottom right;
+    left: 50%; top: 50%;
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+    border-right: 2px solid #fff;
+  }
+  .slice-label {
+    position: absolute;
+    right: -70px;
+    top: 20px;
+    transform: rotate(-45deg);
+    color: #fff;
+    font-weight: bold;
+    font-size: 14px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,.5);
+    width: 100px;
+    text-align: center;
+  }
+  .pointer {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 40px solid #e74c3c;
+    z-index: 10;
+  }
+  #cevirBtn {
+    margin: 20px 0;
+    padding: 15px 30px;
+    font-size: 18px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(255, 75, 43, 0.4);
+    transition: all 0.3s;
+  }
+  #cevirBtn:hover { transform: translateY(-3px); }
+  #cevirBtn:disabled { background: #95a5a6; cursor: not-allowed; }
+  #sonuc {
+    margin: 15px 0;
+    font-size: 20px;
+    font-weight: bold;
+    color: #27ae60;
+    background: rgba(39, 174, 96, 0.1);
+    padding: 15px 25px;
+    border-radius: 10px;
+    display: inline-block;
+    min-width: 250px;
+  }
+  @media(max-width:500px) {
+    .wheel-container { width: 250px; height: 250px; }
+    .slice-label { font-size: 12px; right: -60px; }
+  }
+</style>
 </head>
 <body>
-  <h1>ÇARKI ÇEVİR FIRSATI YAKALA</h1>
+<h1>ÇARKI ÇEVİR FIRSATI YAKALA</h1>
 
-  <div class="social-links">
-    <a href="https://search.google.com/local/writereview?placeid=ChIJaSn0O7o-yhQRjjiw9hjH4vk" target="_blank">
-      Google Yorum Sayfamız
-    </a>
-    <br>
-    <a href="instagram://user?username=manco.caferestoran" 
-       onclick="window.location='https://instagram.com/manco.caferestoran'" 
-       style="color: #E1306C;">
-       Instagram Sayfamız
-    </a>
-  </div>
+<div class="wheel-container">
+  <div class="wheel" id="wheel"></div>
+  <div class="pointer"></div>
+</div>
 
-  <div class="wheel-container">
-    <div class="wheel" id="wheel"></div>
-    <div class="pointer"></div>
-  </div>
-  
-  <button id="cevirBtn">Çarkı Çevir</button>
-  <p id="sonuc"></p>
+<button id="cevirBtn">Çarkı Çevir</button>
+<p id="sonuc"></p>
 
-  <script>
-    const hediyeler = [
-      "Soğuk Kahve",
-      "Çay",
-      "1 Kişilik Künefe",
-      "Tabldot",
-      "Süt Helvası",
-      "Karışık Meze Tabağı",
-      "%5 İndirim",
-      "%10 İndirim"
-    ];
-    const colors = [
-      '#e74c3c', '#3498db', '#2ecc71', '#f39c12',
-      '#9b59b6', '#1abc9c', '#e67e22', '#34495e'
-    ];
-    let cevrildi = false;
+<script>
+const hediyeler = [
+  "Soğuk Kahve", "Çay", "1 Kişilik Künefe", "Tabldot",
+  "Süt Helvası", "Karışık Meze Tabağı", "%5 İndirim", "%10 İndirim"
+];
+const colors = ['#e74c3c','#3498db','#2ecc71','#f39c12',
+                '#9b59b6','#1abc9c','#e67e22','#34495e'];
+let cevrildi = false;
 
-    // Çarkı oluştur
-    function createWheel() {
-      const wheel = document.getElementById("wheel");
-      const dilimAcisi = 360 / hediyeler.length;
-      
-      hediyeler.forEach((hediye, index) => {
-        const slice = document.createElement('div');
-        slice.className = 'wheel-slice';
-        slice.style.transform = `rotate(${index * dilimAcisi}deg)`;
-        slice.style.backgroundColor = colors[index];
-        
-        const label = document.createElement('div');
-        label.className = 'slice-label';
-        label.textContent = hediye;
-        
-        slice.appendChild(label);
-        wheel.appendChild(slice);
-      });
-    }
+function createWheel() {
+  const wheel = document.getElementById("wheel");
+  const dilimAcisi = 360 / hediyeler.length;
+  hediyeler.forEach((hediye, i) => {
+    const slice = document.createElement('div');
+    slice.className = 'wheel-slice';
+    slice.style.transform = `rotate(${i * dilimAcisi}deg) translate(-50%, -50%)`;
+    slice.style.backgroundColor = colors[i];
+    const label = document.createElement('div');
+    label.className = 'slice-label';
+    label.textContent = hediye;
+    slice.appendChild(label);
+    wheel.appendChild(slice);
+  });
+}
 
-    // Kazananı hesapla
-    function getWinner(degree) {
-      const normalizedDegree = 360 - (degree % 360);
-      const dilimAcisi = 360 / hediyeler.length;
-      const winnerIndex = Math.floor(normalizedDegree / dilimAcisi) % hediyeler.length;
-      return {
-        prize: hediyeler[winnerIndex],
-        index: winnerIndex
-      };
-    }
+function getWinner(degree) {
+  const normalizedDegree = 360 - (degree % 360);
+  const dilimAcisi = 360 / hediyeler.length;
+  const winnerIndex = Math.floor(normalizedDegree / dilimAcisi) % hediyeler.length;
+  return hediyeler[winnerIndex];
+}
 
-    // Çarkı çevir
-    document.getElementById("cevirBtn").addEventListener('click', function() {
-      if (cevrildi) {
-        alert("Çark sadece bir kez çevrilebilir!");
-        return;
-      }
+document.getElementById("cevirBtn").addEventListener('click', function() {
+  if (cevrildi) { alert("Çark sadece bir kez çevrilebilir!"); return; }
+  const wheel = document.getElementById("wheel");
+  const btn = this; btn.disabled = true;
+  const tamTur = 1800 + Math.floor(Math.random() * 1080);
+  const rastgeleAci = Math.floor(Math.random() * 360);
+  const toplamDerece = tamTur + rastgeleAci;
+  wheel.style.transform = `rotate(${toplamDerece}deg)`;
+  setTimeout(() => {
+    const prize = getWinner(toplamDerece);
+    document.getElementById("sonuc").textContent = `🎉 Tebrikler! ${prize} kazandınız 🎉`;
+    konfeti();
+    cevrildi = true;
+  }, 4200);
+});
 
-      const wheel = document.getElementById("wheel");
-      const btn = this;
-      const sonuc = document.getElementById("sonuc");
-      btn.disabled = true;
-      sonuc.textContent = "";
-      
-      // 5-8 tam tur (1800-2880 derece) + 0-360 derece rastgele açı
-      const tamTur = 1800 + Math.floor(Math.random() * 1081); // 1800-2880 arası
-      const rastgeleAci = Math.floor(Math.random() * 360);
-      const toplamDerece = tamTur + rastgeleAci;
-      
-      wheel.style.transform = `rotate(${toplamDerece}deg)`;
+function konfeti(){
+  for(let i=0;i<100;i++){
+    const conf = document.createElement('div');
+    conf.style.position = 'fixed';
+    conf.style.left = Math.random()*100+'%';
+    conf.style.top = '-10px';
+    conf.style.width = '8px'; conf.style.height = '8px';
+    conf.style.background = `hsl(${Math.random()*360},100%,50%)`;
+    conf.style.opacity = 0.9;
+    conf.style.transform = `rotate(${Math.random()*360}deg)`;
+    conf.style.transition = 'top 3s ease-out, left 3s ease-out';
+    document.body.appendChild(conf);
+    setTimeout(()=>{
+      conf.style.top = '110%';
+      conf.style.left = Math.random()*100+'%';
+    },10);
+    setTimeout(()=>conf.remove(), 3100);
+  }
+}
 
-      setTimeout(() => {
-        const { prize, index } = getWinner(toplamDerece);
-        sonuc.textContent = `Tebrikler! ${prize} Kazandınız`;
-        sonuc.style.animation = 'none';
-        setTimeout(() => {
-          sonuc.style.animation = 'bounce 0.5s 3';
-        }, 10);
-        
-        console.log(`Dönen açı: ${toplamDerece}°, Normalize: ${360 - (toplamDerece % 360)}°, Kazanan dilim: ${index} (${prize})`);
-        cevrildi = true;
-      }, 4000);
-    });
-
-    // Sayfa yüklendiğinde çarkı oluştur
-    window.addEventListener('load', createWheel);
-  </script>
+window.addEventListener('load', createWheel);
+</script>
 </body>
 </html>
