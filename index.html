@@ -230,7 +230,7 @@
 
     // Kazananı hesapla
     function getWinner(degree) {
-      const normalizedDegree = 360 - (degree % 225);
+      const normalizedDegree = 360 - (degree % 360);
       const dilimAcisi = 360 / hediyeler.length;
       const winnerIndex = Math.floor(normalizedDegree / dilimAcisi) % hediyeler.length;
       return {
