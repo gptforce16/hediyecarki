@@ -146,11 +146,18 @@
       border-radius: 10px;
       display: inline-block;
       min-width: 250px;
+      animation: none;
     }
 
     .logo {
       max-width: 150px;
       margin-bottom: 20px;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+      40% {transform: translateY(-15px);}
+      60% {transform: translateY(-7px);}
     }
 
     @media (max-width: 500px) {
@@ -177,13 +184,11 @@
   </div>
 
   <div class="wheel-container">
-    <div class="wheel" id="wheel">
-      <!-- Çark dilimleri JS ile eklenecek -->
-    </div>
+    <div class="wheel" id="wheel"></div>
     <div class="pointer"></div>
   </div>
   
-  <button id="cevirBtn" onclick="cevir()">Çarkı Çevir</button>
+  <button id="cevirBtn">Çarkı Çevir</button>
   <p id="sonuc"></p>
 
   <script>
@@ -197,28 +202,22 @@
       "%5 İndirim",
       "%10 İndirim"
     ];
+    const colors = [
+      '#e74c3c', '#3498db', '#2ecc71', '#f39c12',
+      '#9b59b6', '#1abc9c', '#e67e22', '#34495e'
+    ];
     let cevrildi = false;
 
-    // Sayfa yüklendiğinde çarkı oluştur
-    window.onload = function() {
-      createWheel();
-    };
-
+    // Çarkı oluştur
     function createWheel() {
       const wheel = document.getElementById("wheel");
-      wheel.innerHTML = '';
-      
-      const colors = [
-        '#e74c3c', '#3498db', '#2ecc71', '#f39c12',
-        '#9b59b6', '#1abc9c', '#e67e22', '#34495e'
-      ];
       const dilimAcisi = 360 / hediyeler.length;
       
       hediyeler.forEach((hediye, index) => {
         const slice = document.createElement('div');
         slice.className = 'wheel-slice';
         slice.style.transform = `rotate(${index * dilimAcisi}deg)`;
-        slice.style.backgroundColor = colors[index % colors.length];
+        slice.style.backgroundColor = colors[index];
         
         const label = document.createElement('div');
         label.className = 'slice-label';
@@ -229,55 +228,52 @@
       });
     }
 
-    function cevir() {
+    // Kazananı hesapla
+    function getWinner(degree) {
+      const normalizedDegree = 360 - (degree % 360);
+      const dilimAcisi = 360 / hediyeler.length;
+      const winnerIndex = Math.floor(normalizedDegree / dilimAcisi) % hediyeler.length;
+      return {
+        prize: hediyeler[winnerIndex],
+        index: winnerIndex
+      };
+    }
+
+    // Çarkı çevir
+    document.getElementById("cevirBtn").addEventListener('click', function() {
       if (cevrildi) {
         alert("Çark sadece bir kez çevrilebilir!");
         return;
       }
 
       const wheel = document.getElementById("wheel");
-      const btn = document.getElementById("cevirBtn");
+      const btn = this;
+      const sonuc = document.getElementById("sonuc");
       btn.disabled = true;
+      sonuc.textContent = "";
       
-      // 3-5 tam tur (1080-1800 derece) + rastgele açı (0-360)
-      const tamTur = 1080 + Math.floor(Math.random() * 721); // 1080-1800 arası
+      // 5-8 tam tur (1800-2880 derece) + 0-360 derece rastgele açı
+      const tamTur = 1800 + Math.floor(Math.random() * 1081); // 1800-2880 arası
       const rastgeleAci = Math.floor(Math.random() * 360);
       const toplamDerece = tamTur + rastgeleAci;
       
       wheel.style.transform = `rotate(${toplamDerece}deg)`;
 
-      // Dönüş bittiğinde kazananı belirle
       setTimeout(() => {
-        // Çarkın durduğu açı (mod 360)
-        const durduguAci = toplamDerece % 360;
-        // Her bir dilimin açısı
-        const dilimAcisi = 360 / hediyeler.length;
-        // Hangi dilimin seçildiği (ters yönde olduğu için 360'dan çıkarıyoruz)
-        const sektor = Math.floor((360 - durduguAci) / dilimAcisi);
-        const kazanan = hediyeler[sektor % hediyeler.length];
-        
-        document.getElementById("sonuc").textContent = `Tebrikler! ${kazanan} Kazandınız`;
-        cevrildi = true;
-        
-        // Kazanma animasyonu
-        const result = document.getElementById("sonuc");
-        result.style.animation = 'none';
+        const { prize, index } = getWinner(toplamDerece);
+        sonuc.textContent = `Tebrikler! ${prize} Kazandınız`;
+        sonuc.style.animation = 'none';
         setTimeout(() => {
-          result.style.animation = 'bounce 0.5s 3';
+          sonuc.style.animation = 'bounce 0.5s 3';
         }, 10);
+        
+        console.log(`Dönen açı: ${toplamDerece}°, Normalize: ${360 - (toplamDerece % 360)}°, Kazanan dilim: ${index} (${prize})`);
+        cevrildi = true;
       }, 4000);
-    }
+    });
 
-    // Animasyon tanımı
-    const style = document.createElement('style');
-    style.textContent = `
-      @keyframes bounce {
-        0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-        40% {transform: translateY(-15px);}
-        60% {transform: translateY(-7px);}
-      }
-    `;
-    document.head.appendChild(style);
+    // Sayfa yüklendiğinde çarkı oluştur
+    window.addEventListener('load', createWheel);
   </script>
 </body>
 </html>
