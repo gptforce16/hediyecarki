@@ -243,12 +243,18 @@
       btn.disabled = true;
       
       // 3-5 tam tur + rastgele açı
-      const derece = 1800 + Math.floor(Math.random() * 1800) + Math.floor(Math.random() * 360);
+      const randomDegree = Math.floor(Math.random() * 360);
+      const derece = 1800 + randomDegree; // 5 tam tur (1800 derece) + rastgele açı
       wheel.style.transform = `rotate(${derece}deg)`;
 
       // Dönüş bittiğinde kazananı belirle
       setTimeout(() => {
-        const sektor = Math.floor((360 - (derece % 360)) / (360 / hediyeler.length)) % hediyeler.length;
+        // Çarkın durduğu açıyı hesapla (mod 360)
+        const durduguAci = derece % 360;
+        // Her bir dilimin açısını hesapla
+        const dilimAcisi = 360 / hediyeler.length;
+        // Hangi dilimin seçildiğini hesapla (ters yönde olduğu için 360'dan çıkarıyoruz)
+        const sektor = Math.floor((360 - durduguAci) / dilimAcisi) % hediyeler.length;
         const kazanan = hediyeler[sektor];
         
         document.getElementById("sonuc").textContent = `Tebrikler! ${kazanan} Kazandınız`;
