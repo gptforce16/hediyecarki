@@ -175,7 +175,7 @@
     function getWinner(degree) {
       const dilimAcisi = 360 / hediyeler.length;
       // Pointer 12 yönünde olduğu için 90 derece ekliyoruz
-      const adjustedDegree = (360 - (degree % 360) + 90) % 360;
+      const adjustedDegree = (360 - (degree % 360) + 45) % 360;
       const winnerIndex = Math.floor(adjustedDegree / dilimAcisi);
       return hediyeler[winnerIndex];
     }
