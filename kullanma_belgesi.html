@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeoLog Pro - Kullanma Belgesi</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- STREAMING_CHUNK:Firebase Init -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyA8JR_mh0FaU_ZT16h6MRZICvYIlHdbZ78",
+        authDomain: "geologpro-3aa61.firebaseapp.com",
+        projectId: "geologpro-3aa61",
+        storageBucket: "geologpro-3aa61.firebasestorage.app",
+        messagingSenderId: "738819989330",
+        appId: "1:738819989330:web:29a446953726300c11e48b",
+        measurementId: "G-2P79TH49YB"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    window.db = getFirestore(app);
+    window.auth = getAuth(app);
+    window.fsCollection = collection; window.fsAddDoc = addDoc; window.fsServerTimestamp = serverTimestamp;
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        onAuthStateChanged(window.auth, user => { window.currentUser = user; });
+    });
+</script>
+
+<style>
+body { font-family: Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #f1f1f1; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+#print-area { display: none; }
+@media print {
+    @page { size: A4 portrait; margin: 15mm; }
+    body { background-color: white !important; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    header, main, #toast { display: none !important; }
+    #print-area { display: block !important; width: 100%; color: #000; font-size: 13px; line-height: 1.5; }
+    .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+    .pdf-table td { padding: 4px 6px; vertical-align: middle; border: 1px solid #000; }
+    .no-border td { border: none; }
+}
+</style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+    <header class="bg-gradient-to-r from-amber-900 to-amber-700 text-white shadow-md py-4 px-6 mb-6">
+        <div class="max-w-7xl mx-auto flex justify-between items-center gap-4">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
+                <div class="bg-white/10 p-2 rounded-lg shadow-md border border-white/20 hover:scale-105 transition"><i class="fa-solid fa-file-signature text-xl px-1"></i></div>
+                <div><h1 class="text-xl font-bold tracking-tight">GeoLog Pro</h1><p class="text-xs text-amber-200">Kullanma Belgesi Editörü</p></div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="saveProjectToCloud()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-bold text-sm transition shadow"><i class="fa-solid fa-cloud-arrow-up"></i> Buluta Kaydet (Ortak)</button>
+                <button onclick="loadSampleData()" class="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded-lg text-sm font-bold transition shadow"><i class="fa-solid fa-database"></i> Şablon</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 pb-16">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- STREAMING_CHUNK:Inputs Panel -->
+            <div class="lg:col-span-5 flex flex-col gap-4">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                    <h2 class="text-sm font-bold text-amber-800 border-b border-amber-100 pb-2 mb-4"><i class="fa-solid fa-user-tie"></i> 1. Müracaat ve Personel</h2>
+                    <div class="space-y-3">
+                        <div><label class="text-[10px] font-bold text-slate-500">MÜRACAAT SAHİBİ</label><input type="text" id="p_muracaat" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div><label class="text-[10px] font-bold text-slate-500">VERGİ DAİRESİ/NO</label><input type="text" id="p_vergi" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
+                            <div><label class="text-[10px] font-bold text-slate-500">DSİ BÖLGE NO</label><input type="text" id="p_dsi_bolge" oninput="updatePreview()" placeholder="Örn: 1. BÖLGE" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
+                        </div>
+                        <div><label class="text-[10px] font-bold text-slate-500">MÜŞTERİ ADRESİ</label><input type="text" id="p_adres" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
+                        
+                        <div class="mt-4 pt-4 border-t border-slate-100 grid grid-cols-2 gap-2">
+                            <div><label class="text-[10px] font-bold text-slate-500">TEKNİK SORUMLU</label><input type="text" id="f_tek_ad" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
+                            <div><label class="text-[10px] font-bold text-slate-500">DİPLOMA / SİCİL NO</label><input type="text" id="f_tek_sicil" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
+                            <div><label class="text-[10px] font-bold text-slate-500">SONDÖR</label><input type="text" id="f_son_ad" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
+                            <div><label class="text-[10px] font-bold text-slate-500">YETKİ BELGE NO</label><input type="text" id="f_son_belge" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                    <h2 class="text-sm font-bold text-amber-800 border-b border-amber-100 pb-2 mb-4"><i class="fa-solid fa-map-location-dot"></i> 2. Kuyu Yeri ve Hidrolik Veriler</h2>
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-3 gap-2">
+                            <div><label class="text-[10px] font-bold text-slate-500">İL</label><input type="text" id="p_il" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
+                            <div><label class="text-[10px] font-bold text-slate-500">İLÇE</label><input type="text" id="p_ilce" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
+                            <div><label class="text-[10px] font-bold text-slate-500">MAHALLE</label><input type="text" id="p_mahalle" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div><label class="text-[10px] font-bold text-slate-500">DSİ NO</label><input type="text" id="p_dsi_no" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
+                            <div><label class="text-[10px] font-bold text-slate-500">KOORDİNAT (ED50)</label><input type="text" id="p_koordinat" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm font-mono"></div>
+                            <div><label class="text-[10px] font-bold text-slate-500">HAVZA</label><input type="text" id="p_havza" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
+                            <div><label class="text-[10px] font-bold text-slate-500">AMACI</label><input type="text" id="p_amaci" oninput="updatePreview()" placeholder="Örn: Sulama" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-slate-100">
+                            <div><label class="text-[10px] font-bold text-slate-500">POMPAJ DEBİ (lt/sn)</label><input type="text" id="v_debi" oninput="updatePreview()" class="w-full bg-amber-50 border border-amber-300 rounded px-3 py-1.5 text-sm font-bold"></div>
+                            <div><label class="text-[10px] font-bold text-slate-500">STATİK S. (m)</label><input type="text" id="v_statik" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
+                            <div><label class="text-[10px] font-bold text-slate-500">DİNAMİK S. (m)</label><input type="text" id="v_dinamik" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
+                            <div><label class="text-[10px] font-bold text-slate-500">ÇEKİLECEK (ton/gün)</label><input type="text" id="h_cekilecek" oninput="updatePreview()" class="w-full bg-amber-50 border border-amber-300 rounded px-3 py-1.5 text-sm font-bold"></div>
+                            <div><label class="text-[10px] font-bold text-slate-500">ENERJİ (kw/saat)</label><input type="text" id="h_enerji" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
+                            <div><label class="text-[10px] font-bold text-slate-500">SAYAÇ NO</label><input type="text" id="h_sayac" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
+                            <div><label class="text-[10px] font-bold text-slate-500">BELGE TARİHİ</label><input type="date" id="p_tarih" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STREAMING_CHUNK:Preview Panel -->
+            <div class="lg:col-span-7 flex flex-col gap-4">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col items-center">
+                    <div class="w-full flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
+                        <h3 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-eye"></i> Canlı Önizleme</h3>
+                        <button onclick="window.print()" class="bg-slate-900 text-white px-4 py-1.5 rounded text-sm font-bold shadow hover:bg-slate-800"><i class="fa-solid fa-print"></i> PDF Kaydet</button>
+                    </div>
+
+                    <!-- PDF Şablonu -->
+                    <div class="w-full max-w-[210mm] min-h-[297mm] bg-white border border-slate-300 shadow-sm p-[15mm] text-black text-[13px] relative" id="pdf_container">
+                        <div class="text-center font-bold text-[16px] mb-2">YERALTI SUYU KULLANMA BELGESİ İSTEME FORMU</div>
+                        <div class="text-center font-bold text-[14px] mb-6">D.S.İ. <span id="prev_dsi_bolge">1. BÖLGE</span> MÜDÜRLÜĞÜ'NE<br><span id="prev_dsi_il">BURSA</span></div>
+                        <div class="text-right text-[12px] font-bold mb-4">Form No: 2.7.3.</div>
+
+                        <table class="pdf-table no-border w-full mb-4">
+                            <tr><td class="w-6 align-top">1</td><td class="w-[180px] font-bold align-top">Müracaat Sahibi</td><td class="w-2">:</td><td><span id="prev_muracaat" class="font-bold"></span></td></tr>
+                            <tr><td></td><td class="pl-4 align-top">Vergi Dairesi-Vergi no</td><td>:</td><td><span id="prev_vergi"></span></td></tr>
+                            <tr><td></td><td class="pl-4 align-top">Adres</td><td>:</td><td><span id="prev_adres"></span></td></tr>
+                        </table>
+
+                        <table class="pdf-table w-full text-center">
+                            <tr class="font-bold bg-gray-100"><td colspan="2">2 Teknik Sorumlu</td><td colspan="2">3 Sondör, Kuyucu, Galericinin</td></tr>
+                            <tr><td class="text-left w-1/4">a) Adı Soyadı</td><td class="w-1/4"><span id="prev_tek_ad"></span></td><td class="text-left w-1/4">a) Adı Soyadı</td><td class="w-1/4"><span id="prev_son_ad"></span></td></tr>
+                            <tr><td class="text-left">b) TC Kimlik No</td><td><span id="prev_tek_tc"></span></td><td class="text-left">b) TC Kimlik No</td><td><span id="prev_son_tc"></span></td></tr>
+                            <tr><td class="text-left">c) Mesleği</td><td><span id="prev_tek_meslek"></span></td><td class="text-left">c) Yet. Belge No.</td><td><span id="prev_son_belge"></span></td></tr>
+                            <tr><td class="text-left">d) Sicil No</td><td><span id="prev_tek_sicil"></span></td><td class="text-left">d) Adresi</td><td rowspan="2" class="align-top text-xs text-left"><span id="prev_son_adres"></span></td></tr>
+                            <tr><td class="text-left">e) Adresi</td><td class="text-xs text-left"><span id="prev_tek_adres"></span></td><td class="text-left">İmzası</td></tr>
+                        </table>
+
+                        <div class="font-bold mt-4 mb-1">4 Kuyu/Galeri Yeri</div>
+                        <table class="pdf-table w-full">
+                            <tr><td class="w-1/4 bg-gray-50 font-bold">İli</td><td class="w-1/4"><span id="prev_il"></span></td><td class="w-1/4 bg-gray-50 font-bold">Kuyunun D.S.İ.No.su</td><td class="w-1/4 font-mono text-[11px]"><span id="prev_dsi_no"></span></td></tr>
+                            <tr><td class="bg-gray-50 font-bold">İlçesi</td><td><span id="prev_ilce"></span></td><td class="bg-gray-50 font-bold">Koordinatı</td><td class="font-mono text-[11px]"><span id="prev_koordinat"></span></td></tr>
+                            <tr><td class="bg-gray-50 font-bold">Köy/Mah/Mevkii</td><td><span id="prev_mahalle"></span></td><td class="bg-gray-50 font-bold">Havza Adı</td><td><span id="prev_havza"></span></td></tr>
+                        </table>
+
+                        <div class="font-bold mt-4 mb-1">5 Kuyu/Galeri Verimi</div>
+                        <table class="pdf-table w-full">
+                            <tr><td class="w-[40%] bg-gray-50 font-bold">Pompajla</td><td class="w-[40%]"><span id="prev_debi"></span></td><td class="w-[20%] text-center">lt/sn</td></tr>
+                            <tr><td class="bg-gray-50 font-bold">Artezyen</td><td><span id="prev_artezyen"></span></td><td class="text-center">lt/sn</td></tr>
+                            <tr><td class="bg-gray-50 font-bold">Statik Seviye</td><td><span id="prev_statik"></span></td><td class="text-center">m</td></tr>
+                            <tr><td class="bg-gray-50 font-bold">Dinamik Seviye (Pompajda)</td><td><span id="prev_dinamik"></span></td><td class="text-center">m</td></tr>
+                            <tr><td class="bg-gray-50 font-bold">Çekilecek Su Miktarı</td><td><span id="prev_cekilecek"></span></td><td class="text-center">t/g</td></tr>
+                            <tr><td class="bg-gray-50 font-bold">Yetecek Enerji Miktarı</td><td><span id="prev_enerji"></span></td><td class="text-center">kw/saat</td></tr>
+                            <tr><td class="bg-gray-50 font-bold">Sayaç Numarası</td><td colspan="2"><span id="prev_sayac"></span></td></tr>
+                            <tr><td class="bg-gray-50 font-bold text-black">Kullanma Amacı</td><td colspan="2" class="font-bold text-black uppercase"><span id="prev_amaci"></span></td></tr>
+                        </table>
+
+                        <div class="text-justify mt-6 leading-relaxed text-[12px]">
+                            Yukarıda yeri ve ekli kuyu kütüğünde durumu açıklanan arazide bulunan su <span id="prev_amaci_metin" class="font-bold lowercase"></span> amacıyla kullanılmak istenmektedir. Bu hususta, 167 sayılı Yeraltı Suları Hakkında Kanun'un 10uncu maddesi gereğince tarafımıza yeraltı suyu kullanma belgesi verilmesini arz ederim.
+                        </div>
+
+                        <div class="mt-6 text-[12px] font-bold">
+                            Ek:<br>
+                            1) Kuyu Kütüğü (2 Takım).<br>
+                            2) Pompaj Programı (2 Takım).<br>
+                            3) Analiz Raporu (Kullanma Amacına Uygun) (2 Takım).<br>
+                            4) Kuyu Açılan Arazinin Onaylı Fotokopisi.
+                        </div>
+
+                        <div class="absolute bottom-10 right-10 text-center">
+                            <span class="block mb-2"><span id="prev_tarih">...../...../2024</span></span>
+                            <span class="block mb-6 font-bold">Adı Soyadı<br>Müracaat Sahibi</span>
+                            <span id="prev_imza_muracaat" class="italic"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- STREAMING_CHUNK:Print Content -->
+    <div id="print-area"></div>
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-50"><span id="toastIcon"></span><span id="toastMessage" class="text-sm font-semibold"></span></div>
+
+    <!-- STREAMING_CHUNK:Logic Scripts -->
+    <script>
+        const inputIdsToSave = [
+            'p_muracaat', 'p_vergi', 'p_adres', 'p_dsi_bolge', 'p_dsi_no', 'p_belge_tipi', 'p_amaci',
+            'p_il', 'p_ilce', 'p_mahalle', 'p_pafta', 'p_ada_parsel', 'p_yuzolcumu', 'p_koordinat', 'p_havza', 'p_alt_havza',
+            'f_firma', 'f_tek_ad', 'f_tek_tc', 'f_tek_meslek', 'f_tek_sicil', 'f_tek_adres',
+            'f_son_ad', 'f_son_tc', 'f_son_belge', 'f_son_adres',
+            'p_tarih', 't_tipi', 't_usul', 't_adet', 'tech_pipe_spec', 't_techiz', 'tech_hole_spec', 't_su_gun', 't_su_yil',
+            'v_debi', 'h_artezyen', 'v_statik', 'v_dinamik', 'v_sure', 'p_kalinlik', 'h_cekilecek', 'h_enerji', 'h_sayac',
+            'p_derinlik', 'filterDepthsInput', 'p_t1', 'p_t2', 'kroki_img_base64'
+        ];
+
+        let globalProjectData = { inputs: {} };
+
+        function showToast(msg, type='info') {
+            const t = document.getElementById('toast'), i = document.getElementById('toastIcon'), m = document.getElementById('toastMessage');
+            m.innerText = msg;
+            i.innerHTML = type==='success' ? '<i class="fa-solid fa-check text-green-400"></i>' : (type==='error' ? '<i class="fa-solid fa-exclamation text-rose-400"></i>' : '<i class="fa-solid fa-info text-blue-400"></i>');
+            t.className = `fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-50 border-l-4 ${type==='success'?'border-green-500':(type==='error'?'border-rose-500':'border-blue-500')}`;
+            setTimeout(() => { t.classList.replace('translate-y-0', 'translate-y-20'); t.classList.replace('opacity-100', 'opacity-0'); }, 3000);
+        }
+
+        window.onload = function() {
+            const cloudDataStr = sessionStorage.getItem('cloudLoadData');
+            if (cloudDataStr) {
+                try {
+                    const data = JSON.parse(cloudDataStr);
+                    globalProjectData = data;
+                    if(!globalProjectData.inputs) globalProjectData.inputs = {};
+                    inputIdsToSave.forEach(id => {
+                        const el = document.getElementById(id);
+                        if(el && data.inputs[id] !== undefined) el.value = data.inputs[id];
+                    });
+                    updatePreview();
+                    showToast("Ortak proje verileri yüklendi.", "success");
+                } catch(e) { console.error(e); }
+                sessionStorage.removeItem('cloudLoadData');
+            }
+            if(!document.getElementById('p_tarih').value) document.getElementById('p_tarih').valueAsDate = new Date();
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const map = {
+                'p_muracaat':'prev_muracaat', 'p_vergi':'prev_vergi', 'p_adres':'prev_adres', 'p_dsi_bolge':'prev_dsi_bolge', 
+                'p_il':'prev_il', 'p_ilce':'prev_ilce', 'p_mahalle':'prev_mahalle', 'p_dsi_no':'prev_dsi_no', 'p_koordinat':'prev_koordinat', 'p_havza':'prev_havza', 'p_amaci':'prev_amaci',
+                'f_tek_ad':'prev_tek_ad', 'f_tek_tc':'prev_tek_tc', 'f_tek_meslek':'prev_tek_meslek', 'f_tek_sicil':'prev_tek_sicil', 'f_tek_adres':'prev_tek_adres',
+                'f_son_ad':'prev_son_ad', 'f_son_tc':'prev_son_tc', 'f_son_belge':'prev_son_belge', 'f_son_adres':'prev_son_adres',
+                'v_debi':'prev_debi', 'v_statik':'prev_statik', 'v_dinamik':'prev_dinamik', 'h_cekilecek':'prev_cekilecek', 'h_enerji':'prev_enerji', 'h_sayac':'prev_sayac'
+            };
+            
+            for(let inputId in map) {
+                const el = document.getElementById(inputId);
+                const prev = document.getElementById(map[inputId]);
+                if(el && prev) prev.innerText = el.value;
+            }
+            
+            // Formatlamalar
+            const il = document.getElementById('p_il').value; document.getElementById('prev_dsi_il').innerText = il ? il.toUpperCase() : "...........";
+            const amaci = document.getElementById('p_amaci').value; document.getElementById('prev_amaci_metin').innerText = amaci ? amaci.toLowerCase() : "...........";
+            document.getElementById('prev_imza_muracaat').innerText = document.getElementById('p_muracaat').value || "";
+            
+            const rawDate = document.getElementById('p_tarih').value;
+            if (rawDate) { const [y, m, d] = rawDate.split('-'); document.getElementById('prev_tarih').innerText = `${d}.${m}.${y}`; }
+            
+            document.getElementById('print-area').innerHTML = document.getElementById('pdf_container').innerHTML;
+        }
+
+        function loadSampleData() {
+            const sample = {
+                p_muracaat: "BUSKİ Genel Müdürlüğü", p_vergi: "Osmangazi VD - 1850000000", p_adres: "Sırameşeler Mh. Avrupa Konseyi Bulvarı No:6/3 Osmangazi/BURSA", p_dsi_bolge: "1. BÖLGE",
+                p_il: "Bursa", p_ilce: "Karacabey", p_mahalle: "Çamlıca", p_dsi_no: "01.1602.001.A", p_koordinat: "630401 D-4464749 K", p_havza: "Susurluk", p_amaci: "Sulama",
+                f_tek_ad: "Emine Beril HAMZAGİL", f_tek_tc: "18505445158", f_tek_meslek: "Hidrojeoloji Mühendisi", f_tek_sicil: "06.358.011-11031", f_tek_adres: "Balat Mah. Bukle Sk. No:54d/3 Nilüfer/BURSA",
+                f_son_ad: "Bedir ÖNCÜ", f_son_tc: "29167744954", f_son_belge: "2019-2R-6811", f_son_adres: "Kuletepe Mah. Cumhuriyet Cad. No:2 Reyhanlı/HATAY",
+                v_debi: "8", v_statik: "21", v_dinamik: "47", h_cekilecek: "691,2", h_enerji: "8", h_sayac: "12345678"
+            };
+            for(let id in sample) { const el = document.getElementById(id); if(el) el.value = sample[id]; }
+            updatePreview(); showToast("Şablon yüklendi.", "success");
+        }
+
+        async function saveProjectToCloud() {
+            if(!window.currentUser) { showToast("Giriş yapmanız gerekiyor.", "error"); return; }
+            let dataToSave = JSON.parse(JSON.stringify(globalProjectData));
+            if(!dataToSave.inputs) dataToSave.inputs = {};
+            inputIdsToSave.forEach(id => { const el = document.getElementById(id); if(el) dataToSave.inputs[id] = el.value; });
+            
+            let nameStr = [document.getElementById('p_ilce').value, document.getElementById('p_mahalle').value].filter(Boolean).join(" ");
+            if(!nameStr.trim()) nameStr = document.getElementById('p_muracaat').value || "İsimsiz Proje";
+
+            try {
+                showToast("Buluta kaydediliyor...", "info");
+                await window.fsAddDoc(window.fsCollection(window.db, "projects"), { uid: window.currentUser.uid, name: nameStr, data: dataToSave, createdAt: window.fsServerTimestamp() });
+                showToast("Tüm projelere ortak kaydedildi!", "success");
+            } catch(e) { console.error(e); showToast("Kayıt hatası.", "error"); }
+        }
+    </script>
+</body>
+</html>
