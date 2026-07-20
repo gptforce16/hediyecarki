@@ -6,168 +6,64 @@
 <title>GeoLog Pro - Kuyu Yeri Krokisi</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-<!-- STREAMING_CHUNK:Firebase Init -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyA8JR_mh0FaU_ZT16h6MRZICvYIlHdbZ78",
-        authDomain: "geologpro-3aa61.firebaseapp.com",
-        projectId: "geologpro-3aa61",
-        storageBucket: "geologpro-3aa61.firebasestorage.app",
-        messagingSenderId: "738819989330",
-        appId: "1:738819989330:web:29a446953726300c11e48b",
-        measurementId: "G-2P79TH49YB"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    window.db = getFirestore(app);
-    window.auth = getAuth(app);
-    window.fsCollection = collection; window.fsAddDoc = addDoc; window.fsServerTimestamp = serverTimestamp;
-    
-    document.addEventListener('DOMContentLoaded', () => {
-        onAuthStateChanged(window.auth, user => { window.currentUser = user; });
-    });
-</script>
-
 <style>
-body { font-family: Arial, sans-serif; -webkit-font-smoothing: antialiased; }
-::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #f1f1f1; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-#print-area { display: none; }
+body { font-family: Arial, sans-serif; background: #e2e8f0; }
 @media print {
     @page { size: A4 portrait; margin: 15mm; }
-    body { background-color: white !important; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-    header, main, #toast { display: none !important; }
-    #print-area { display: flex !important; flex-direction: column; width: 100%; height: 267mm; color: #000; font-size: 14px; line-height: 1.6; }
+    body { background-color: white !important; }
+    header, #upload_controls { display: none !important; }
+    #pdf_container { box-shadow: none !important; border: none !important; width: 100% !important; margin: 0 !important; height: 267mm; }
 }
 </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen">
-
-    <header class="bg-gradient-to-r from-purple-900 to-purple-800 text-white shadow-md py-4 px-6 mb-6">
-        <div class="max-w-7xl mx-auto flex justify-between items-center gap-4">
-            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
-                <div class="bg-white/10 p-2 rounded-lg shadow-md border border-white/20 hover:scale-105 transition"><i class="fa-solid fa-map-location-dot text-xl px-1"></i></div>
-                <div><h1 class="text-xl font-bold tracking-tight">GeoLog Pro</h1><p class="text-xs text-purple-200">Kroki Belgesi Editörü</p></div>
-            </div>
-            <div class="flex items-center gap-2">
-                <button onclick="saveProjectToCloud()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-bold text-sm transition shadow"><i class="fa-solid fa-cloud-arrow-up"></i> Buluta Kaydet (Ortak)</button>
-            </div>
-        </div>
+<body class="min-h-screen flex flex-col items-center">
+    
+    <header class="w-full bg-purple-900 text-white p-4 text-center shadow-md mb-6 sticky top-0 z-50 flex justify-between px-8">
+        <button onclick="window.location.href='index.html'" class="bg-slate-800 px-4 py-2 rounded text-sm hover:bg-slate-700"><i class="fa-solid fa-arrow-left"></i> Geri Dön</button>
+        <span class="font-bold text-lg"><i class="fa-solid fa-map-location-dot"></i> Kuyu Yeri Krokisi Önizleme</span>
+        <button onclick="window.print()" class="bg-purple-500 hover:bg-purple-400 text-slate-900 px-6 py-2 rounded font-bold shadow"><i class="fa-solid fa-print"></i> Yazdır (PDF)</button>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 pb-16">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            <!-- STREAMING_CHUNK:Inputs Panel -->
-            <div class="lg:col-span-4 flex flex-col gap-4">
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-                    <h2 class="text-sm font-bold text-purple-800 border-b border-purple-100 pb-2 mb-4"><i class="fa-solid fa-image"></i> 1. Kroki Görseli Yükle</h2>
-                    <div class="space-y-3">
-                        <input type="file" id="kroki_upload" accept="image/*" onchange="handleImageUpload(event)" class="hidden">
-                        <input type="hidden" id="kroki_img_base64" value="">
-                        
-                        <button onclick="document.getElementById('kroki_upload').click()" class="w-full bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 font-bold py-3 rounded-xl transition flex flex-col items-center justify-center gap-2 border-dashed">
-                            <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
-                            <span>Bilgisayardan Resim Seç</span>
-                        </button>
-                    </div>
-                </div>
+    <div id="upload_controls" class="w-[210mm] mb-4 flex gap-4">
+        <input type="file" id="kroki_upload" accept="image/*" onchange="handleImageUpload(event)" class="hidden">
+        <button onclick="document.getElementById('kroki_upload').click()" class="flex-1 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-lg shadow-sm transition"><i class="fa-solid fa-cloud-arrow-up text-purple-600 mr-2"></i> Bilgisayardan Kroki Görseli Seç (Otomatik Oturur)</button>
+    </div>
 
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-                    <h2 class="text-sm font-bold text-purple-800 border-b border-purple-100 pb-2 mb-4"><i class="fa-solid fa-align-left"></i> 2. Kroki Bilgileri</h2>
-                    <div class="space-y-3">
-                        <div><label class="text-[10px] font-bold text-slate-500">MÜRACAAT SAHİBİ</label><input type="text" id="p_muracaat" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div><label class="text-[10px] font-bold text-slate-500">İL</label><input type="text" id="p_il" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
-                            <div><label class="text-[10px] font-bold text-slate-500">İLÇE</label><input type="text" id="p_ilce" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
-                            <div><label class="text-[10px] font-bold text-slate-500">MAHALLE</label><input type="text" id="p_mahalle" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
-                            <div><label class="text-[10px] font-bold text-slate-500">PAFTA</label><input type="text" id="p_pafta" oninput="updatePreview()" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-sm"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- STREAMING_CHUNK:Preview Panel -->
-            <div class="lg:col-span-8 flex flex-col gap-4">
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col items-center">
-                    <div class="w-full flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
-                        <h3 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-eye"></i> Canlı Önizleme</h3>
-                        <button onclick="window.print()" class="bg-slate-900 text-white px-4 py-1.5 rounded text-sm font-bold shadow hover:bg-slate-800"><i class="fa-solid fa-print"></i> PDF Kaydet</button>
-                    </div>
-
-                    <!-- PDF Şablonu -->
-                    <div class="w-full max-w-[210mm] min-h-[297mm] bg-white border border-slate-300 shadow-sm p-[15mm] text-black text-[14px] flex flex-col" id="pdf_container">
-                        <div class="text-center font-bold text-[22px] mb-2 underline tracking-wider">AYRINTILI KUYU YERİ KROKİSİ</div>
-                        <div class="text-center font-bold text-[16px] mb-6">Pafta: <span id="prev_pafta">..................</span></div>
-
-                        <div class="flex-1 w-full border-2 border-black flex items-center justify-center bg-gray-50 mb-6 overflow-hidden relative">
-                            <img id="prev_kroki_img" src="" class="absolute inset-0 w-full h-full object-contain p-2 hidden">
-                            <span id="prev_kroki_placeholder" class="text-gray-400 font-bold"><i class="fa-solid fa-image text-3xl block text-center mb-2"></i>Görsel Yüklenmedi</span>
-                        </div>
-
-                        <div class="text-justify leading-relaxed mt-auto font-medium text-[15px]">
-                            Yukarıdaki krokide gösterilen arazide açılacak kuyu <span id="prev_il" class="font-bold">...........</span> İli, <span id="prev_ilce" class="font-bold">...........</span> İlçesi, <span id="prev_mahalle" class="font-bold">...........</span> Mahallesi'nde, <span id="prev_muracaat" class="font-bold">...........................</span>'ne ait olup, açılacak olan kuyulardan etkilenebilecek mesafede başka bir kuyu, kaynak, kaptaj vb. tesisler yoktur.
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="w-[210mm] h-[297mm] bg-white shadow-2xl p-[15mm] text-black text-[14px] flex flex-col relative mb-12" id="pdf_container">
+        <div id="noDataOverlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
+            <i class="fa-solid fa-file-circle-xmark text-6xl text-slate-300 mb-4"></i>
+            <p class="font-bold text-lg text-slate-600">Veri Bulunamadı!</p>
+            <p class="text-sm text-slate-500 mt-2">Lütfen Ana Sayfadan "Projelerim" ekranına gidip bir proje seçin.</p>
         </div>
-    </main>
 
-    <!-- STREAMING_CHUNK:Print Content -->
-    <div id="print-area"></div>
-    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-50"><span id="toastIcon"></span><span id="toastMessage" class="text-sm font-semibold"></span></div>
+        <div class="text-center font-bold text-[22px] mb-2 underline tracking-wider mt-4">AYRINTILI KUYU YERİ KROKİSİ</div>
+        <div class="text-center font-bold text-[16px] mb-8">Pafta: <span id="prev_pafta">..................</span></div>
 
-    <!-- STREAMING_CHUNK:Logic Scripts -->
+        <div class="flex-1 w-full border-2 border-black flex items-center justify-center bg-gray-50 mb-8 overflow-hidden relative">
+            <img id="prev_kroki_img" src="" class="absolute inset-0 w-full h-full object-contain p-2 hidden">
+            <span id="prev_kroki_placeholder" class="text-gray-400 font-bold"><i class="fa-solid fa-image text-3xl block text-center mb-2"></i>Görsel Bekleniyor</span>
+        </div>
+
+        <div class="text-justify leading-relaxed mt-auto font-medium text-[15px] mb-4">
+            Yukarıdaki krokide gösterilen arazide açılacak kuyu <span id="prev_il" class="font-bold">...........</span> İli, <span id="prev_ilce" class="font-bold">...........</span> İlçesi, <span id="prev_mahalle" class="font-bold">...........</span> Mahallesi'nde, <span id="prev_muracaat" class="font-bold">...........................</span>'ne ait olup, açılacak olan kuyulardan etkilenebilecek mesafede başka bir kuyu, kaynak, kaptaj vb. tesisler yoktur.
+        </div>
+    </div>
+
     <script>
-        const inputIdsToSave = [
-            'p_muracaat', 'p_vergi', 'p_adres', 'p_dsi_bolge', 'p_dsi_no', 'p_belge_tipi', 'p_amaci',
-            'p_il', 'p_ilce', 'p_mahalle', 'p_pafta', 'p_ada_parsel', 'p_yuzolcumu', 'p_koordinat', 'p_havza', 'p_alt_havza',
-            'f_firma', 'f_tek_ad', 'f_tek_tc', 'f_tek_meslek', 'f_tek_sicil', 'f_tek_adres',
-            'f_son_ad', 'f_son_tc', 'f_son_belge', 'f_son_adres',
-            'p_tarih', 't_tipi', 't_usul', 't_adet', 'tech_pipe_spec', 't_techiz', 'tech_hole_spec', 't_su_gun', 't_su_yil',
-            'v_debi', 'h_artezyen', 'v_statik', 'v_dinamik', 'v_sure', 'p_kalinlik', 'h_cekilecek', 'h_enerji', 'h_sayac',
-            'p_derinlik', 'filterDepthsInput', 'p_t1', 'p_t2', 'kroki_img_base64', 'p_zone', 'p_easting', 'p_northing', 'p_lat', 'p_lon'
-        ];
-
-        let globalProjectData = { inputs: {} };
-
-        function showToast(msg, type='info') {
-            const t = document.getElementById('toast'), i = document.getElementById('toastIcon'), m = document.getElementById('toastMessage');
-            m.innerText = msg;
-            i.innerHTML = type==='success' ? '<i class="fa-solid fa-check text-green-400"></i>' : (type==='error' ? '<i class="fa-solid fa-exclamation text-rose-400"></i>' : '<i class="fa-solid fa-info text-blue-400"></i>');
-            t.className = `fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-50 border-l-4 ${type==='success'?'border-green-500':(type==='error'?'border-rose-500':'border-blue-500')}`;
-            setTimeout(() => { t.classList.replace('translate-y-0', 'translate-y-20'); t.classList.replace('opacity-100', 'opacity-0'); }, 3000);
-        }
-
         window.onload = function() {
-            const cloudDataStr = sessionStorage.getItem('cloudLoadData');
-            if (cloudDataStr) {
-                try {
-                    const data = JSON.parse(cloudDataStr);
-                    globalProjectData = data;
-                    if(!globalProjectData.inputs) globalProjectData.inputs = {};
-                    inputIdsToSave.forEach(id => {
-                        const el = document.getElementById(id);
-                        if(el && data.inputs[id] !== undefined) el.value = data.inputs[id];
+            const dataStr = sessionStorage.getItem('cloudLoadData');
+            if (dataStr) {
+                document.getElementById('noDataOverlay').classList.add('hidden');
+                const data = JSON.parse(dataStr);
+                if(data.inputs) {
+                    ['muracaat','il','ilce','mahalle','pafta'].forEach(key => {
+                        const el = document.getElementById('prev_'+key);
+                        let val = data.inputs['p_'+key];
+                        if(el && val) el.innerText = val;
                     });
-                    
-                    if(globalProjectData.inputs['kroki_img_base64']) {
-                        document.getElementById('prev_kroki_img').src = globalProjectData.inputs['kroki_img_base64'];
-                        document.getElementById('prev_kroki_img').classList.remove('hidden');
-                        document.getElementById('prev_kroki_placeholder').classList.add('hidden');
-                    }
-                    
-                    updatePreview();
-                    showToast("Ortak proje verileri yüklendi.", "success");
-                } catch(e) { console.error(e); }
+                }
                 sessionStorage.removeItem('cloudLoadData');
             }
-            document.getElementById('print-area').innerHTML = document.getElementById('pdf_container').innerHTML;
         }
 
         function handleImageUpload(event) {
@@ -176,44 +72,11 @@ body { font-family: Arial, sans-serif; -webkit-font-smoothing: antialiased; }
             const reader = new FileReader();
             reader.onload = function(e) {
                 const b64 = e.target.result;
-                document.getElementById('kroki_img_base64').value = b64;
                 document.getElementById('prev_kroki_img').src = b64;
                 document.getElementById('prev_kroki_img').classList.remove('hidden');
                 document.getElementById('prev_kroki_placeholder').classList.add('hidden');
-                updatePreview();
-                showToast("Kroki görseli başarıyla yüklendi.", "success");
             };
             reader.readAsDataURL(file);
-        }
-
-        function updatePreview() {
-            const map = {
-                'p_muracaat':'prev_muracaat', 'p_il':'prev_il', 'p_ilce':'prev_ilce', 'p_mahalle':'prev_mahalle', 'p_pafta':'prev_pafta'
-            };
-            
-            for(let inputId in map) {
-                const el = document.getElementById(inputId);
-                const prev = document.getElementById(map[inputId]);
-                if(el && prev) { prev.innerText = el.value || (inputId === 'p_pafta' ? ".................." : "..........."); }
-            }
-            
-            document.getElementById('print-area').innerHTML = document.getElementById('pdf_container').innerHTML;
-        }
-
-        async function saveProjectToCloud() {
-            if(!window.currentUser) { showToast("Giriş yapmanız gerekiyor.", "error"); return; }
-            let dataToSave = JSON.parse(JSON.stringify(globalProjectData));
-            if(!dataToSave.inputs) dataToSave.inputs = {};
-            inputIdsToSave.forEach(id => { const el = document.getElementById(id); if(el) dataToSave.inputs[id] = el.value; });
-            
-            let nameStr = [document.getElementById('p_ilce').value, document.getElementById('p_mahalle').value].filter(Boolean).join(" ");
-            if(!nameStr.trim()) nameStr = document.getElementById('p_muracaat').value || "İsimsiz Proje";
-
-            try {
-                showToast("Buluta kaydediliyor...", "info");
-                await window.fsAddDoc(window.fsCollection(window.db, "projects"), { uid: window.currentUser.uid, name: nameStr, data: dataToSave, createdAt: window.fsServerTimestamp() });
-                showToast("Tüm projelere ortak kaydedildi!", "success");
-            } catch(e) { console.error(e); showToast("Kayıt hatası.", "error"); }
         }
     </script>
 </body>
