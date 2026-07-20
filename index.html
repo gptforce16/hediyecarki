@@ -7,118 +7,17 @@
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0/dist/chartjs-plugin-annotation.min.js"></script>
-
-    <!-- Leaflet Map CSS & JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-    
-    <!-- QRious (QR Code Generator) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
-    
-    <!-- Proj4js (Precision Coordinate Transformation) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.js"></script>
-
-    <style>
-        body {
-            font-family: 'Inter', Arial, sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-        /* Ana Ekran Arka Plan Efekti */
-        .bg-grid-pattern {
-            background-image: 
-                linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
-            background-size: 30px 30px;
-        }
-
-        .text-gradient {
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-image: linear-gradient(to right, #60a5fa, #a78bfa);
-        }
-
-        /* View Yönetimi */
-        .app-view { display: none; }
-        .app-view.active { display: block; animation: fadeIn 0.4s ease forwards; }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Harita Z-Index */
-        #kl_map { z-index: 10; }
-
-        /* Print Alanları Varsayılan Gizli */
-        #print-area-dusum, #print-area-kuyu { display: none; }
-
-        /* --- KUSURSUZ YAZDIRMA & PDF ÇIKTISI İÇİN CSS --- */
-        @media print {
-            @page { size: A4 portrait; margin: 0mm; }
-            body {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                background-color: white !important;
-                margin: 0; padding: 0;
-            }
-            * {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            /* Arayüz elemanlarını gizle */
-            #global-nav, .app-view, #toast { display: none !important; }
-
-            /* Hangi view aktifse onun print alanını göster */
-            body.print-mode-dusum #print-area-dusum {
-                display: flex !important;
-                position: absolute; left: 0; top: 0;
-                width: 210mm; height: 297mm;
-                margin: 0; padding: 10mm;
-                box-sizing: border-box;
-                flex-direction: column;
-                background: #ffffff; color: #000000;
-            }
-
-            body.print-mode-kuyu #print-area-kuyu {
-                display: flex !important;
-                position: absolute; left: 0; top: 0;
-                width: 210mm; height: 297mm;
-                margin: 0; padding: 10mm;
-                box-sizing: border-box;
-                flex-direction: column;
-                background: #ffffff; color: #000000;
-            }
-
-            /* Print Tablo Çizgileri */
-            .print-table { border-collapse: collapse; }
-            .print-table td, .print-table th { border: 1px solid #000; padding: 3px 5px; }
-        }
-    </style>
-
+    <!-- STREAMING_CHUNK:Firebase Init... -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, query, where, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, deleteDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Kullanıcının kendi Firebase Proje Bilgileri
         const firebaseConfig = {
             apiKey: "AIzaSyA8JR_mh0FaU_ZT16h6MRZICvYIlHdbZ78",
             authDomain: "geologpro-3aa61.firebaseapp.com",
@@ -133,700 +32,182 @@
         window.db = getFirestore(app);
         window.auth = getAuth(app);
         window.currentUser = null;
+        window.fsCollection = collection; window.fsGetDocs = getDocs; window.fsDoc = doc; window.fsDeleteDoc = deleteDoc; window.fsQuery = query; window.fsWhere = where; window.fsOrderBy = orderBy;
 
-        // Firebase fonksiyonlarını global alana (window) aktarıyoruz ki HTML içinden çağrılabilsin
-        window.fsCollection = collection;
-        window.fsAddDoc = addDoc;
-        window.fsGetDocs = getDocs;
-        window.fsDoc = doc;
-        window.fsDeleteDoc = deleteDoc;
-        window.fsQuery = query;
-        window.fsWhere = where;
-        window.fsOrderBy = orderBy;
-        window.fsServerTimestamp = serverTimestamp;
-        window.fsSetDoc = setDoc;
-
-        // Sayfa yüklendiğinde anonim giriş yap
-        signInAnonymously(window.auth).catch((error) => {
-            console.error("Firebase Auth Hatası:", error);
-            showToast("Buluta bağlanılamadı!", "error");
-        });
-
-        onAuthStateChanged(window.auth, (user) => {
+        signInAnonymously(window.auth).catch(error => console.error(error));
+        onAuthStateChanged(window.auth, user => {
             if (user) {
                 window.currentUser = user;
-                const statusEl = document.getElementById('cloudStatus');
-                if(statusEl) {
-                    statusEl.innerHTML = `<i class="fa-solid fa-cloud-check text-emerald-400"></i> Buluta Bağlı`;
-                    statusEl.classList.remove('text-slate-400');
-                    statusEl.classList.add('text-emerald-300');
-                }
-                // Kullanıcı giriş yaptıktan sonra projeleri getir
-                loadDashboardProjects();
+                const cloudStatus = document.getElementById('cloudAuthStatus');
+                if(cloudStatus) cloudStatus.innerHTML = '<i class="fa-solid fa-cloud-check text-emerald-400"></i> Buluta Bağlı';
             }
         });
     </script>
-</head>
-<body class="bg-slate-900 text-slate-800 flex flex-col min-h-screen w-full relative overflow-x-hidden transition-colors duration-300" id="mainBody">
 
-    <!-- Global Navigation -->
-    <nav id="global-nav" class="relative z-50 w-full py-4 px-6 flex flex-wrap justify-between items-center bg-slate-900 border-b border-white/10 shrink-0">
-        <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('home-view')">
-            <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-2 rounded-lg shadow-lg shadow-blue-900/40 text-white flex items-center justify-center border border-white/10">
-                <i class="fa-solid fa-layer-group text-lg"></i>
+    <style>
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        .bg-grid-pattern { background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 30px 30px; }
+        .fade-in-up { animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+        .delay-100 { animation-delay: 100ms; } .delay-200 { animation-delay: 200ms; } .delay-300 { animation-delay: 300ms; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .app-card { transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .app-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5); }
+        .icon-wrapper { transition: transform 0.4s ease; }
+        .app-card:hover .icon-wrapper { transform: scale(1.1) rotate(-5deg); }
+        .text-gradient { background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-image: linear-gradient(to right, #60a5fa, #a78bfa); }
+        /* Modal Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    </style>
+</head>
+
+<body class="bg-slate-900 text-slate-800 flex flex-col min-h-screen lg:h-screen w-full relative overflow-x-hidden">
+
+    <!-- STREAMING_CHUNK:Background & Navbar... -->
+    <div class="fixed inset-0 bg-grid-pattern opacity-60 z-0 pointer-events-none"></div>
+    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[800px] md:h-[500px] bg-blue-600/10 blur-[100px] md:blur-[120px] rounded-full pointer-events-none z-0"></div>
+
+    <nav class="relative z-40 w-full py-6 px-4 flex justify-center items-center shrink-0">
+        <div class="flex items-center gap-3 fade-in-up">
+            <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-2.5 rounded-xl shadow-lg shadow-blue-900/40 text-white flex items-center justify-center border border-white/10">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 2v13" /><path d="M9 15h6l-3 5-3-5z" fill="currentColor"/><path d="M3 9h18" /><path d="M4 14h4" /><path d="M16 14h4" /><path d="M5 19h3" /><path d="M16 19h3" /></svg>
             </div>
             <div>
-                <span class="text-xl font-bold text-white tracking-tight">GeoLog Pro</span>
+                <span class="text-xl md:text-2xl font-bold text-white tracking-tight">GeoLog Pro</span>
             </div>
         </div>
-        <div class="flex items-center gap-4 mt-4 md:mt-0">
-            <button onclick="switchView('dashboard-view')" class="text-slate-300 hover:text-white transition flex items-center gap-2 font-medium text-sm">
-                <i class="fa-solid fa-folder-open"></i> Projelerim
+        
+        <!-- Bulut Projelerim Butonu -->
+        <div class="absolute right-4 md:right-8 flex items-center gap-3 fade-in-up delay-100">
+            <span id="cloudAuthStatus" class="text-xs font-bold text-slate-400 hidden md:flex items-center gap-1"><i class="fa-solid fa-spinner fa-spin"></i> Bağlanıyor</span>
+            <button onclick="openDashboard()" class="bg-blue-600/20 hover:bg-blue-600/40 text-blue-300 px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2 border border-blue-500/30">
+                <i class="fa-solid fa-cloud"></i> <span class="hidden md:inline">Projelerim</span>
             </button>
-            <div class="w-px h-5 bg-slate-700"></div>
-            <span id="cloudStatus" class="text-xs font-bold text-slate-400 flex items-center gap-1.5">
-                <i class="fa-solid fa-spinner fa-spin"></i> Bağlanıyor...
-            </span>
         </div>
     </nav>
 
-    <!-- ================= HOME VIEW ================= -->
-    <div id="home-view" class="app-view active flex-grow flex items-center justify-center w-full max-w-[1500px] mx-auto px-4 relative z-20 py-8 lg:py-0">
-        <div class="fixed inset-0 bg-grid-pattern opacity-60 z-0 pointer-events-none"></div>
-        <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[800px] md:h-[500px] bg-blue-600/10 blur-[100px] md:blur-[120px] rounded-full pointer-events-none z-0"></div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10 items-center w-full relative z-10">
+    <!-- STREAMING_CHUNK:Main Content Elements... -->
+    <main class="flex-grow flex items-center justify-center w-full max-w-[1500px] mx-auto px-4 md:px-8 relative z-20 py-8 lg:py-0">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10 items-center w-full">
             
-            <!-- Kuyu Logu Editörü Kartı -->
-            <div class="bg-white rounded-3xl p-6 lg:p-8 shadow-2xl border border-slate-200/60 flex flex-col relative overflow-hidden group h-[500px] md:h-[520px] transition-all hover:-translate-y-2 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] order-2 lg:order-1">
-                <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-slate-50 rounded-full blur-3xl opacity-50 transition-colors pointer-events-none"></div>
-                
+            <div class="app-card bg-white rounded-3xl p-6 lg:p-8 shadow-2xl border border-slate-200/60 flex flex-col relative overflow-hidden group h-[500px] md:h-[520px] fade-in-up delay-100 order-2 lg:order-1">
+                <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-slate-50 rounded-full blur-3xl opacity-50 group-hover:bg-slate-100 transition-colors pointer-events-none"></div>
                 <div class="relative z-10 flex flex-col h-full">
                     <div class="flex justify-between items-start mb-5">
-                        <div class="bg-slate-900 w-14 h-14 rounded-2xl flex items-center justify-center shadow-md border border-slate-700 transition-transform group-hover:scale-110 group-hover:-rotate-3">
-                            <i class="fa-solid fa-water text-white text-2xl"></i>
+                        <div class="icon-wrapper bg-slate-900 w-14 h-14 rounded-2xl flex items-center justify-center shadow-md border border-slate-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-7 h-7 text-white"><path d="M12 2v13" /><path d="M9 15h6l-3 5-3-5z" fill="currentColor"/><path d="M3 9h18" /><path d="M4 14h4" /><path d="M16 14h4" /><path d="M5 19h3" /><path d="M16 19h3" /></svg>
                         </div>
                     </div>
-                    
                     <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight mb-3">Kuyu Logu Editörü</h2>
-                    <p class="text-slate-500 mb-6 leading-relaxed font-medium text-sm">
-                        Litolojik birimleri, filtre tasarımlarını ve teknik kuyu teçhizlerini parametrik olarak çizin.
-                    </p>
-                    
+                    <p class="text-slate-500 mb-6 leading-relaxed font-medium text-sm">Litolojik birimleri, filtre tasarımlarını ve teknik kuyu teçhizlerini parametrik olarak çizin.</p>
                     <ul class="space-y-3 mb-8 flex-grow">
                         <li class="flex items-start gap-3 text-sm text-slate-600 font-medium"><i class="fa-solid fa-check-circle text-emerald-500 mt-0.5"></i><span>Detaylı litolojik katman tanımlama</span></li>
                         <li class="flex items-start gap-3 text-sm text-slate-600 font-medium"><i class="fa-solid fa-check-circle text-emerald-500 mt-0.5"></i><span>Otomatik teçhiz çizimi</span></li>
                         <li class="flex items-start gap-3 text-sm text-slate-600 font-medium"><i class="fa-solid fa-check-circle text-emerald-500 mt-0.5"></i><span>Canlı harita desteği (ESRI)</span></li>
                         <li class="flex items-start gap-3 text-sm text-slate-600 font-medium"><i class="fa-solid fa-check-circle text-emerald-500 mt-0.5"></i><span>Standarda uygun PDF raporu alma</span></li>
                     </ul>
-                    
-                    <button onclick="switchView('kuyu-view')" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all mt-auto">
-                        Başlat <i class="fa-solid fa-play text-xs ml-1"></i>
-                    </button>
+                    <a href="kuyu_logu.html" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all group-hover:shadow-lg mt-auto">Başlat <i class="fa-solid fa-play text-xs ml-1"></i></a>
                 </div>
             </div>
 
-            <!-- Ana Başlık -->
-            <div class="flex flex-col items-center justify-center text-center px-2 py-4 lg:py-0 order-1 lg:order-2">
-                <h1 class="text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-extrabold text-white tracking-tight mb-6 leading-tight">
-                    <span class="text-gradient">Hidrojeolojik</span><br/>Dokümantasyon<br/>Platformu
-                </h1>
-                <p class="text-base md:text-lg text-slate-300 font-light max-w-md mx-auto leading-relaxed">
-                    Kuyu kütüğü oluşturma ve düşüm deneyi analizlerinizi bulut destekli merkezden yönetin.
-                </p>
+            <div class="flex flex-col items-center justify-center text-center px-2 py-4 lg:py-0 fade-in-up delay-200 order-1 lg:order-2">
+                <h1 class="text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-extrabold text-white tracking-tight mb-6 leading-tight"><span class="text-gradient">Hidrojeolojik</span><br/>Dokümantasyon<br/>Platformu</h1>
+                <p class="text-base md:text-lg text-slate-300 font-light max-w-md mx-auto leading-relaxed">Kuyu kütüğü oluşturma, litolojik kesit modelleme ve sabit seviyeli düşüm deneyi analizlerinizi tek bir merkezden yönetin.</p>
             </div>
 
-            <!-- Düşüm Zaman Editörü Kartı -->
-            <div class="bg-white rounded-3xl p-6 lg:p-8 shadow-2xl border border-slate-200/60 flex flex-col relative overflow-hidden group h-[500px] md:h-[520px] transition-all hover:-translate-y-2 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] order-3 lg:order-3">
-                <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-blue-50 rounded-full blur-3xl opacity-50 transition-colors pointer-events-none"></div>
-                
+            <div class="app-card bg-white rounded-3xl p-6 lg:p-8 shadow-2xl border border-slate-200/60 flex flex-col relative overflow-hidden group h-[500px] md:h-[520px] fade-in-up delay-300 order-3 lg:order-3">
+                <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-blue-50 rounded-full blur-3xl opacity-50 group-hover:bg-blue-100 transition-colors pointer-events-none"></div>
                 <div class="relative z-10 flex flex-col h-full">
                     <div class="flex justify-between items-start mb-5">
-                        <div class="bg-blue-600 w-14 h-14 rounded-2xl flex items-center justify-center shadow-md shadow-blue-500/20 border border-blue-500 transition-transform group-hover:scale-110 group-hover:-rotate-3">
-                            <i class="fa-solid fa-chart-line text-xl text-white"></i>
-                        </div>
+                        <div class="icon-wrapper bg-blue-600 w-14 h-14 rounded-2xl flex items-center justify-center shadow-md shadow-blue-500/20 border border-blue-500"><i class="fa-solid fa-chart-line text-xl text-white"></i></div>
                     </div>
-                    
                     <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight mb-3">Düşüm - Zaman Analizi</h2>
-                    <p class="text-slate-500 mb-6 leading-relaxed font-medium text-sm">
-                        Sabit seviyeli düşüm deneylerini yarı-logaritmik grafik üzerinde analiz edin. T ve K değerlerini hesaplayın.
-                    </p>
-                    
+                    <p class="text-slate-500 mb-6 leading-relaxed font-medium text-sm">Sabit seviyeli düşüm deneylerini yarı-logaritmik grafik üzerinde analiz edin. T ve K değerlerini hesaplayın.</p>
                     <ul class="space-y-3 mb-8 flex-grow">
                         <li class="flex items-start gap-3 text-sm text-slate-600 font-medium"><i class="fa-solid fa-check-circle text-emerald-500 mt-0.5"></i><span>Dinamik düşüm grafiği</span></li>
                         <li class="flex items-start gap-3 text-sm text-slate-600 font-medium"><i class="fa-solid fa-check-circle text-emerald-500 mt-0.5"></i><span>Otomatik T ve K hesabı</span></li>
-                        <li class="flex items-start gap-3 text-sm text-slate-600 font-medium"><i class="fa-solid fa-check-circle text-emerald-500 mt-0.5"></i><span>Özelleştirilebilir zaman periyotları</span></li>
+                        <li class="flex items-start gap-3 text-sm text-slate-600 font-medium"><i class="fa-solid fa-check-circle text-emerald-500 mt-0.5"></i><span>Özelleştirilebilir zaman periyotları seçimi</span></li>
                         <li class="flex items-start gap-3 text-sm text-slate-600 font-medium"><i class="fa-solid fa-check-circle text-emerald-500 mt-0.5"></i><span>Standarda uygun PDF raporu alma</span></li>
                     </ul>
-                    
-                    <button onclick="switchView('dusum-view')" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all mt-auto shadow-blue-500/25">
-                        Başlat <i class="fa-solid fa-play text-xs ml-1"></i>
-                    </button>
+                    <a href="dusum_zaman.html" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all group-hover:shadow-lg shadow-blue-500/25 mt-auto">Başlat <i class="fa-solid fa-play text-xs ml-1"></i></a>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- ================= DASHBOARD VIEW (Projelerim) ================= -->
-    <div id="dashboard-view" class="app-view w-full max-w-6xl mx-auto px-4 py-8">
-        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 md:p-10">
-            <div class="flex items-center justify-between border-b border-slate-200 pb-5 mb-6">
+        </div>
+    </main>
+
+    <footer class="relative z-40 w-full border-t border-white/10 py-5 mt-auto flex items-center justify-center bg-slate-900/50 backdrop-blur-sm shrink-0">
+        <div class="w-full px-4 md:px-8 flex justify-center items-center">
+            <p class="text-slate-500 text-xs md:text-sm text-center">&copy; 2026 | Emre Mermutlu | Tüm hakları saklıdır</p>
+        </div>
+    </footer>
+
+    <!-- STREAMING_CHUNK:Dashboard Modal Modal... -->
+    <!-- Projelerim Modal (Popup) -->
+    <div id="dashboardModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-5xl flex flex-col max-h-[90vh] overflow-hidden transform scale-95 transition-transform duration-300" id="dashboardContent">
+            
+            <div class="flex items-center justify-between border-b border-slate-200 p-5 bg-slate-50">
                 <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-cloud text-blue-500 text-2xl"></i>
-                    <h2 class="text-2xl font-bold text-slate-800">Bulut Projelerim</h2>
+                    <div class="bg-blue-100 text-blue-600 p-2 rounded-lg"><i class="fa-solid fa-cloud text-xl"></i></div>
+                    <h2 class="text-xl font-bold text-slate-800">Bulut Projelerim</h2>
                 </div>
-                <button onclick="loadDashboardProjects()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2">
-                    <i class="fa-solid fa-rotate-right"></i> Yenile
-                </button>
-            </div>
-
-            <div class="overflow-x-auto rounded-xl border border-slate-200">
-                <table class="w-full text-left text-sm border-collapse">
-                    <thead class="bg-slate-100 text-slate-700 font-bold">
-                        <tr>
-                            <th class="p-4 border-b border-slate-200">Proje Adı / Bölge</th>
-                            <th class="p-4 border-b border-slate-200">Uygulama Tipi</th>
-                            <th class="p-4 border-b border-slate-200">Kayıt Tarihi</th>
-                            <th class="p-4 border-b border-slate-200 text-right">İşlemler</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dashboardTableBody" class="divide-y divide-slate-100 bg-white">
-                        <tr>
-                            <td colspan="4" class="p-8 text-center text-slate-500">
-                                <i class="fa-solid fa-spinner fa-spin text-2xl mb-2 block"></i> Projeler yükleniyor...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= DÜŞÜM ZAMAN VIEW ================= -->
-    <div id="dusum-view" class="app-view w-full max-w-7xl mx-auto px-4 pb-16 pt-6">
-        <div class="flex flex-col md:flex-row justify-between items-center bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-6">
-            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-chart-line text-blue-600"></i> Düşüm - Zaman Analizi</h2>
-            <div class="flex flex-wrap items-center gap-2 mt-4 md:mt-0">
-                <input type="file" id="dz_fileInput" accept=".geolog" class="hidden" onchange="dz_handleFileUpload(event)">
-                <div class="flex bg-slate-100 rounded-lg p-1 gap-1 border border-slate-200">
-                    <button onclick="document.getElementById('dz_fileInput').click()" class="bg-white hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded text-xs font-bold transition shadow-sm" title="Yerel Yükle"><i class="fa-solid fa-folder-open"></i> Yerel Yükle</button>
-                    <button onclick="dz_downloadProject()" class="bg-white hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded text-xs font-bold transition shadow-sm" title="Yerel İndir"><i class="fa-solid fa-download"></i> Yerel İndir</button>
-                </div>
-                <button onclick="saveProjectToCloud('dusum')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold text-xs transition shadow flex items-center gap-1.5">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> Buluta Kaydet
-                </button>
-                <div class="w-px h-6 bg-slate-300 mx-1"></div>
-                <button onclick="dz_loadSampleData()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg font-bold text-xs transition shadow"><i class="fa-solid fa-database"></i> Şablon</button>
-                <button onclick="dz_clearAllData()" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-2 rounded-lg font-bold text-xs transition shadow"><i class="fa-solid fa-eraser"></i> Sıfırla</button>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <!-- Sol Panel: Veri Girişi -->
-            <div class="lg:col-span-4 flex flex-col gap-6">
-                <!-- Künye -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-                    <div class="flex items-center gap-2 border-b border-slate-100 pb-3 mb-4">
-                        <i class="fa-solid fa-circle-info text-slate-600 text-lg"></i><h2 class="text-base font-bold text-slate-800">Proje Künyesi</h2>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="grid grid-cols-3 gap-2">
-                            <div><label class="block text-[11px] font-bold text-slate-500 mb-1">İL</label><input type="text" id="dz_p_il" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none focus:border-blue-500"></div>
-                            <div><label class="block text-[11px] font-bold text-slate-500 mb-1">İLÇE</label><input type="text" id="dz_p_ilce" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none focus:border-blue-500"></div>
-                            <div><label class="block text-[11px] font-bold text-slate-500 mb-1">MAHALLE</label><input type="text" id="dz_p_mahalle" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none focus:border-blue-500"></div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div><label class="block text-[11px] font-bold text-slate-500 mb-1">ADA</label><input type="text" id="dz_p_ada" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none focus:border-blue-500"></div>
-                            <div><label class="block text-[11px] font-bold text-slate-500 mb-1">PARSEL</label><input type="text" id="dz_p_parsel" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none focus:border-blue-500"></div>
-                        </div>
-                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">KUYU SAHİBİ</label><input type="text" id="dz_p_sahip" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none focus:border-blue-500"></div>
-                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">SORUMLU MÜHENDİS</label><input type="text" id="dz_p_muhendis" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none focus:border-blue-500"></div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div><label class="block text-[11px] font-bold text-slate-500 mb-1">DSİ BELGE NO</label><input type="text" id="dz_p_dsi" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none focus:border-blue-500"></div>
-                            <div><label class="block text-[11px] font-bold text-slate-500 mb-1">TARİH</label><input type="text" id="dz_p_tarih" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none focus:border-blue-500"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Hidrolik Parametreler -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-                    <div class="flex items-center gap-2 border-b border-slate-100 pb-3 mb-4">
-                        <i class="fa-solid fa-water text-blue-600 text-lg"></i><h2 class="text-base font-bold text-slate-800">Akifer Parametreleri</h2>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3 mb-4">
-                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">STATİK SEVİYE (m)</label><input type="number" step="1" id="dz_p_statik" value="21" onchange="dz_generateData()" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm font-bold outline-none focus:border-blue-500"></div>
-                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">DEBİ - Q (lt/sn)</label><input type="number" step="1" id="dz_p_debi" value="8" onchange="dz_generateData()" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm font-bold outline-none focus:border-blue-500"></div>
-                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">AKİFER KALINLIĞI (e)</label><input type="number" step="1" id="dz_p_kalinlik" value="120" oninput="dz_calculateResults()" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm font-bold outline-none focus:border-blue-500"></div>
-                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">DİNAMİK SEVİYE (m)</label><input type="number" step="1" id="dz_p_dinamik" value="47" onchange="dz_generateData()" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm font-bold outline-none focus:border-blue-500"></div>
-                    </div>
-                    <div class="p-3 bg-blue-50/50 rounded-lg border border-blue-100">
-                        <label class="block text-[10px] font-bold text-blue-800 mb-2">GRAFİK ANALİZ ARALIĞI (Log Periyodu)</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div><span class="text-[10px] font-bold text-slate-500 block">Başlangıç Zamanı (dk)</span><input type="number" id="dz_p_t1" value="10" oninput="dz_calculateResults()" class="w-full bg-white border border-blue-200 rounded px-2 py-1 text-sm"></div>
-                            <div><span class="text-[10px] font-bold text-slate-500 block">Bitiş Zamanı (dk)</span><input type="number" id="dz_p_t2" value="100" oninput="dz_calculateResults()" class="w-full bg-white border border-blue-200 rounded px-2 py-1 text-sm"></div>
-                        </div>
-                    </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="loadDashboardProjects()" class="bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-semibold transition shadow-sm"><i class="fa-solid fa-rotate-right"></i> Yenile</button>
+                    <button onclick="closeDashboard()" class="text-slate-400 hover:text-slate-700 transition p-2"><i class="fa-solid fa-times text-xl"></i></button>
                 </div>
             </div>
 
-            <!-- Sağ Panel -->
-            <div class="lg:col-span-8 flex flex-col gap-6">
-                <!-- Sonuçlar ve Grafik -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col">
-                    <div class="grid grid-cols-3 gap-4 mb-4 pb-4 border-b border-slate-100">
-                        <div class="bg-slate-50 rounded-lg p-3 border border-slate-200 flex flex-col justify-center items-center">
-                            <span class="text-xs font-bold text-slate-500 uppercase">Düşüm Farkı (Δd)</span><span class="text-xl text-slate-800 font-mono mt-1" id="dz_ui_res_dd">0</span>
-                        </div>
-                        <div class="bg-slate-50 rounded-lg p-3 border border-slate-200 flex flex-col justify-center items-center">
-                            <span class="text-xs font-bold text-slate-500 uppercase">İletim (T) m²/sn</span><span class="text-xl text-slate-800 font-mono mt-1" id="dz_ui_res_T">0.00</span>
-                        </div>
-                        <div class="bg-slate-50 rounded-lg p-3 border border-slate-200 flex flex-col justify-center items-center">
-                            <span class="text-xs font-bold text-slate-500 uppercase">Hid. İletkenlik (K) m/sn</span><span class="text-xl font-bold text-slate-800 font-mono mt-1" id="dz_ui_res_K">0.00</span>
-                        </div>
-                    </div>
-                    <div class="relative w-full h-[450px] bg-white border border-slate-200 rounded-lg p-2">
-                        <canvas id="dz_drawdownChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Veri Tablosu -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col flex-1">
-                    <div class="flex items-center gap-2 border-b border-slate-100 pb-3 mb-4">
-                        <i class="fa-solid fa-table-list text-slate-600 text-lg"></i><h2 class="text-base font-bold text-slate-800">Düşüm Deneyi Verileri</h2>
-                    </div>
-                    <div class="overflow-y-auto max-h-[350px] border border-slate-200 rounded-lg bg-white">
-                        <table class="w-full text-left text-sm border-collapse">
-                            <thead>
-                                <tr class="bg-slate-100 border-b border-slate-300 sticky top-0 z-10">
-                                    <th class="p-2 font-bold text-slate-700 w-1/4 text-center">Zaman (dk)</th>
-                                    <th class="p-2 font-bold text-slate-700 w-1/4 text-center">Ölçülen Seviye (m)</th>
-                                    <th class="p-2 font-bold text-slate-700 w-1/4 text-center">Düşüm (m)</th>
-                                    <th class="p-2 font-bold text-slate-700 w-1/4 text-center">Debi (lt/sn)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="dz_dataTableBody" class="divide-y divide-slate-100"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="mt-6 flex justify-center w-full">
-            <button onclick="dz_prepareAndPrint()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-lg py-4 px-12 rounded-xl shadow-lg transition transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-3 w-full md:w-auto border border-slate-700">
-                <i class="fa-solid fa-print text-2xl"></i><span>PDF OLUŞTUR / YAZDIR</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- ================= KUYU LOGU VIEW ================= -->
-    <div id="kuyu-view" class="app-view w-full max-w-7xl mx-auto px-4 pb-16 pt-6">
-        <div class="flex flex-col md:flex-row justify-between items-center bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-6">
-            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-water text-slate-700"></i> Kuyu Logu Editörü</h2>
-            <div class="flex flex-wrap items-center gap-2 mt-4 md:mt-0">
-                <input type="file" id="kl_fileInput" accept=".geolog,.json" class="hidden" onchange="kl_handleFileUpload(event)">
-                <div class="flex bg-slate-100 rounded-lg p-1 gap-1 border border-slate-200">
-                    <button onclick="document.getElementById('kl_fileInput').click()" class="bg-white hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded text-xs font-bold transition shadow-sm" title="Yerel Yükle"><i class="fa-solid fa-folder-open"></i> Yerel Yükle</button>
-                    <button onclick="kl_downloadProject()" class="bg-white hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded text-xs font-bold transition shadow-sm" title="Yerel İndir"><i class="fa-solid fa-download"></i> Yerel İndir</button>
-                </div>
-                <button onclick="saveProjectToCloud('kuyu')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold text-xs transition shadow flex items-center gap-1.5">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> Buluta Kaydet
-                </button>
-                <div class="w-px h-6 bg-slate-300 mx-1"></div>
-                <button onclick="kl_loadSampleData()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg font-bold text-xs transition shadow"><i class="fa-solid fa-database"></i> Şablon</button>
-                <button onclick="kl_clearAllData()" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-2 rounded-lg font-bold text-xs transition shadow"><i class="fa-solid fa-eraser"></i> Sıfırla</button>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <!-- Sol Panel (Giriş Formları) -->
-            <div class="lg:col-span-8 flex flex-col gap-6">
-                <!-- Firma ve Lokasyon -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-                    <div class="flex items-center gap-2 border-b border-slate-100 pb-3 mb-4">
-                        <i class="fa-solid fa-building text-slate-600 text-lg"></i><h2 class="text-base font-bold text-slate-800">Kuyu Künyesi</h2>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4">
-                        <div class="md:col-span-4"><label class="block text-xs font-bold text-slate-500 mb-1">FİRMA ADI</label><input type="text" id="kl_firm_name" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                        <div class="md:col-span-3"><label class="block text-xs font-bold text-slate-500 mb-1">SORUMLU MÜHENDİS</label><input type="text" id="kl_firm_engineer" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                        <div class="md:col-span-3"><label class="block text-xs font-bold text-slate-500 mb-1">MÜHENDİS MESLEĞİ</label><input type="text" id="kl_eng_profession" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">SONDÖR</label><input type="text" id="kl_driller_name" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">KUYU SAHİBİ</label><input type="text" id="kl_p_client" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">İL</label><input type="text" id="kl_p_il" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">İLÇE</label><input type="text" id="kl_p_ilce" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">MAHALLE</label><input type="text" id="kl_p_mahalle" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">ADA</label><input type="text" id="kl_p_ada" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">PARSEL</label><input type="text" id="kl_p_parsel" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">TARİHİ</label><input type="date" id="kl_p_tarih" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">DERİNLİK (m)</label><input type="number" id="kl_p_derinlik" oninput="kl_autoGenerateBoringDesign()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">DSİ NO</label><input type="text" id="kl_p_dsi_no" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">AÇILIŞ GAYESİ</label><input type="text" id="kl_p_amaci" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">UTM DİLİMİ (ZONE)</label><input type="number" id="kl_p_zone" oninput="kl_updateMapFromUtm()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">SAĞA DEĞER (Y)</label><input type="number" id="kl_p_easting" oninput="kl_updateMapFromUtm()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 mb-1">YUKARI DEĞER (X)</label><input type="number" id="kl_p_northing" oninput="kl_updateMapFromUtm()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                    </div>
-                </div>
-
-                <!-- Harita -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-                        <div class="flex items-center gap-2"><i class="fa-solid fa-map-location-dot text-slate-600 text-lg"></i><h2 class="text-base font-bold text-slate-800">Kuyu Yeri Krokisi</h2></div>
-                        <span class="font-bold text-slate-600 cursor-pointer hover:underline text-xs" onclick="kl_toggleMapLayer()">Harita Stilini Değiştir</span>
-                    </div>
-                    <input type="hidden" id="kl_p_lat" value=""><input type="hidden" id="kl_p_lon" value="">
-                    <div id="kl_map" class="w-full h-[240px] rounded-xl border border-slate-300 shadow-inner overflow-hidden"></div>
-                </div>
-
-                <!-- Hidrolik Ölçüm -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-                    <div class="flex items-center gap-2 border-b border-slate-100 pb-3 mb-4">
-                        <i class="fa-solid fa-droplet text-slate-600 text-lg"></i><h2 class="text-base font-bold text-slate-800">Su Verim Tecrübesi</h2>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div><label class="block text-xs font-bold text-slate-600 mb-1">KUYU VERİMİ (lt/sn)</label><input type="number" id="kl_v_debi" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                        <div><label class="block text-xs font-bold text-slate-600 mb-1">STATİK SEVİYE (m)</label><input type="number" id="kl_v_statik" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                        <div><label class="block text-xs font-bold text-slate-600 mb-1">DİNAMİK SEVİYE (m)</label><input type="number" id="kl_v_dinamik" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                        <div><label class="block text-xs font-bold text-slate-600 mb-1">ÇALIŞMA SÜRESİ (Saat)</label><input type="number" id="kl_v_sure" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                    </div>
-                </div>
-
-                <!-- Litoloji & Teçhiz -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-                        <div class="flex items-center gap-2 border-b border-slate-100 pb-3 mb-4">
-                            <i class="fa-solid fa-layer-group text-slate-600 text-lg"></i><h2 class="text-base font-bold text-slate-800">Jeoloji Litolojisi Ekle</h2>
-                        </div>
-                        <div class="space-y-3">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 mb-1">LİTOLOJİ TÜRÜ</label>
-                                <select id="kl_litType" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none">
-                                    <option value="Bitkisel Toprak">Bitkisel Toprak</option><option value="Alüvyon">Alüvyon</option>
-                                    <option value="Kil">Kil</option><option value="Silt">Silt</option>
-                                    <option value="Kumlu Silt">Kumlu Silt</option><option value="Siltli Kum">Siltli Kum</option>
-                                    <option value="İnce Kum">İnce Kum</option><option value="Kum">Kum</option>
-                                    <option value="İri Kum">İri Kum</option><option value="İnce Çakıl">İnce Çakıl</option>
-                                    <option value="Çakıl">Çakıl</option><option value="İri Çakıl">İri Çakıl</option>
-                                    <option value="Killi Kum">Killi Kum</option><option value="Kumlu Çakıl">Kumlu Çakıl</option>
-                                    <option value="Killi Kumlu Çakıl">Killi Kumlu Çakıl</option><option value="Konglomera">Konglomera</option>
-                                    <option value="Breş">Breş</option><option value="Kumtaşı">Kumtaşı</option>
-                                    <option value="Silttaşı">Silttaşı</option><option value="Kiltaşı">Kiltaşı</option>
-                                    <option value="Çamurtaşı">Çamurtaşı</option><option value="Marn">Marn</option>
-                                    <option value="Kireçtaşı">Kireçtaşı</option><option value="Dolomit">Dolomit</option>
-                                    <option value="Traverten">Traverten</option><option value="Alçıtaşı (Jips)">Alçıtaşı (Jips)</option>
-                                    <option value="Tüf">Tüf</option><option value="Aglomera">Aglomera</option>
-                                    <option value="Volkanit">Volkanit</option><option value="Metavolkanit">Metavolkanit</option>
-                                    <option value="Bazalt">Bazalt</option><option value="Andezit">Andezit</option>
-                                    <option value="Riyolit">Riyolit</option><option value="Trakit">Trakit</option>
-                                    <option value="Granit">Granit</option><option value="Siyenit">Siyenit</option>
-                                    <option value="Diyorit">Diyorit</option><option value="Gabro">Gabro</option>
-                                    <option value="Peridotit">Peridotit</option><option value="Pegmatit">Pegmatit</option>
-                                    <option value="Şist">Şist</option><option value="Gnays">Gnays</option>
-                                    <option value="Mermer">Mermer</option><option value="Kuvarsit">Kuvarsit</option>
-                                    <option value="Serpantinit">Serpantinit</option><option value="Amfibolit">Amfibolit</option>
-                                </select>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div><label class="block text-xs font-bold text-slate-500 mb-1">ÜST SINIR (m)</label><input type="number" id="kl_litStartD" value="0" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                                <div><label class="block text-xs font-bold text-slate-500 mb-1">ALT SINIR (m)</label><input type="number" id="kl_litEndD" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-                            </div>
-                        </div>
-                        <button onclick="kl_addLithologyLayer()" class="mt-4 w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2 rounded-lg text-xs transition flex items-center justify-center gap-1.5 shadow">
-                            <i class="fa-solid fa-plus"></i> Litoloji Ekle
-                        </button>
-                        
-                        <div class="mt-4 overflow-y-auto max-h-[150px] border border-slate-200 rounded-lg bg-white">
-                            <table class="w-full text-left text-xs border-collapse">
-                                <thead>
-                                    <tr class="bg-slate-100 border-b border-slate-300 sticky top-0"><th class="p-2 font-bold text-slate-700">Derinlik</th><th class="p-2 font-bold text-slate-700">Formasyon</th><th class="p-2 text-center"><i class="fa-solid fa-trash"></i></th></tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-100" id="kl_litoTableBody"><tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Litoloji tablosu boş.</td></tr></tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-                        <div class="flex items-center gap-2 border-b border-slate-100 pb-3 mb-4">
-                            <i class="fa-solid fa-toolbox text-slate-600 text-lg"></i><h2 class="text-base font-bold text-slate-800">Filtre Tasarımı</h2>
-                        </div>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">FİLTRE METRELERİ (Virgülle Ayırın)</label>
-                                <input type="text" id="kl_filterDepthsInput" oninput="kl_autoGenerateBoringDesign()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono outline-none" placeholder="Örn: 30,52,74">
-                                <p class="text-[10px] text-slate-500 mt-1 italic">* Belirttiğiniz her metreye otomatik 4 metre filtre atılır.</p>
-                            </div>
-                            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                                <label class="block text-xs font-bold text-slate-600 mb-1">BORU VE DELGİ</label>
-                                <div class="grid grid-cols-2 gap-2 mt-1">
-                                    <div><span class="text-[9px] font-bold text-slate-500 block">BORU TÜRÜ/ÇAPI</span><input type="text" id="kl_tech_pipe_spec" oninput="kl_autoGenerateBoringDesign()" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs"></div>
-                                    <div><span class="text-[9px] font-bold text-slate-500 block">DELGİ ÇAPI</span><input type="text" id="kl_tech_hole_spec" oninput="kl_drawCanvasLog()" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sağ Sütun: Kesit (Canvas) -->
-            <div class="lg:col-span-4 flex flex-col gap-6">
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 sticky top-4">
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-                        <div class="flex items-center gap-2"><i class="fa-solid fa-pencil-ruler text-slate-600"></i><h3 class="font-bold text-sm text-slate-800">Kuyu Şeması</h3></div>
-                        <span id="kl_canvasDepthIndicator" class="text-xs bg-slate-100 text-slate-700 font-mono font-bold border border-slate-200 px-2 py-0.5 rounded">0 m</span>
-                    </div>
-                    <div class="flex justify-center bg-slate-100 rounded-xl p-3 shadow-inner border border-slate-200">
-                        <div class="relative w-full max-h-[580px] overflow-y-auto flex justify-center">
-                            <canvas id="kl_logCanvas" class="bg-white rounded border border-slate-400 shadow-sm"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="mt-6 flex justify-center w-full">
-            <button onclick="kl_prepareAndPrint()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-lg py-4 px-12 rounded-xl shadow-lg transition transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-3 w-full md:w-auto border border-slate-700">
-                <i class="fa-solid fa-print text-2xl"></i><span>PDF OLUŞTUR / YAZDIR</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- ================= PRINT AREA: DÜŞÜM ZAMAN ================= -->
-    <div id="print-area-dusum">
-        <div class="text-center font-bold text-[16px] mb-3 uppercase tracking-wider">SABİT SEVİYELİ DÜŞÜM DENEYİ</div>
-        <table class="w-full print-table text-[11px] font-bold bg-white text-left mb-6">
-            <tbody>
-                <tr><td class="w-[15%]">Adres</td><td id="dz_pdf_adres" class="font-normal w-[35%]">-</td><td class="w-[20%] whitespace-nowrap">Sorumlu Mühendis</td><td id="dz_pdf_muhendis" class="font-normal w-[30%] whitespace-nowrap">-</td></tr>
-                <tr><td>Ada / Parsel</td><td id="dz_pdf_ada" class="font-normal">-</td><td>DSİ Belge No</td><td id="dz_pdf_dsi" class="font-normal">-</td></tr>
-                <tr><td>Kuyu Sahibi</td><td id="dz_pdf_sahip" class="font-normal">-</td><td>Tarih</td><td id="dz_pdf_tarih_val" class="font-normal">-</td></tr>
-            </tbody>
-        </table>
-        <div class="flex gap-4 w-full">
-            <div class="w-[28%] flex flex-col gap-2">
-                <table class="w-full print-table text-[10px] text-center bg-white">
-                    <thead><tr class="bg-gray-100"><th class="py-1">Zaman (dk)</th><th class="py-1">Seviye (m)</th><th class="py-1">Düşüm (m)</th><th class="py-1">Debi (l/s)</th></tr></thead>
-                    <tbody id="dz_pdf_data_tbody"></tbody>
-                </table>
-                <div class="border border-black p-3 flex flex-col items-center justify-end h-[25mm] shrink-0 w-full mt-auto">
-                    <div class="text-[11px] font-bold whitespace-nowrap">Sorumlu Mühendis</div><div id="dz_pdf_imza_isim" class="text-[11px] mt-1 h-3"></div>
-                </div>
-            </div>
-            <div class="w-[72%] flex flex-col gap-3">
-                <div class="border border-black flex flex-col w-full h-[105mm] shrink-0">
-                    <div class="text-center font-bold border-b border-black py-1 text-[12px] uppercase bg-gray-50">Düşüm - Zaman Grafiği</div>
-                    <div class="flex-1 p-0 flex justify-center items-center overflow-hidden relative">
-                        <img id="dz_pdf_chart_img" src="" class="w-full h-full object-contain absolute inset-0 p-1.5">
-                    </div>
-                </div>
-                <div class="border border-black flex flex-col bg-white flex-1" style="box-sizing: border-box;">
-                    <table class="w-full text-[11px] font-bold bg-white text-left" style="border-collapse: collapse;">
-                        <tbody>
-                            <tr><td class="w-[25%] p-1.5 pl-2">Statik Seviye</td><td id="dz_pdf_statik" class="w-[25%] p-1.5 font-normal">-</td><td class="w-[25%] p-1.5 pl-2">Akifer Kalınlığı (e)</td><td id="dz_pdf_kalinlik" class="w-[25%] p-1.5 font-normal">-</td></tr>
-                            <tr><td class="p-1.5 pl-2 border-b border-black">Dinamik Seviye</td><td id="dz_pdf_dinamik" class="p-1.5 font-normal border-b border-black">-</td><td class="p-1.5 pl-2 border-b border-black">Debi</td><td id="dz_pdf_debi" class="p-1.5 font-normal border-b border-black">-</td></tr>
-                            <tr><td colspan="4" class="text-center font-bold text-[11px] uppercase tracking-widest pt-4 pb-2 border-b border-gray-300 bg-gray-50">Hidrolik Parametre Hesaplamaları</td></tr>
+            <div class="p-5 overflow-y-auto flex-1 bg-white">
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="w-full text-left text-sm border-collapse">
+                        <thead class="bg-slate-100 text-slate-700 font-bold sticky top-0">
+                            <tr>
+                                <th class="p-4 border-b border-slate-200">Proje Adı / Bölge</th>
+                                <th class="p-4 border-b border-slate-200">Uygulama Tipi</th>
+                                <th class="p-4 border-b border-slate-200">Kayıt Tarihi</th>
+                                <th class="p-4 border-b border-slate-200 text-right">İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashboardTableBody" class="divide-y divide-slate-100 bg-white">
+                            <!-- JS ile dolacak -->
                         </tbody>
                     </table>
-                    <div class="p-3 pb-4 flex flex-col justify-center gap-2 bg-white">
-                        <div class="text-[11px] leading-relaxed text-black"><span class="inline-block w-36 font-bold pl-2">Düşüm Farkı (Δd) :</span><span class="font-mono">Δd = <span id="dz_pdf_eq_d2"></span> - <span id="dz_pdf_eq_d1"></span> = <span id="dz_pdf_eq_dd"></span> m</span></div>
-                        <div class="text-[11px] leading-relaxed mt-1 text-black"><span class="inline-block w-36 font-bold pl-2">İletilebilirlik (T) :</span><span class="font-mono">T = (0.183 &times; Q) / Δd</span></div>
-                        <div class="text-[11px] leading-relaxed pl-[150px] text-black"><span class="font-mono">T = (0.183 &times; <span id="dz_pdf_eq_Q"></span>) / <span id="dz_pdf_eq_dd_div"></span></span><br><span class="font-mono">T = <span id="dz_res_T_msn"></span> m²/sn &nbsp;&nbsp;&nbsp;(&nbsp;<span id="dz_res_T_mgun"></span> m²/gün&nbsp;)</span></div>
-                        <div class="text-[11px] leading-relaxed mt-2 pt-2 border-t border-gray-300 text-black"><span class="inline-block w-36 font-bold pl-2">Hidrolik İletkenlik (K) :</span><span class="font-mono">K = T / e</span></div>
-                        <div class="text-[11px] leading-relaxed pl-[150px] text-black"><span class="font-mono">K = <span id="dz_pdf_eq_T"></span> / <span id="dz_pdf_eq_e"></span></span><br><span class="font-mono font-bold text-[13px] tracking-wide mt-1 inline-block">K = <span id="dz_res_K"></span> m/sn</span></div>
-                    </div>
                 </div>
+            </div>
+            <div class="bg-slate-50 p-4 border-t border-slate-200 text-xs text-slate-500 text-center">
+                Projeleriniz sadece size özel olarak Firebase sunucularında saklanmaktadır. Açılan projeler yeni bir sekmede yüklenir.
             </div>
         </div>
     </div>
 
-    <!-- ================= PRINT AREA: KUYU LOGU ================= -->
-    <div id="print-area-kuyu" class="flex-col justify-between">
-        <div class="border-b-2 border-black pb-1 mb-1.5 text-center"><h1 class="text-[18px] font-bold text-black uppercase">KUYU KÜTÜĞÜ</h1></div>
-        <div class="grid grid-cols-12 gap-3 flex-1" style="height: 260mm;">
-            <div class="col-span-6 flex flex-col h-full">
-                <!-- 1. Genel Durum -->
-                <div class="mb-1">
-                    <h2 class="text-[11px] font-bold text-black border-b border-black pb-0.5 mb-1 uppercase tracking-wide">Genel Durum</h2>
-                    <div class="border border-black rounded overflow-hidden">
-                        <table class="w-full text-[10px] text-left"><tbody class="divide-y divide-black">
-                            <tr><td class="text-black p-1.5 font-bold w-[35%] border-r border-black">Adres</td><td class="p-1.5 text-black font-normal" id="kl_pdf_location_val">-</td></tr>
-                            <tr><td class="text-black p-1.5 font-bold border-r border-black">Ada / Parsel</td><td class="p-1.5 text-black font-normal" id="kl_pdf_mevkii_val">-</td></tr>
-                            <tr><td class="text-black p-1.5 font-bold border-r border-black">Koordinat (ED50_6)</td><td class="p-1.5 font-mono text-black font-normal" id="kl_pdf_utm_val">-</td></tr>
-                            <tr><td class="text-black p-1.5 font-bold border-r border-black">Kuyu Sahibi</td><td class="p-1.5 text-black font-normal" id="kl_pdf_client_val">-</td></tr>
-                            <tr><td class="text-black p-1.5 font-bold border-r border-black">Açılış Gayesi</td><td class="p-1.5 text-black font-normal" id="kl_pdf_kuyu_amaci">-</td></tr>
-                            <tr><td class="text-black p-1.5 font-bold border-r border-black">Tarihi</td><td class="p-1.5 font-mono text-black font-normal" id="kl_pdf_tarih_val">-</td></tr>
-                            <tr><td class="text-black p-1.5 font-bold border-r border-black">Kuyu Derinliği</td><td class="p-1.5 text-black font-normal" id="kl_pdf_depth_val">0 m</td></tr>
-                            <tr><td class="text-black p-1.5 font-bold border-r border-black">DSİ No</td><td class="p-1.5 text-black font-normal" id="kl_pdf_dsi_no_val">-</td></tr>
-                        </tbody></table>
-                    </div>
-                </div>
-                <!-- 2. Firma -->
-                <div class="mb-1">
-                    <h2 class="text-[11px] font-bold text-black border-b border-black pb-0.5 mb-1 uppercase tracking-wide">Açan Firma ve Mesul Şahıslar</h2>
-                    <div class="border border-black rounded overflow-hidden">
-                        <table class="w-full text-[10px] text-left"><tbody class="divide-y divide-black">
-                            <tr><td class="text-black p-1.5 font-bold w-[35%] border-r border-black">Firma Adı</td><td class="p-1.5 text-black font-normal" id="kl_pdf_firm_name_td">-</td></tr>
-                            <tr><td class="text-black p-1.5 font-bold border-r border-black" id="kl_pdf_eng_prof_label">Sorumlu Mühendis</td><td class="p-1.5 text-black font-normal" id="kl_pdf_responsible_eng">-</td></tr>
-                            <tr><td class="text-black p-1.5 font-bold border-r border-black">Sondör</td><td class="p-1.5 text-black font-normal" id="kl_pdf_driller_val">-</td></tr>
-                        </tbody></table>
-                    </div>
-                </div>
-                <!-- 3. Su -->
-                <div class="mb-1">
-                    <h2 class="text-[11px] font-bold text-black border-b border-black pb-0.5 mb-1 uppercase tracking-wide">Su Verim Tecrübesi</h2>
-                    <div class="border border-black rounded overflow-hidden">
-                        <table class="w-full text-[10px] text-left"><tbody class="divide-y divide-black">
-                            <tr><td class="text-black p-1.5 font-bold w-[35%] border-r border-black">Kuyu Verimi</td><td class="p-1.5 font-mono text-black font-normal" id="kl_pdf_hyd_debi">-</td></tr>
-                            <tr><td class="text-black p-1.5 font-bold border-r border-black">Statik Seviye</td><td class="p-1.5 font-mono text-black font-normal" id="kl_pdf_hyd_statik">-</td></tr>
-                            <tr><td class="text-black p-1.5 font-bold border-r border-black">Dinamik Seviye</td><td class="p-1.5 font-mono text-black font-normal" id="kl_pdf_hyd_dinamik">-</td></tr>
-                            <tr><td class="text-black p-1.5 font-bold border-r border-black">Pompa Çalışma Süresi</td><td class="p-1.5 font-mono text-black font-normal" id="kl_pdf_hyd_sure">-</td></tr>
-                        </tbody></table>
-                    </div>
-                </div>
-                <!-- Krokiler -->
-                <div class="mb-1 flex flex-col gap-1 flex-1">
-                    <div>
-                        <h2 class="text-[11px] font-bold text-black border-b border-black pb-0.5 mb-1 uppercase tracking-wide">Kuyu Başı Krokisi</h2>
-                        <div class="border border-black rounded flex flex-col h-[135px] bg-white items-center justify-center overflow-hidden">
-                            <svg viewBox="0 10 300 235" class="w-full h-full">
-                                <defs>
-                                    <pattern id="gravelPattern" width="15" height="15" patternUnits="userSpaceOnUse"><rect width="15" height="15" fill="#ffffff"/><path d="M2,2 Q3,1 4,2 Q5,3 4,4 Q3,5 2,4 Z" fill="#000" stroke="#000" stroke-width="0.5"/><path d="M10,8 Q12,7 13,9 Q11,11 10,10 Z" fill="none" stroke="#000" stroke-width="1"/><circle cx="8" cy="3" r="1" fill="#000"/><circle cx="3" cy="12" r="1.5" fill="none" stroke="#000" stroke-width="1"/><circle cx="13" cy="14" r="1" fill="#000"/></pattern>
-                                    <pattern id="concretePattern" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="8" stroke="#000" stroke-width="1"/></pattern>
-                                    <marker id="blackArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1 L 10 5 L 0 9 z" fill="#000"/></marker>
-                                </defs>
-                                <line x1="10" y1="75" x2="290" y2="75" stroke="#000" stroke-width="3"/>
-                                <rect x="40" y="55" width="220" height="20" fill="url(#concretePattern)" stroke="#000" stroke-width="1.5"/>
-                                <rect x="90" y="75" width="120" height="40" fill="url(#concretePattern)" stroke="#000" stroke-width="1.5"/>
-                                <rect x="90" y="115" width="120" height="115" fill="url(#gravelPattern)" stroke="#000" stroke-width="1.5"/>
-                                <rect x="110" y="45" width="80" height="185" fill="#ffffff" stroke="#000" stroke-width="2"/>
-                                <ellipse cx="150" cy="45" rx="40" ry="12" fill="#ffffff" stroke="#000" stroke-width="2"/>
-                                <ellipse cx="150" cy="230" rx="40" ry="12" fill="#ffffff" stroke="#000" stroke-width="2"/>
-                                <rect x="194" y="15" width="12" height="110" fill="url(#gravelPattern)" stroke="#000" stroke-width="1.5"/>
-                                <ellipse cx="200" cy="15" rx="6" ry="2.5" fill="#ffffff" stroke="#000" stroke-width="1.5"/>
-                                <text x="75" y="30" font-family="Arial, sans-serif" font-weight="700" font-size="16" fill="#000" text-anchor="middle">Beton</text>
-                                <line x1="75" y1="35" x2="95" y2="65" stroke="#000" stroke-width="2" marker-end="url(#blackArrow)"/>
-                                <text x="260" y="30" font-family="Arial, sans-serif" font-weight="700" font-size="16" fill="#000" text-anchor="middle">Çakıl Borusu</text>
-                                <line x1="250" y1="35" x2="208" y2="50" stroke="#000" stroke-width="2" marker-end="url(#blackArrow)"/>
-                                <line x1="112" y1="95" x2="188" y2="95" stroke="#000" stroke-width="2" marker-start="url(#blackArrow)" marker-end="url(#blackArrow)"/>
-                                <text id="kl_svg_pipe_spec" x="150" y="90" font-family="Arial, sans-serif" font-weight="700" font-size="12" fill="#000" text-anchor="middle" paint-order="stroke" stroke="#fff" stroke-width="4">225mm</text>
-                                <line x1="92" y1="165" x2="208" y2="165" stroke="#000" stroke-width="2" marker-start="url(#blackArrow)" marker-end="url(#blackArrow)"/>
-                                <text id="kl_svg_hole_spec" x="150" y="160" font-family="Arial, sans-serif" font-weight="700" font-size="12" fill="#000" text-anchor="middle" paint-order="stroke" stroke="#fff" stroke-width="4">15"</text>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="flex flex-col flex-1">
-                        <h2 class="text-[11px] font-bold text-black border-b border-black pb-0.5 mb-1 uppercase tracking-wide">Kuyu Yeri Krokisi</h2>
-                        <div class="border border-black rounded p-1 flex flex-col flex-1 h-[180px]">
-                            <div class="w-full h-full bg-white flex items-center justify-center relative overflow-hidden rounded border border-black">
-                                <img id="kl_pdf_map_static_img" class="absolute inset-0 w-full h-full object-cover" src="">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- İmzalar -->
-                <div class="p-1.5 border border-black rounded mt-auto flex flex-row justify-between items-center gap-2">
-                    <div class="flex-1">
-                        <p class="text-[9px] text-black italic leading-relaxed text-justify mb-2">İş bu kütükte sunulan jeolojik formasyon kesitleri, kuyu teçhiz dizilimi ve akifer verim parametreleri tarafımızca doğrulanarak kayıt altına alınmıştır.</p>
-                        <div class="text-center mt-3"><span class="text-[10px] font-bold text-black uppercase block" id="kl_pdf_sig_eng_prof_bottom">Sorumlu Mühendis</span><span class="text-[12px] font-bold text-black block mt-1" id="kl_pdf_sig_eng_p1">Ahmet Yılmaz</span></div>
-                    </div>
-                    <div class="w-[80px] flex flex-col items-center justify-center border-l border-black pl-2 shrink-0">
-                        <canvas id="kl_qr_map_canvas" class="w-[65px] h-[65px]"></canvas>
-                        <span class="text-[8px] text-black font-bold mt-1 text-center leading-tight">Konuma Git</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-span-6 flex flex-col h-full">
-                <h2 class="text-[11px] font-bold text-black border-b border-black pb-0.5 mb-1 uppercase tracking-wide">Kuyu Şeması</h2>
-                <div class="border border-black rounded p-1 flex-1 flex flex-col items-center justify-center bg-white h-full">
-                    <img id="kl_pdf_canvas_img" src="" class="w-full h-full object-contain">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Bildirim -->
-    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-50">
-        <span id="toastIcon"><i class="fa-solid fa-info-circle"></i></span>
-        <span id="toastMessage" class="text-sm font-semibold">İşlem başarılı</span>
-    </div>
-
+    <!-- STREAMING_CHUNK:Dashboard Logic... -->
     <script>
-        // ================= GLOBAL =================
-        let currentActiveView = 'home-view';
-
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('toast');
-            const iconSpan = document.getElementById('toastIcon');
-            const msgSpan = document.getElementById('toastMessage');
-            
-            msgSpan.innerText = message;
-            if(type === 'success') {
-                iconSpan.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>';
-                toast.className = "fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-50 border-l-4 border-emerald-500";
-            } else if(type === 'error') {
-                iconSpan.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-rose-400 text-lg"></i>';
-                toast.className = "fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-50 border-l-4 border-rose-500";
-            } else {
-                iconSpan.innerHTML = '<i class="fa-solid fa-info-circle text-blue-400 text-lg"></i>';
-                toast.className = "fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-50 border-l-4 border-blue-500";
-            }
-            setTimeout(() => {
-                toast.className = "fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-50";
-            }, 3000);
+        function openDashboard() {
+            const modal = document.getElementById('dashboardModal');
+            const content = document.getElementById('dashboardContent');
+            modal.classList.remove('hidden');
+            // Animasyon için minik gecikme
+            setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); }, 10);
+            loadDashboardProjects();
         }
 
-        function switchView(viewId) {
-            document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-            currentActiveView = viewId;
-
-            const body = document.getElementById('mainBody');
-            if(viewId === 'home-view') {
-                body.classList.replace('bg-slate-50', 'bg-slate-900');
-            } else {
-                body.classList.replace('bg-slate-900', 'bg-slate-50');
-                if (viewId === 'kuyu-view' && !kl_map) kl_initMap();
-                if (viewId === 'dashboard-view') loadDashboardProjects();
-            }
-        }
-
-        // ================= FIREBASE (CLOUD) =================
-        async function saveProjectToCloud(type) {
-            if (!window.currentUser) { showToast("Bulut bağlantısı yok!", "error"); return; }
-            
-            let data, nameStr;
-            if(type === 'dusum') {
-                data = dz_getProjectData();
-                nameStr = [data.inputs.dz_p_ilce, data.inputs.dz_p_mahalle, data.inputs.dz_p_ada, data.inputs.dz_p_parsel].filter(Boolean).join(" ");
-            } else {
-                data = kl_getProjectData();
-                nameStr = [data.inputs.kl_p_ilce, data.inputs.kl_p_mahalle, data.inputs.kl_p_ada, data.inputs.kl_p_parsel].filter(Boolean).join(" ");
-            }
-
-            if(!nameStr.trim()) nameStr = (type === 'dusum' ? "İsimsiz Düşüm Projesi" : "İsimsiz Kuyu Projesi");
-
-            try {
-                showToast("Buluta kaydediliyor...", "info");
-                await window.fsAddDoc(window.fsCollection(window.db, "projects"), {
-                    uid: window.currentUser.uid,
-                    type: type,
-                    name: nameStr,
-                    data: data,
-                    createdAt: window.fsServerTimestamp()
-                });
-                showToast("Proje buluta başarıyla kaydedildi!", "success");
-            } catch(e) {
-                console.error(e);
-                showToast("Buluta kaydetme başarısız oldu.", "error");
-            }
+        function closeDashboard() {
+            const modal = document.getElementById('dashboardModal');
+            const content = document.getElementById('dashboardContent');
+            modal.classList.add('opacity-0'); content.classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
         }
 
         async function loadDashboardProjects() {
-            if(!window.currentUser || !window.db) return;
             const tbody = document.getElementById('dashboardTableBody');
-            tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-slate-500"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2 block"></i> Yükleniyor...</td></tr>';
+            if(!window.currentUser || !window.db) {
+                tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-rose-500"><i class="fa-solid fa-circle-exclamation mb-2"></i> Bulut bağlantısı bekleniyor...</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-slate-500"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2 block"></i> Projeler yükleniyor...</td></tr>';
             
             try {
                 const q = window.fsQuery(window.fsCollection(window.db, "projects"), window.fsWhere("uid", "==", window.currentUser.uid), window.fsOrderBy("createdAt", "desc"));
@@ -840,7 +221,7 @@
 
                 querySnapshot.forEach((doc) => {
                     const p = doc.data();
-                    const dateStr = p.createdAt ? new Date(p.createdAt.toDate()).toLocaleDateString('tr-TR') : "Yeni";
+                    const dateStr = p.createdAt ? new Date(p.createdAt.toDate()).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short', year: 'numeric', hour:'2-digit', minute:'2-digit' }) : "Yeni";
                     const icon = p.type === 'dusum' ? '<i class="fa-solid fa-chart-line text-blue-500"></i>' : '<i class="fa-solid fa-water text-slate-600"></i>';
                     const typeName = p.type === 'dusum' ? 'Düşüm Analizi' : 'Kuyu Logu';
                     
@@ -850,33 +231,33 @@
                         <td class="p-4 font-semibold text-slate-700">${p.name}</td>
                         <td class="p-4">${icon} ${typeName}</td>
                         <td class="p-4 text-slate-500 text-sm">${dateStr}</td>
-                        <td class="p-4 text-right">
-                            <button onclick="openCloudProject('${doc.id}', '${p.type}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-1.5 rounded text-xs font-bold transition mr-2"><i class="fa-solid fa-folder-open"></i> Aç</button>
-                            <button onclick="deleteCloudProject('${doc.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded text-xs font-bold transition"><i class="fa-solid fa-trash"></i> Sil</button>
+                        <td class="p-4 text-right whitespace-nowrap">
+                            <button onclick="openCloudProject('${doc.id}', '${p.type}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-1.5 rounded text-xs font-bold transition border border-blue-200 mr-2"><i class="fa-solid fa-folder-open"></i> Aç</button>
+                            <button onclick="deleteCloudProject('${doc.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded text-xs font-bold transition border border-rose-200"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     `;
                     tbody.appendChild(tr);
-                    // Proje datalarını geçici olarak saklayalım ki açıldığında alabilelim
+                    // Veriyi Session'a geçici olarak yazabilmek için saklıyoruz
                     window[`cloud_proj_${doc.id}`] = p.data;
                 });
             } catch(e) {
                 console.error(e);
-                tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-rose-500">Projeler yüklenirken hata oluştu! (Test Modu aktif mi?)</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-rose-500">Projeler yüklenirken hata oluştu! <br><span class="text-xs text-slate-500">(Dizin oluşturuluyor olabilir, sayfayı 1dk sonra yenileyin)</span></td></tr>';
             }
         }
 
         function openCloudProject(docId, type) {
             const data = window[`cloud_proj_${docId}`];
-            if(!data) { showToast("Veri bulunamadı", "error"); return; }
+            if(!data) { alert("Veri bulunamadı!"); return; }
             
+            // Veriyi sayfa değiştirmeden önce tarayıcı hafızasına yazıyoruz
+            sessionStorage.setItem('cloudLoadData', JSON.stringify(data));
+            
+            // İlgili sayfaya yönlendiriyoruz
             if(type === 'dusum') {
-                dz_setProjectData(data);
-                switchView('dusum-view');
-                showToast("Düşüm projesi buluttan açıldı.", "success");
+                window.location.href = 'dusum_zaman.html';
             } else {
-                kl_setProjectData(data);
-                switchView('kuyu-view');
-                showToast("Kuyu projesi buluttan açıldı.", "success");
+                window.location.href = 'kuyu_logu.html';
             }
         }
 
@@ -884,378 +265,12 @@
             if(!confirm("Bu projeyi buluttan kalıcı olarak silmek istediğinize emin misiniz?")) return;
             try {
                 await window.fsDeleteDoc(window.fsDoc(window.db, "projects", docId));
-                showToast("Proje silindi.", "success");
                 loadDashboardProjects();
             } catch(e) {
                 console.error(e);
-                showToast("Silinirken hata oluştu.", "error");
+                alert("Silinirken hata oluştu.");
             }
         }
-
-        // ================= DÜŞÜM ZAMAN LOKAL LOGIC =================
-        let dz_chartInstance = null;
-        let dz_dataPoints = [];
-        const dz_inputIdsToSave = ['dz_p_il', 'dz_p_ilce', 'dz_p_mahalle', 'dz_p_ada', 'dz_p_parsel', 'dz_p_sahip', 'dz_p_muhendis', 'dz_p_dsi', 'dz_p_tarih', 'dz_p_statik', 'dz_p_debi', 'dz_p_kalinlik', 'dz_p_dinamik', 'dz_p_t1', 'dz_p_t2'];
-        const dz_timeSteps = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
-
-        function dz_generateData() {
-            let statik = parseFloat(document.getElementById('dz_p_statik').value);
-            let dinamik = parseFloat(document.getElementById('dz_p_dinamik').value);
-            let targetDebi = parseFloat(document.getElementById('dz_p_debi').value);
-            
-            if (isNaN(statik) || isNaN(targetDebi)) return;
-            if (isNaN(dinamik)) { dinamik = statik + 20; document.getElementById('dz_p_dinamik').value = dinamik; }
-
-            let maxDrawdown = Math.max(0, dinamik - statik);
-            dz_dataPoints = [];
-            dz_timeSteps.forEach(t => {
-                let currentDrawdown = 0; let currentDebi = targetDebi;
-                if (t === 1) { currentDrawdown = 0; currentDebi = Math.ceil(targetDebi * 1.3); } 
-                else if (t < 600) {
-                    let logFactor = Math.log(t) / Math.log(600);
-                    currentDrawdown = maxDrawdown * logFactor;
-                    currentDebi = Math.ceil((targetDebi * 1.3) - ((targetDebi * 0.3) * logFactor));
-                } else { currentDrawdown = maxDrawdown; currentDebi = Math.round(targetDebi); }
-
-                let level = Math.round(statik + currentDrawdown);
-                let dusum = level - Math.round(statik);
-                dz_dataPoints.push({ t: t, level: level, dusum: dusum, debi: Math.round(currentDebi) });
-            });
-            dz_calculateResults();
-        }
-
-        function dz_updateRow(index, field, value) {
-            let val = parseFloat(value); if(isNaN(val)) return;
-            let statik = Math.round(parseFloat(document.getElementById('dz_p_statik').value) || 0);
-            if (dz_dataPoints[index].t === 1000) return;
-
-            if (field === 'level') { dz_dataPoints[index].level = Math.round(val); dz_dataPoints[index].dusum = Math.round(dz_dataPoints[index].level - statik); } 
-            else if (field === 'dusum') { dz_dataPoints[index].dusum = Math.round(val); dz_dataPoints[index].level = Math.round(statik + dz_dataPoints[index].dusum); } 
-            else if (field === 'debi') { dz_dataPoints[index].debi = Math.round(val); }
-            dz_calculateResults();
-        }
-
-        function dz_renderTable() {
-            const tbody = document.getElementById('dz_dataTableBody'); tbody.innerHTML = '';
-            dz_dataPoints.forEach((p, index) => {
-                let isLocked = (p.t === 1000);
-                let inputClass = isLocked ? "w-full text-center bg-transparent border-none outline-none text-sm py-1 font-mono text-slate-400 cursor-not-allowed" : "w-full text-center bg-transparent border-b border-transparent focus:border-blue-500 outline-none text-sm py-1 font-mono";
-                let tr = document.createElement('tr'); tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
-                tr.innerHTML = `<td class="p-1"><input type="text" value="${p.t}" readonly class="w-full text-center bg-transparent outline-none text-sm py-1 text-slate-500 cursor-default"></td><td class="p-1"><input type="number" step="1" value="${p.level}" ${isLocked ? 'readonly' : `onchange="dz_updateRow(${index}, 'level', this.value)"`} class="${inputClass}"></td><td class="p-1"><input type="number" step="1" value="${p.dusum}" ${isLocked ? 'readonly' : `onchange="dz_updateRow(${index}, 'dusum', this.value)"`} class="${inputClass}"></td><td class="p-1"><input type="number" step="1" value="${p.debi}" ${isLocked ? 'readonly' : `onchange="dz_updateRow(${index}, 'debi', this.value)"`} class="${inputClass}"></td>`;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function dz_getDrawdownAt(t) {
-            if(dz_dataPoints.length === 0) return 0;
-            let exact = dz_dataPoints.find(p => p.t === t); if (exact) return exact.dusum;
-            let sorted = [...dz_dataPoints].sort((a,b) => a.t - b.t);
-            if(t <= sorted[0].t) return sorted[0].dusum; if(t >= sorted[sorted.length-1].t) return sorted[sorted.length-1].dusum;
-            let p1 = sorted[0], p2 = sorted[sorted.length-1];
-            for(let i=0; i<sorted.length-1; i++) { if(t > sorted[i].t && t < sorted[i+1].t) { p1 = sorted[i]; p2 = sorted[i+1]; break; } }
-            if (p1.t === p2.t) return p1.dusum;
-            let d = p1.dusum + (p2.dusum - p1.dusum) * ((Math.log10(t) - Math.log10(p1.t)) / (Math.log10(p2.t) - Math.log10(p1.t)));
-            return Math.max(0, d);
-        }
-
-        function dz_formatScientific(num) {
-            if (num === 0 || isNaN(num) || !isFinite(num)) return "0.00";
-            let [base, exp] = num.toExponential(1).split('e');
-            return `${base} &times; 10<sup>${parseInt(exp, 10)}</sup>`;
-        }
-
-        function dz_calculateResults() {
-            dz_renderTable();
-            let Q = parseFloat(document.getElementById('dz_p_debi').value) || 0; let e = parseFloat(document.getElementById('dz_p_kalinlik').value) || 1;
-            let t1 = parseFloat(document.getElementById('dz_p_t1').value) || 10; let t2 = parseFloat(document.getElementById('dz_p_t2').value) || 100;
-            let d1 = dz_getDrawdownAt(t1); let d2 = dz_getDrawdownAt(t2); let deltaD = d2 - d1;
-            let T_msn = 0, K_msn = 0;
-            if (deltaD > 0 && Q > 0) { T_msn = (0.183 * (Q / 1000)) / deltaD; K_msn = T_msn / e; }
-            document.getElementById('dz_ui_res_dd').innerText = deltaD > 0 ? Math.round(deltaD) : "0";
-            document.getElementById('dz_ui_res_T').innerHTML = dz_formatScientific(T_msn);
-            document.getElementById('dz_ui_res_K').innerHTML = dz_formatScientific(K_msn);
-            dz_updateChart(t1, t2, d1, d2, deltaD);
-        }
-
-        function dz_updateChart(t1, t2, d1, d2, deltaD) {
-            const ctx = document.getElementById('dz_drawdownChart'); if(!ctx) return;
-            let plotData = dz_dataPoints.map(p => ({ x: p.t, y: p.dusum }));
-            let maxY = 35; if (plotData.length > 0) maxY = Math.ceil(Math.max(...plotData.map(p => p.y)) * 1.05);
-            if (dz_chartInstance) dz_chartInstance.destroy();
-            dz_chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: { datasets: [{ label: 'Düşüm', data: plotData, borderColor: '#000', borderWidth: 3, pointBackgroundColor: '#000', pointRadius: 2, pointHoverRadius: 5, fill: false, tension: 0.4 }] },
-                options: {
-                    responsive: true, maintainAspectRatio: false, animation: false,
-                    scales: {
-                        x: { type: 'logarithmic', min: 1, max: 1000, title: { display: true, text: 'Zaman (dk)', font: { size: 16, weight: 'bold' } }, grid: { display: true }, ticks: { font: { size: 16, weight: 'bold' }, callback: v => [1,10,100,1000].includes(v)?v:'' } },
-                        y: { type: 'linear', min: 0, max: maxY, title: { display: true, text: 'Düşüm (m)', font: { size: 16, weight: 'bold' } }, ticks: { font: { size: 16, weight: 'bold' } } }
-                    },
-                    plugins: {
-                        legend: { display: false },
-                        annotation: {
-                            annotations: (deltaD > 0) ? {
-                                lineBase: { type: 'line', xMin: t1, xMax: t2, yMin: d1, yMax: d1, borderColor: '#475569', borderWidth: 2, borderDash: [5, 5] },
-                                lineHeight: { type: 'line', xMin: t2, xMax: t2, yMin: d1, yMax: d2, borderColor: '#475569', borderWidth: 2, borderDash: [5, 5] },
-                                lineHypotenuse: { type: 'line', xMin: t1, xMax: t2, yMin: d1, yMax: d2, borderColor: '#475569', borderWidth: 1 },
-                                labelBox: { type: 'label', xValue: t2, yValue: d1 + (deltaD/2), xAdjust: 45, content: `ΔD = ${Math.round(deltaD)}`, backgroundColor: 'white', borderWidth: 1, borderColor: '#000', color: '#000', font: { size: 14, weight: 'bold' } }
-                            } : {}
-                        }
-                    }
-                }
-            });
-        }
-
-        function dz_getProjectData() {
-            let data = { inputs: {}, points: dz_dataPoints };
-            dz_inputIdsToSave.forEach(id => { data.inputs[id] = document.getElementById(id).value; });
-            return data;
-        }
-
-        function dz_setProjectData(data) {
-            if(data.inputs) { for (const [id, value] of Object.entries(data.inputs)) { const el = document.getElementById(id); if(el) el.value = value; } }
-            dz_dataPoints = data.points || []; dz_calculateResults();
-        }
-
-        function dz_downloadProject() {
-            const data = dz_getProjectData();
-            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }));
-            let fn = [document.getElementById('dz_p_ilce').value, document.getElementById('dz_p_mahalle').value, document.getElementById('dz_p_ada').value, document.getElementById('dz_p_parsel').value].join('_').replace(/[\/\s\\]/g, '_');
-            a.download = (fn ? fn : 'dusum_proje') + ".geolog"; document.body.appendChild(a); a.click(); document.body.removeChild(a); showToast("İndirildi", "success");
-        }
-
-        function dz_handleFileUpload(e) {
-            const reader = new FileReader();
-            reader.onload = function(e) { try { dz_setProjectData(JSON.parse(e.target.result)); showToast("Yüklendi", "success"); } catch (err) { showToast("Bozuk dosya", "error"); } };
-            reader.readAsText(e.target.files[0]); e.target.value = "";
-        }
-
-        function dz_loadSampleData() {
-            document.getElementById('dz_p_il').value = "Bursa"; document.getElementById('dz_p_ilce').value = "Yenişehir"; document.getElementById('dz_p_mahalle').value = "Çeltikçi"; document.getElementById('dz_p_ada').value = "102"; document.getElementById('dz_p_parsel').value = "13"; document.getElementById('dz_p_sahip').value = "Alper BULUT"; document.getElementById('dz_p_muhendis').value = "Cevat MUTLU"; document.getElementById('dz_p_dsi').value = "BRS.09.126"; document.getElementById('dz_p_tarih').value = "16.07.2026";
-            document.getElementById('dz_p_statik').value = "21"; document.getElementById('dz_p_debi').value = "8"; document.getElementById('dz_p_kalinlik').value = "120"; document.getElementById('dz_p_dinamik').value = "47"; document.getElementById('dz_p_t1').value = "10"; document.getElementById('dz_p_t2').value = "100";
-            dz_generateData(); showToast("Şablon yüklendi", "success");
-        }
-
-        function dz_clearAllData() {
-            dz_inputIdsToSave.forEach(id => { let el = document.getElementById(id); if(el && (el.type === "text" || el.type === "date")) el.value = ""; });
-            document.getElementById('dz_p_statik').value = "21"; document.getElementById('dz_p_debi').value = "8"; document.getElementById('dz_p_kalinlik').value = "120"; document.getElementById('dz_p_dinamik').value = "47"; document.getElementById('dz_p_t1').value = "10"; document.getElementById('dz_p_t2').value = "100";
-            dz_generateData(); showToast("Temizlendi", "info");
-        }
-
-        function dz_prepareAndPrint() {
-            if(dz_dataPoints.length === 0) { showToast("Veri yok!", "error"); return; }
-            let il = document.getElementById('dz_p_il').value, ilce = document.getElementById('dz_p_ilce').value, mah = document.getElementById('dz_p_mahalle').value;
-            document.getElementById('dz_pdf_adres').innerText = [il, ilce, mah ? mah + " Mah." : ""].filter(Boolean).join(" / ") || "-";
-            let ada = document.getElementById('dz_p_ada').value, parsel = document.getElementById('dz_p_parsel').value;
-            document.getElementById('dz_pdf_ada').innerText = (ada||parsel) ? `${ada} Ada / ${parsel} Parsel` : "-";
-            document.getElementById('dz_pdf_sahip').innerText = document.getElementById('dz_p_sahip').value || "-";
-            document.getElementById('dz_pdf_muhendis').innerText = document.getElementById('dz_p_muhendis').value || "-";
-            document.getElementById('dz_pdf_imza_isim').innerText = document.getElementById('dz_p_muhendis').value || "";
-            document.getElementById('dz_pdf_dsi').innerText = document.getElementById('dz_p_dsi').value || "-";
-            document.getElementById('dz_pdf_tarih_val').innerText = document.getElementById('dz_p_tarih').value || "-";
-            
-            document.getElementById('dz_pdf_statik').innerText = (document.getElementById('dz_p_statik').value || "0") + " m";
-            document.getElementById('dz_pdf_dinamik').innerText = (document.getElementById('dz_p_dinamik').value || "0") + " m";
-            document.getElementById('dz_pdf_kalinlik').innerText = (document.getElementById('dz_p_kalinlik').value || "0") + " m";
-            document.getElementById('dz_pdf_debi').innerText = (document.getElementById('dz_p_debi').value || "0") + " lt/sn";
-
-            let Q = parseFloat(document.getElementById('dz_p_debi').value) || 0;
-            let t1 = parseFloat(document.getElementById('dz_p_t1').value) || 10; let t2 = parseFloat(document.getElementById('dz_p_t2').value) || 100;
-            let d1 = dz_getDrawdownAt(t1); let d2 = dz_getDrawdownAt(t2); let deltaD = d2 - d1;
-            
-            document.getElementById('dz_pdf_eq_d2').innerText = Math.round(d2); document.getElementById('dz_pdf_eq_d1').innerText = Math.round(d1); document.getElementById('dz_pdf_eq_dd').innerText = Math.round(deltaD); document.getElementById('dz_pdf_eq_dd_div').innerText = Math.round(deltaD); document.getElementById('dz_pdf_eq_Q').innerText = Math.round(Q);
-            document.getElementById('dz_res_T_msn').innerHTML = document.getElementById('dz_ui_res_T').innerHTML;
-            document.getElementById('dz_res_T_mgun').innerText = (((0.183 * (Q/1000)) / (deltaD > 0 ? deltaD : 1)) * 86400).toFixed(3);
-            document.getElementById('dz_pdf_eq_T').innerHTML = document.getElementById('dz_ui_res_T').innerHTML; document.getElementById('dz_pdf_eq_e').innerText = document.getElementById('dz_p_kalinlik').value || "1"; document.getElementById('dz_res_K').innerHTML = document.getElementById('dz_ui_res_K').innerHTML;
-            
-            const tbody = document.getElementById('dz_pdf_data_tbody'); tbody.innerHTML = '';
-            dz_dataPoints.forEach(p => { tbody.innerHTML += `<tr><td class="py-1.5">${p.t}</td><td class="py-1.5">${p.level}</td><td class="py-1.5">${p.dusum}</td><td class="py-1.5">${p.debi}</td></tr>`; });
-
-            const tempCanvas = document.createElement('canvas'); tempCanvas.width = dz_chartInstance.canvas.width; tempCanvas.height = dz_chartInstance.canvas.height; 
-            const tCtx = tempCanvas.getContext('2d'); tCtx.fillStyle = '#ffffff'; tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height); tCtx.drawImage(dz_chartInstance.canvas, 0, 0);
-            document.getElementById('dz_pdf_chart_img').src = tempCanvas.toDataURL('image/png', 1.0);
-            
-            document.body.classList.add('print-mode-dusum');
-            setTimeout(() => { window.print(); document.body.classList.remove('print-mode-dusum'); }, 500);
-        }
-
-        // ================= KUYU LOGU LOKAL LOGIC =================
-        let kl_lithologies = []; let kl_techLayers = []; let kl_map; let kl_kuyuMarker; let kl_isSatellite = true;
-        const kl_inputIdsToSave = ['kl_firm_name', 'kl_firm_engineer', 'kl_eng_profession', 'kl_driller_name', 'kl_p_client', 'kl_p_il', 'kl_p_ilce', 'kl_p_mahalle', 'kl_p_ada', 'kl_p_parsel', 'kl_p_tarih', 'kl_p_derinlik', 'kl_p_dsi_no', 'kl_p_amaci', 'kl_p_zone', 'kl_p_easting', 'kl_p_northing', 'kl_p_lat', 'kl_p_lon', 'kl_v_debi', 'kl_v_statik', 'kl_v_dinamik', 'kl_v_sure', 'kl_tech_pipe_spec', 'kl_tech_hole_spec', 'kl_filterDepthsInput'];
-        
-        const kl_satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles © Esri', crossOrigin: 'anonymous' });
-        const kl_streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap', crossOrigin: 'anonymous' });
-
-        function kl_initMap() {
-            if(kl_map) return;
-            const startWgs84 = proj4('+proj=utm +zone=35 +ellps=intl +towgs84=-84,-95,-130,0,0,0,0 +units=m +no_defs', proj4.WGS84, [671036, 4453273]);
-            if (!document.getElementById('kl_p_lat').value) { document.getElementById('kl_p_lat').value = startWgs84[1].toFixed(6); document.getElementById('kl_p_lon').value = startWgs84[0].toFixed(6); }
-            kl_map = L.map('kl_map', { center: [document.getElementById('kl_p_lat').value, document.getElementById('kl_p_lon').value], zoom: 15, layers: [kl_satelliteLayer], fadeAnimation: false, zoomAnimation: false });
-            kl_kuyuMarker = L.marker([document.getElementById('kl_p_lat').value, document.getElementById('kl_p_lon').value], {draggable: true}).addTo(kl_map);
-            kl_kuyuMarker.on('dragend', function (e) { document.getElementById('kl_p_lat').value = kl_kuyuMarker.getLatLng().lat.toFixed(6); document.getElementById('kl_p_lon').value = kl_kuyuMarker.getLatLng().lng.toFixed(6); kl_convertToUtm(); });
-        }
-
-        function kl_updateMapFromInputs() {
-            const lat = parseFloat(document.getElementById('kl_p_lat').value); const lon = parseFloat(document.getElementById('kl_p_lon').value);
-            if (!isNaN(lat) && !isNaN(lon) && kl_map) { const latlng = L.latLng(lat, lon); kl_kuyuMarker.setLatLng(latlng); kl_map.panTo(latlng); kl_convertToUtm(); }
-        }
-
-        function kl_toggleMapLayer() {
-            if (kl_isSatellite) { kl_map.removeLayer(kl_satelliteLayer); kl_map.addLayer(kl_streetLayer); kl_isSatellite = false; } 
-            else { kl_map.removeLayer(kl_streetLayer); kl_map.addLayer(kl_satelliteLayer); kl_isSatellite = true; }
-        }
-
-        function kl_convertToUtm() {
-            const lat = parseFloat(document.getElementById('kl_p_lat').value); const lon = parseFloat(document.getElementById('kl_p_lon').value);
-            if(isNaN(lat) || isNaN(lon)) return;
-            const zone = Math.floor((lon + 180) / 6) + 1;
-            const utm = proj4(proj4.WGS84, `+proj=utm +zone=${zone} +ellps=intl +towgs84=-84,-95,-130,0,0,0,0 +units=m +no_defs`, [lon, lat]);
-            document.getElementById('kl_p_zone').value = zone; document.getElementById('kl_p_easting').value = Math.round(utm[0]); document.getElementById('kl_p_northing').value = Math.round(utm[1]);
-        }
-
-        function kl_updateMapFromUtm() {
-            const zone = parseInt(document.getElementById('kl_p_zone').value); const east = parseFloat(document.getElementById('kl_p_easting').value); const north = parseFloat(document.getElementById('kl_p_northing').value);
-            if (!isNaN(zone) && !isNaN(east) && !isNaN(north)) {
-                const latlngArray = proj4(`+proj=utm +zone=${zone} +ellps=intl +towgs84=-84,-95,-130,0,0,0,0 +units=m +no_defs`, proj4.WGS84, [east, north]);
-                if (latlngArray && !isNaN(latlngArray[1])) { document.getElementById('kl_p_lat').value = latlngArray[1].toFixed(6); document.getElementById('kl_p_lon').value = latlngArray[0].toFixed(6); kl_updateMapFromInputs(); }
-            }
-        }
-
-        function kl_addLithologyLayer() {
-            const type = document.getElementById('kl_litType').value; const start = parseFloat(document.getElementById('kl_litStartD').value); const end = parseFloat(document.getElementById('kl_litEndD').value); const total = parseFloat(document.getElementById('kl_p_derinlik').value);
-            if (isNaN(total) || total <= 0) { showToast("Kuyu derinliği girin!", "error"); return; }
-            if (isNaN(start) || isNaN(end) || start >= end) { showToast("Sınırları kontrol edin!", "error"); return; }
-            if (end > total) { showToast("Tabandan daha derine inemez!", "error"); return; }
-            if (kl_lithologies.some(l => (start < l.end && end > l.start))) { showToast("Aralık çakışıyor!", "error"); return; }
-            kl_lithologies.push({ type, start, end, thick: end - start }); kl_lithologies.sort((a, b) => a.start - b.start);
-            kl_updateLitoTable(); kl_drawCanvasLog(); document.getElementById('kl_litStartD').value = end; document.getElementById('kl_litEndD').value = "";
-        }
-
-        function kl_updateLitoTable() {
-            const tbody = document.getElementById('kl_litoTableBody');
-            if (kl_lithologies.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Boş</td></tr>`; return; }
-            tbody.innerHTML = kl_lithologies.map((l, i) => `<tr class="border-b"><td class="p-2 font-mono text-xs">${l.start}-${l.end}m</td><td class="p-2 text-xs font-bold">${l.type}</td><td class="p-2 text-center"><button onclick="kl_deleteLito(${i})" class="text-rose-500"><i class="fa-solid fa-trash"></i></button></td></tr>`).join('');
-        }
-
-        function kl_deleteLito(i) { kl_lithologies.splice(i, 1); kl_updateLitoTable(); kl_drawCanvasLog(); }
-
-        function kl_autoGenerateBoringDesign() {
-            const rawVal = document.getElementById('kl_filterDepthsInput').value; const total = parseFloat(document.getElementById('kl_p_derinlik').value); const spec = document.getElementById('kl_tech_pipe_spec').value || "Boru Çapı";
-            kl_techLayers = []; if (isNaN(total) || total <= 0) { kl_drawCanvasLog(); return; }
-            const starts = rawVal.split(',').map(v => parseFloat(v.trim())).filter(v => !isNaN(v) && v >= 0 && v < total).sort((a,b) => a - b);
-            if(starts.length === 0) { kl_techLayers.push({ type: 'Kapalı', start: 0, end: total, thick: total, size: spec }); } 
-            else {
-                let p = 0;
-                starts.forEach(fs => {
-                    if (fs > p) kl_techLayers.push({ type: 'Kapalı', start: p, end: fs, thick: fs - p, size: spec });
-                    let fe = Math.min(fs + 4, total);
-                    kl_techLayers.push({ type: 'Filtreli', start: fs, end: fe, thick: fe - fs, size: spec + " Süzgeçli" });
-                    p = fe;
-                });
-                if (p < total) kl_techLayers.push({ type: 'Kapalı', start: p, end: total, thick: total - p, size: spec });
-            }
-            kl_techLayers.push({ type: 'Çakıl', start: 0, end: total, thick: total, size: "Çakıl" });
-            kl_drawCanvasLog();
-        }
-
-        function kl_createHatchPattern(ctx, type) {
-            const tc = document.createElement('canvas'); const tCtx = tc.getContext('2d'); tc.width = 20; tc.height = 20; tCtx.fillStyle = '#fff'; tCtx.fillRect(0,0,20,20); tCtx.strokeStyle = '#000'; tCtx.fillStyle = '#000'; tCtx.lineWidth = 1;
-            // (Basitleştirilmiş Hatch Logic - Hız için varsayılan tarama çizgileri)
-            tCtx.beginPath();
-            if(type.includes('Kil') || type.includes('Marn')) { tCtx.setLineDash([5, 3]); tCtx.moveTo(0, 10); tCtx.lineTo(20, 10); } 
-            else if(type.includes('Kum')) { tCtx.fillRect(5,5,1.5,1.5); tCtx.fillRect(15,15,1.5,1.5); tCtx.fillRect(10,10,1.5,1.5); }
-            else if(type.includes('Çakıl') || type.includes('Konglomera')) { tCtx.arc(10,10,4,0,2*Math.PI); }
-            else if(type.includes('Kireçtaşı') || type.includes('Dolomit')) { tCtx.moveTo(0,10); tCtx.lineTo(20,10); tCtx.moveTo(10,0); tCtx.lineTo(10,10); }
-            else { tCtx.moveTo(0,0); tCtx.lineTo(20,20); }
-            tCtx.stroke(); return ctx.createPattern(tc, 'repeat');
-        }
-
-        function kl_drawCanvasLog() {
-            const canvas = document.getElementById('kl_logCanvas'); if (!canvas) return; const ctx = canvas.getContext('2d');
-            const total = parseFloat(document.getElementById('kl_p_derinlik').value);
-            canvas.width = 1500; canvas.height = 3750; canvas.style.width = '300px'; canvas.style.height = '750px'; ctx.scale(5, 5);
-            if (isNaN(total) || total <= 0) { document.getElementById('kl_canvasDepthIndicator').innerText = "0 m"; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, 300, 750); ctx.fillStyle = '#94a3b8'; ctx.font = '14px sans-serif'; ctx.textAlign = 'center'; ctx.fillText("Kuyu Derinliği Girin", 150, 375); return; }
-            document.getElementById('kl_canvasDepthIndicator').innerText = total + " m";
-            const scale = 710 / total; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, 300, 750);
-            
-            // Litoloji
-            if(kl_lithologies.length === 0) { ctx.strokeRect(45, 35, 100, 710); } else {
-                kl_lithologies.forEach(l => { const y = 35 + (l.start * scale); const h = l.thick * scale; ctx.fillStyle = kl_createHatchPattern(ctx, l.type); ctx.fillRect(45, y, 100, h); ctx.strokeRect(45, y, 100, h); if(h>15) { ctx.fillStyle='#fff'; ctx.fillRect(47, y+(h/2)-4, ctx.measureText(l.type).width+4, 10); ctx.fillStyle='#000'; ctx.font='8px sans-serif'; ctx.textAlign='left'; ctx.fillText(l.type, 49, y+(h/2)+3); } });
-            }
-            // Teçhiz
-            ctx.fillStyle = '#fff'; ctx.fillRect(175, 35, 105, 710); ctx.setLineDash([4,4]); ctx.strokeRect(175, 35, 105, 710); ctx.setLineDash([]);
-            kl_techLayers.forEach(t => {
-                const y = 35 + (t.start * scale); const h = t.thick * scale;
-                if(t.type === 'Çakıl') { ctx.fillStyle = '#fff'; ctx.fillRect(175, y, 18, h); ctx.fillRect(262, y, 18, h); ctx.fillStyle = '#000'; for(let py=y+4; py<y+h; py+=10){ ctx.beginPath(); ctx.arc(184,py,1.5,0,Math.PI*2); ctx.arc(271,py,1.5,0,Math.PI*2); ctx.fill(); } }
-            });
-            kl_techLayers.forEach(t => {
-                const y = 35 + (t.start * scale); const h = t.thick * scale;
-                if(t.type === 'Kapalı' || t.type === 'Filtreli') {
-                    ctx.fillStyle = '#fff'; ctx.fillRect(197, y, 61, h); ctx.strokeRect(197, y, 61, h);
-                    if(t.type === 'Filtreli') { ctx.beginPath(); for(let sy=y+3; sy<y+h; sy+=4){ ctx.moveTo(201, sy); ctx.lineTo(254, sy); } ctx.stroke(); }
-                    if(h>=11) { ctx.fillStyle='#000'; ctx.textAlign='center'; ctx.font='8px sans-serif'; ctx.fillText((t.type==='Kapalı'?'Kapalı':'Filtre') + ' ' + t.start + '-' + t.end, 227.5, y+(h/2)+3); }
-                }
-            });
-            
-            ctx.fillStyle = '#000'; ctx.font = '8px monospace'; ctx.textAlign = 'right';
-            const depths = new Set([0, total]); kl_lithologies.forEach(l => { depths.add(l.start); depths.add(l.end); });
-            Array.from(depths).sort((a,b)=>a-b).forEach(d => ctx.fillText(d + 'm', 38, 35 + (d * scale)));
-            
-            ctx.textAlign = 'center'; ctx.font = '8px sans-serif'; ctx.fillText("LİTOLOJİK KESİT", 95, 13); ctx.fillText("TEÇHİZ PLANI", 227.5, 13);
-        }
-
-        function kl_getProjectData() {
-            let data = { inputs: {}, lithologies: kl_lithologies };
-            kl_inputIdsToSave.forEach(id => { data.inputs[id] = document.getElementById(id).value; });
-            return data;
-        }
-
-        function kl_setProjectData(data) {
-            if(data.inputs) { for (const [id, value] of Object.entries(data.inputs)) { const el = document.getElementById(id); if(el) el.value = value; } }
-            kl_lithologies = data.lithologies || []; kl_updateLitoTable(); kl_autoGenerateBoringDesign(); kl_updateMapFromInputs();
-        }
-
-        function kl_downloadProject() {
-            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(kl_getProjectData(), null, 2)], { type: "application/json" }));
-            a.download = "kuyu_projesi.geolog"; document.body.appendChild(a); a.click(); document.body.removeChild(a); showToast("İndirildi", "success");
-        }
-
-        function kl_handleFileUpload(e) {
-            const reader = new FileReader(); reader.onload = function(e) { kl_setProjectData(JSON.parse(e.target.result)); showToast("Yüklendi", "success"); }; reader.readAsText(e.target.files[0]); e.target.value = "";
-        }
-
-        function kl_loadSampleData() {
-            document.getElementById('kl_firm_name').value = "Mega Altyapı Sondaj"; document.getElementById('kl_firm_engineer').value = "Kemal Alkan"; document.getElementById('kl_p_il').value = "Bursa"; document.getElementById('kl_p_ilce').value = "Yenişehir"; document.getElementById('kl_p_ada').value = "104"; document.getElementById('kl_p_parsel').value = "12"; document.getElementById('kl_p_derinlik').value = "160"; document.getElementById('kl_p_lat').value = "40.262500"; document.getElementById('kl_p_lon').value = "29.663100"; kl_updateMapFromInputs();
-            kl_lithologies = [ { type: 'Kil', start: 0, end: 30, thick: 30 }, { type: 'Kum', start: 30, end: 100, thick: 70 }, { type: 'Kireçtaşı', start: 100, end: 160, thick: 60 } ];
-            kl_updateLitoTable(); document.getElementById('kl_filterDepthsInput').value = "52,68,100,116"; kl_autoGenerateBoringDesign(); showToast("Şablon yüklendi.", "success");
-        }
-
-        function kl_clearAllData() { kl_lithologies = []; kl_inputIdsToSave.forEach(id => { let el = document.getElementById(id); if(el) el.value = ""; }); kl_updateLitoTable(); kl_autoGenerateBoringDesign(); showToast("Temizlendi", "info"); }
-
-        function kl_prepareAndPrint() {
-            if (kl_lithologies.length === 0) { showToast("Veri yok!", "error"); return; }
-            document.getElementById('kl_pdf_location_val').innerText = [document.getElementById('kl_p_il').value, document.getElementById('kl_p_ilce').value].join(" / ");
-            document.getElementById('kl_pdf_mevkii_val').innerText = document.getElementById('kl_p_ada').value + " Ada " + document.getElementById('kl_p_parsel').value + " Parsel";
-            document.getElementById('kl_pdf_depth_val').innerText = document.getElementById('kl_p_derinlik').value + " m";
-            document.getElementById('kl_pdf_tarih_val').innerText = document.getElementById('kl_p_tarih').value || "-";
-            document.getElementById('kl_pdf_firm_name_td').innerText = document.getElementById('kl_firm_name').value || "-";
-            document.getElementById('kl_pdf_responsible_eng').innerText = document.getElementById('kl_firm_engineer').value || "-";
-            document.getElementById('kl_pdf_sig_eng_p1').innerText = document.getElementById('kl_firm_engineer').value || "-";
-            document.getElementById('kl_svg_pipe_spec').textContent = document.getElementById('kl_tech_pipe_spec').value || "";
-            document.getElementById('kl_svg_hole_spec').textContent = document.getElementById('kl_tech_hole_spec').value || "";
-
-            new QRious({ element: document.getElementById('kl_qr_map_canvas'), value: `https://www.google.com/maps/search/?api=1&query=${document.getElementById('kl_p_lat').value},${document.getElementById('kl_p_lon').value}`, size: 300 });
-            document.getElementById('kl_pdf_canvas_img').src = document.getElementById('kl_logCanvas').toDataURL('image/png');
-            
-            const mc = document.createElement('canvas'); mc.width = 400; mc.height = 300; mc.getContext('2d').fillStyle = '#ddd'; mc.getContext('2d').fillRect(0,0,400,300); mc.getContext('2d').fillStyle = '#000'; mc.getContext('2d').fillText("Harita Çıktısı (Önizleme)", 150, 150);
-            document.getElementById('kl_pdf_map_static_img').src = mc.toDataURL('image/png'); // Bypass cors map issue for print preview
-            
-            document.body.classList.add('print-mode-kuyu');
-            setTimeout(() => { window.print(); document.body.classList.remove('print-mode-kuyu'); }, 500);
-        }
-
-        // ================= INITIAL LOAD =================
-        window.onload = () => { dz_generateData(); };
     </script>
 </body>
 </html>
