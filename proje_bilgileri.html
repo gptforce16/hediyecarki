@@ -1,1 +1,167 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeoLog Pro - Yeni Ana Proje</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
+<!-- STREAMING_CHUNK:Firebase Init -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    const firebaseConfig = { apiKey: "AIzaSyA8JR_mh0FaU_ZT16h6MRZICvYIlHdbZ78", authDomain: "geologpro-3aa61.firebaseapp.com", projectId: "geologpro-3aa61", storageBucket: "geologpro-3aa61.firebasestorage.app", messagingSenderId: "738819989330", appId: "1:738819989330:web:29a446953726300c11e48b", measurementId: "G-2P79TH49YB" };
+    const app = initializeApp(firebaseConfig); window.db = getFirestore(app); window.auth = getAuth(app);
+    window.fsCollection = collection; window.fsAddDoc = addDoc; window.fsServerTimestamp = serverTimestamp;
+    
+    document.addEventListener('DOMContentLoaded', () => { onAuthStateChanged(window.auth, user => { window.currentUser = user; }); });
+</script>
+
+<style>
+body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+</style>
+</head>
+<body class="text-slate-800 pb-20">
+
+    <header class="bg-slate-900 text-white shadow-md py-4 px-6 mb-8">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
+                <div class="bg-blue-600 p-2 rounded-lg"><i class="fa-solid fa-folder-plus text-xl"></i></div>
+                <div><h1 class="text-xl font-bold">Ana Proje Veri Girişi</h1></div>
+            </div>
+            <button onclick="saveMasterProject()" class="bg-emerald-500 hover:bg-emerald-400 px-6 py-2.5 rounded-full font-bold shadow-lg transition flex items-center gap-2 text-slate-900">
+                <i class="fa-solid fa-save"></i> Projeyi Buluta Kaydet
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+            
+            <div class="p-6 border-b border-slate-100 bg-slate-50">
+                <h2 class="text-lg font-bold text-slate-800 mb-1"><i class="fa-solid fa-building text-blue-500 mr-2"></i> Firma ve Personel Bilgileri</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">FİRMA ADI</label><input type="text" id="firm_name" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">SORUMLU MÜHENDİS</label><input type="text" id="firm_engineer" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">MÜHENDİS MESLEĞİ</label><input type="text" id="eng_profession" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">DİPLOMA / SİCİL NO</label><input type="text" id="f_tek_sicil" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">MÜHENDİS ADRESİ</label><input type="text" id="f_tek_adres" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"></div>
+                    
+                    <div class="md:col-span-2 grid grid-cols-2 gap-4 border-t border-slate-200 pt-4 mt-2">
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">SONDÖR</label><input type="text" id="driller_name" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">SONDÖR TC KİMLİK</label><input type="text" id="f_son_tc" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">YETKİ BELGE NO</label><input type="text" id="f_son_belge" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">SONDÖR ADRESİ</label><input type="text" id="f_son_adres" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 border-b border-slate-100">
+                <h2 class="text-lg font-bold text-slate-800 mb-1"><i class="fa-solid fa-user-tie text-emerald-500 mr-2"></i> Müracaat ve Müşteri Bilgileri</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                    <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">MÜRACAAT SAHİBİ / MÜŞTERİ</label><input type="text" id="p_muracaat" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">VERGİ DAİRESİ/NO</label><input type="text" id="p_vergi" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500"></div>
+                    <div class="md:col-span-3"><label class="block text-xs font-bold text-slate-500 mb-1">MÜŞTERİ ADRESİ</label><input type="text" id="p_adres" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">DSİ BÖLGE NO</label><input type="text" id="p_dsi_bolge" placeholder="1. BÖLGE" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">DSİ KUYU NO</label><input type="text" id="p_dsi_no" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">KULLANMA AMACI</label><input type="text" id="p_amaci" placeholder="Sulama" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500"></div>
+                </div>
+            </div>
+
+            <div class="p-6 border-b border-slate-100 bg-slate-50">
+                <h2 class="text-lg font-bold text-slate-800 mb-1"><i class="fa-solid fa-map-location-dot text-amber-500 mr-2"></i> Lokasyon ve Havza</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">İL</label><input type="text" id="p_il" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-amber-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">İLÇE</label><input type="text" id="p_ilce" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-amber-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">MAHALLE / MEVKİİ</label><input type="text" id="p_mahalle" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-amber-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">PAFTA</label><input type="text" id="p_pafta" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-amber-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">ADA</label><input type="text" id="p_ada" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-amber-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">PARSEL</label><input type="text" id="p_parsel" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-amber-500"></div>
+                    <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">YÜZÖLÇÜMÜ</label><input type="text" id="p_yuzolcumu" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-amber-500"></div>
+                    <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">HAVZA ADI</label><input type="text" id="p_havza" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-amber-500"></div>
+                    <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">OVA / ALT HAVZA</label><input type="text" id="p_alt_havza" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-amber-500"></div>
+                    
+                    <!-- Ortak Koordinatlar -->
+                    <div class="md:col-span-4 mt-2 p-3 border border-slate-200 rounded-lg">
+                        <label class="block text-xs font-bold text-slate-700 mb-2">KOORDİNAT BİLGİLERİ</label>
+                        <div class="grid grid-cols-5 gap-2">
+                            <div><span class="text-[10px] font-bold text-slate-400">ZONE</span><input type="text" id="p_zone" class="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 text-sm"></div>
+                            <div class="col-span-2"><span class="text-[10px] font-bold text-slate-400">DOĞU (Y)</span><input type="text" id="p_easting" class="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 text-sm"></div>
+                            <div class="col-span-2"><span class="text-[10px] font-bold text-slate-400">KUZEY (X)</span><input type="text" id="p_northing" class="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 text-sm"></div>
+                            <div class="col-span-5"><span class="text-[10px] font-bold text-slate-400">YAZI FORMATI (ED50)</span><input type="text" id="p_koordinat" placeholder="630401 D-4464749 K" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-sm font-mono"></div>
+                            <input type="hidden" id="p_lat" value=""><input type="hidden" id="p_lon" value="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <h2 class="text-lg font-bold text-slate-800 mb-1"><i class="fa-solid fa-gear text-purple-500 mr-2"></i> Planlanan Kuyu Teknik Verileri</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">TARİH</label><input type="date" id="p_tarih" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-purple-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">DERİNLİK (m)</label><input type="number" id="p_derinlik" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-purple-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">KUYU TİPİ</label><input type="text" id="t_tipi" placeholder="Derin Kuyu" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-purple-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">DELME USULÜ</label><input type="text" id="t_usul" placeholder="Rotary/Havalı" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-purple-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">ADEDİ</label><input type="text" id="t_adet" placeholder="1" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-purple-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">BORU ÇAPI</label><input type="text" id="tech_pipe_spec" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-purple-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">TEÇHİZ MALZEMESİ</label><input type="text" id="t_techiz" placeholder="PVC" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-purple-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">SONDAJ ÇAPI</label><input type="text" id="tech_hole_spec" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-purple-500"></div>
+                    <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">TALEP M³ / GÜN</label><input type="text" id="t_su_gun" class="w-full bg-purple-50 border border-purple-200 rounded-lg px-3 py-2 text-sm font-bold outline-none focus:border-purple-500"></div>
+                    <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">TALEP M³ / YIL</label><input type="text" id="t_su_yil" class="w-full bg-purple-50 border border-purple-200 rounded-lg px-3 py-2 text-sm font-bold outline-none focus:border-purple-500"></div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-[150]"><span id="toastIcon"></span><span id="toastMessage" class="text-sm font-semibold"></span></div>
+
+    <!-- STREAMING_CHUNK:Javascript Logic -->
+    <script>
+        const allIds = [
+            'firm_name', 'firm_engineer', 'eng_profession', 'driller_name',
+            'p_muracaat', 'p_vergi', 'p_adres', 'p_dsi_bolge', 'p_dsi_no', 'p_amaci',
+            'p_il', 'p_ilce', 'p_mahalle', 'p_pafta', 'p_ada', 'p_parsel', 'p_yuzolcumu', 'p_koordinat', 'p_havza', 'p_alt_havza',
+            'p_zone', 'p_easting', 'p_northing', 'p_lat', 'p_lon',
+            'f_tek_sicil', 'f_tek_adres', 'f_son_tc', 'f_son_belge', 'f_son_adres',
+            'p_tarih', 'p_derinlik', 't_tipi', 't_usul', 't_adet', 'tech_pipe_spec', 't_techiz', 'tech_hole_spec', 't_su_gun', 't_su_yil'
+        ];
+
+        function showToast(msg, type='info') {
+            const t = document.getElementById('toast'), i = document.getElementById('toastIcon'), m = document.getElementById('toastMessage');
+            m.innerText = msg;
+            i.innerHTML = type==='success' ? '<i class="fa-solid fa-check text-green-400"></i>' : (type==='error' ? '<i class="fa-solid fa-exclamation text-rose-400"></i>' : '<i class="fa-solid fa-info text-blue-400"></i>');
+            t.className = `fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-[150] border-l-4 ${type==='success'?'border-green-500':(type==='error'?'border-rose-500':'border-blue-500')}`;
+            setTimeout(() => { t.classList.replace('translate-y-0', 'translate-y-20'); t.classList.replace('opacity-100', 'opacity-0'); }, 3000);
+        }
+
+        async function saveMasterProject() {
+            if(!window.currentUser) { showToast("Giriş yapmanız gerekiyor. Lütfen ana sayfadan giriş yapın.", "error"); return; }
+            
+            let dataToSave = { inputs: {} };
+            allIds.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) dataToSave.inputs[id] = el.value;
+            });
+            
+            let nameStr = [document.getElementById('p_ilce').value, document.getElementById('p_mahalle').value, document.getElementById('p_ada').value, document.getElementById('p_parsel').value].filter(Boolean).join(" ");
+            if(!nameStr.trim()) nameStr = document.getElementById('p_muracaat').value || "İsimsiz Yeni Proje";
+
+            try {
+                showToast("Proje buluta kaydediliyor...", "info");
+                await window.fsAddDoc(window.fsCollection(window.db, "projects"), { uid: window.currentUser.uid, name: nameStr, data: dataToSave, createdAt: window.fsServerTimestamp() });
+                showToast("Proje başarıyla oluşturuldu! Yönlendiriliyorsunuz...", "success");
+                setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+            } catch(e) { console.error(e); showToast("Kayıt hatası.", "error"); }
+        }
+
+        window.onload = () => {
+            document.getElementById('p_tarih').valueAsDate = new Date();
+        }
+    </script>
+</body>
+</html>
