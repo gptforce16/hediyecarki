@@ -2,27 +2,44 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<!-- Mobil uyumluluk için viewport -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GeoLog Pro - Arama Belgesi</title>
-<!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com"></script>
-<!-- FontAwesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 body { font-family: Arial, sans-serif; background: #e2e8f0; }
+
+/* Yazdırma (PDF) Ayarları - 2. Sayfa Taşması Kesin Olarak Engellendi */
 @media print {
     @page { size: A4 portrait; margin: 0; }
-    body { background-color: white !important; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    html, body { 
+        background-color: white !important; 
+        margin: 0 !important; 
+        padding: 0 !important; 
+        height: 100% !important; 
+        overflow: hidden !important; 
+        -webkit-print-color-adjust: exact !important; 
+        print-color-adjust: exact !important; 
+    }
     header, #noDataOverlay { display: none !important; }
-    /* İkinci sayfaya taşmayı engellemek için yüksekliği 296mm ile sınırlandırdık ve taşanları gizledik */
-    #pdf_container { box-shadow: none !important; border: none !important; width: 210mm !important; height: 296mm !important; margin: 0 !important; padding: 20mm !important; overflow: hidden !important; page-break-inside: avoid; }
+    #pdf_container { 
+        box-shadow: none !important; 
+        border: none !important; 
+        width: 210mm !important; 
+        height: 295mm !important; 
+        max-height: 295mm !important; 
+        margin: 0 !important; 
+        padding: 20mm !important; 
+        padding-bottom: 30mm !important; /* Alt boşluk artırıldı */
+        overflow: hidden !important; 
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important; 
+    }
 }
 .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 6px; } 
 .pdf-table td { padding: 3px 6px; vertical-align: top; }
-/* Etiket genişlikleri 190px ile hizalandı, uzun metinlerin alt satıra düşmesini engellemek için whitespace-nowrap eklendi */
 .pdf-label { width: 190px; font-weight: normal; } 
-.pdf-colon { width: 10px; font-weight: normal; } /* İki nokta üst üste (:) işaretleri ince yapıldı */
+.pdf-colon { width: 10px; font-weight: normal; }
 </style>
 </head>
 <body class="min-h-screen flex flex-col items-center pb-12 bg-slate-200">
@@ -32,11 +49,9 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
         <button onclick="window.print()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-900 px-6 py-2 rounded font-bold shadow transition"><i class="fa-solid fa-print"></i> Yazdır (PDF)</button>
     </header>
 
-    <!-- Mobil Uyumlu Yatay Kaydırma (Scroll) Sarmalayıcı -->
     <div class="w-full max-w-full overflow-x-auto flex justify-start lg:justify-center px-4 lg:px-0 mb-4 pb-4">
-        <!-- A4 Konteyner: Boyutlar kesinlikle A4'e sabit, kenar boşlukları 20mm yapıldı -->
-        <div class="w-[210mm] min-w-[210mm] h-[296mm] bg-white shadow-2xl p-[20mm] text-black text-[12px] leading-snug relative flex flex-col shrink-0" id="pdf_container">
-            <!-- Veri Bulunamadı Ekranı -->
+        <div class="w-[210mm] min-w-[210mm] h-[295mm] bg-white shadow-2xl p-[20mm] pb-[30mm] text-black text-[12px] leading-snug relative flex flex-col shrink-0" id="pdf_container">
+            
             <div id="noDataOverlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
                 <i class="fa-solid fa-file-circle-xmark text-6xl text-slate-300 mb-4"></i>
                 <p class="font-bold text-lg text-slate-600">Veri Bulunamadı Veya Proje Seçilmedi!</p>
@@ -45,9 +60,9 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
 
             <div class="text-center font-bold text-[16px] mb-2">YER ALTI SUYU ARAMA BELGESİ İSTEME FORMU</div>
             
-            <div class="flex justify-between items-start mb-4 text-[11px] font-bold">
-                <div class="flex-1 text-center font-bold text-[14px] pl-16">
-                    DSİ <span id="prev_dsi_bolge">....................</span> BÖLGE MÜDÜRLÜĞÜNE<br><span id="prev_dsi_il">...........</span>
+            <div class="flex justify-between items-start mb-2 text-[11px] font-bold">
+                <div class="flex-1 text-center font-bold text-[14px] pl-16 underline">
+                    DSİ <span id="prev_dsi_bolge">....................</span> MÜDÜRLÜĞÜNE<br><span id="prev_dsi_il">...........</span>
                 </div>
                 <div class="text-right">
                     <div>Belge Tipi: A</div>
@@ -55,16 +70,15 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                 </div>
             </div>
 
-            <!-- 1. Müracaat -->
             <table class="pdf-table">
-                <tr><td class="pdf-label font-bold whitespace-nowrap">1. Müracaat Sahibi</td><td class="pdf-colon">:</td><td><span id="prev_muracaat" class="font-bold"></span></td></tr>
+                <tr><td class="font-bold whitespace-nowrap" colspan="3">1. Müracaat Sahibi</td></tr>
+                <tr><td class="pdf-label pl-4 whitespace-nowrap">Adı Soyadı / Unvanı</td><td class="pdf-colon">:</td><td><span id="prev_muracaat" class="font-bold"></span></td></tr>
                 <tr><td class="pl-4 whitespace-nowrap">Vergi Dairesi-Vergi No</td><td class="pdf-colon">:</td><td><span id="prev_vergi"></span></td></tr>
                 <tr><td class="pl-4 whitespace-nowrap">Adresi</td><td class="pdf-colon">:</td><td><span id="prev_adres"></span></td></tr>
             </table>
             
-            <!-- 2. Arazi -->
-            <div class="font-bold mb-1 mt-1">2. Arazinin</div>
-            <table class="w-full text-[12px] mb-2">
+            <table class="pdf-table mt-1">
+                <tr><td class="font-bold" colspan="6">2. Arazinin</td></tr>
                 <tr>
                     <td class="w-[190px] pl-4 whitespace-nowrap">a) İli</td><td class="w-[10px] font-normal">:</td><td class="w-[170px]"><span id="prev_il"></span></td>
                     <td class="w-[110px] pl-4 whitespace-nowrap">f) Pafta</td><td class="w-[10px] font-normal">:</td><td class="w-auto"><span id="prev_pafta"></span></td>
@@ -87,7 +101,6 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                 </tr>
             </table>
             
-            <!-- 3. Mühendis -->
             <table class="pdf-table mt-1">
                 <tr><td class="font-bold" colspan="3">3. Teknik Elemanın (Teknik Sorumlu)</td></tr>
                 <tr><td class="pdf-label pl-4 whitespace-nowrap">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_tek_ad"></span> <span class="float-right mr-10 italic text-gray-600">İmzası: .......................</span></td></tr>
@@ -97,19 +110,16 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                 <tr><td class="pl-4 whitespace-nowrap">e) Adresi</td><td class="pdf-colon">:</td><td><span id="prev_tek_adres"></span></td></tr>
             </table>
             
-            <!-- 4. Sondör -->
             <table class="pdf-table mt-1">
                 <tr><td class="font-bold" colspan="3">4. Sondör, Kuyucu, Galericinin</td></tr>
                 <tr><td class="pdf-label pl-4 whitespace-nowrap">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_son_ad"></span> <span class="float-right mr-10 italic text-gray-600">İmzası: .......................</span></td></tr>
                 <tr><td class="pl-4 whitespace-nowrap">b) TC Kimlik No</td><td class="pdf-colon">:</td><td><span id="prev_son_tc"></span></td></tr>
-                <!-- Yetki belge dalı alt satıra düşmesin diye whitespace-nowrap eklendi -->
                 <tr><td class="pl-4 whitespace-nowrap">c) Yet. Belge dalı tarihi ve No</td><td class="pdf-colon">:</td><td><span id="prev_son_belge"></span></td></tr>
                 <tr><td class="pl-4 whitespace-nowrap">d) Adresi</td><td class="pdf-colon">:</td><td><span id="prev_son_adres"></span></td></tr>
             </table>
             
-            <!-- 5. Kuyu -->
-            <div class="font-bold mt-2 mb-1">5. Kuyunun</div>
-            <table class="w-full text-[12px] mb-3">
+            <table class="pdf-table mt-1">
+                <tr><td class="font-bold" colspan="6">5. Kuyunun</td></tr>
                 <tr>
                     <td class="w-[190px] pl-4 whitespace-nowrap">a) Tipi</td><td class="w-[10px] font-normal">:</td><td class="w-[170px]"><span id="prev_tipi"></span></td>
                     <td class="w-[110px] pl-4 whitespace-nowrap">d) Kesiti</td><td class="w-[10px] font-normal">:</td><td class="w-auto"><span id="prev_kesit"></span></td>
@@ -124,31 +134,31 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                 </tr>
             </table>
             
-            <!-- 6. Su Miktarı ve Sonuç (Kalınlaştırmalar iptal edildi) -->
-            <div class="font-bold mt-2 mb-2">
-                6. Talep edilen su miktarı: 
-                <span class="font-normal"><span id="prev_su_gun"></span> m³/gün</span> &nbsp;&nbsp; - &nbsp;&nbsp; 
-                <span class="font-normal"><span id="prev_su_yil"></span> m³/yıl</span>
-            </div>
+            <table class="pdf-table mt-1">
+                <tr>
+                    <td class="font-bold">
+                        6. Talep edilen su miktarı: 
+                        <span class="font-normal"><span id="prev_su_gun"></span> m³/gün</span> &nbsp;&nbsp; - &nbsp;&nbsp; 
+                        <span class="font-normal"><span id="prev_su_yil"></span> m³/yıl</span>
+                    </td>
+                </tr>
+            </table>
             
-            <div class="text-justify mt-3 leading-snug">
+            <div class="text-justify mt-2 leading-snug px-[6px]">
                 Yukarıda belirtilen ve ilişikteki krokide sınırları gösterilen arazide <span id="prev_amaci" class="font-bold uppercase"></span> amacıyla yeraltı suyu aranmak istenmektedir. Bu hususta 167 sayılı Yeraltı Suları hakkındaki Kanunun 9'uncu maddesi gereğince tarafımıza bir yeraltı suyu arama belgesi verilmesini arz ederim.
             </div>
             
-            <!-- Ek kısmı ince font (font-normal) yapıldı -->
-            <div class="mt-4 text-[12px] font-normal">
-                <span class="font-bold">Ek:</span><br>
+            <div class="mt-4 text-[12px] font-normal px-[6px]">
+                Ek:<br>
                 1) A tipi belge için hidrojeoloji raporu (2 takım).<br>
                 2) Kuyu projesi (kuyu yeri krokili) (2 takım).<br>
                 3) Kuyu açılacak arazinin onaylı tapu fotokopisi.<br>
                 4) Su İhtiyaç belgesi.
             </div>
             
-            <!-- İmza Alanı (Sağ alt köşe, margin 20mm içeride) -->
-            <div class="absolute bottom-[20mm] right-[20mm] text-center">
-                <!-- Tarih ve İsim İNCE (font-normal) yapıldı, Adı Soyadı/Müracaat Sahibi ibaresi kaldırıldı -->
+            <div class="absolute bottom-[30mm] right-[20mm] text-center">
                 <span class="block mb-8 font-normal text-center">...../...../.....</span>
-                <span id="prev_imza_muracaat" class="block font-normal text-[13px] uppercase"></span>
+                <span id="prev_imza_muracaat" class="block font-normal text-[13px]"></span>
             </div>
         </div>
     </div>
@@ -186,16 +196,17 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                     let prevDsiIl = document.getElementById('prev_dsi_il');
                     if(prevDsiIl && data.inputs.p_il) prevDsiIl.innerText = data.inputs.p_il.toUpperCase();
                     
-                    // DSİ Bölge Numarası Formatlama
+                    // DSİ Bölge Formatlama (Rakam gelirse sonuna nokta koyar ve BÖLGE ekler)
                     let dsiBolgeEl = document.getElementById('prev_dsi_bolge');
                     if (dsiBolgeEl) {
                         let bolgeTxt = (data.inputs.p_dsi_bolge || "").trim();
                         if (bolgeTxt) {
                             if (/^\d+$/.test(bolgeTxt)) {
-                                dsiBolgeEl.innerText = bolgeTxt; 
+                                dsiBolgeEl.innerText = bolgeTxt + ". BÖLGE"; 
                             } else {
-                                // "1. BÖLGE" veya "BÖLGE" içeriyorsa sadece numarasını bırakalım
-                                dsiBolgeEl.innerText = bolgeTxt.replace(/[^0-9]/g, '');
+                                let numOnly = bolgeTxt.replace(/[^0-9]/g, '');
+                                if(numOnly) dsiBolgeEl.innerText = numOnly + ". BÖLGE";
+                                else dsiBolgeEl.innerText = bolgeTxt.toUpperCase();
                             }
                         }
                     }
