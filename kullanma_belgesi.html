@@ -165,7 +165,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
 
                     // Teknik Sorumlu
                     setVal('prev_tek_ad', ['t_tek_ad', 'tek_ad', 'p_tek_ad']);
-                    setVal('prev_tek_tc', ['t_tek_tc', 'tek_tc', 'p_tek_tc']);
+                    setVal('prev_tek_tc', ['f_tek_tc', 't_tek_tc', 'tek_tc', 'p_tek_tc']);
                     setVal('prev_tek_meslek', ['t_tek_meslek', 'tek_meslek', 'p_tek_meslek']);
                     setVal('prev_tek_sicil', ['t_tek_sicil', 'tek_sicil', 'p_tek_sicil']);
                     setVal('prev_tek_adres', ['t_tek_adres', 'tek_adres', 'p_tek_adres']);
@@ -191,6 +191,12 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                     if(amaciMetinEl) {
                         let amaciVal = inputs['p_amaci'] || inputs['amaci'] || inputs['f_amaci'] || "";
                         amaciMetinEl.innerText = amaciVal.toLowerCase();
+                    }
+                    
+                    // DSİ Bölge Numarasına Rakam Girildiyse Otomatik ". BÖLGE" Ekleme
+                    let dsiBolgeEl = document.getElementById('prev_dsi_bolge');
+                    if (dsiBolgeEl && dsiBolgeEl.innerText && !dsiBolgeEl.innerText.toUpperCase().includes('BÖLGE')) {
+                        dsiBolgeEl.innerText = dsiBolgeEl.innerText + ". BÖLGE";
                     }
 
                     setVal('prev_imza_muracaat', ['p_muracaat', 'muracaat', 'f_unvan']);
