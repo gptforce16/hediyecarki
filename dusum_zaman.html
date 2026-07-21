@@ -14,15 +14,14 @@
 <!-- Chart.js Annotation Plugin -->
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0/dist/chartjs-plugin-annotation.min.js"></script>
 
-<!-- STREAMING_CHUNK:Firebase Init -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, collection, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     const firebaseConfig = { apiKey: "AIzaSyA8JR_mh0FaU_ZT16h6MRZICvYIlHdbZ78", authDomain: "geologpro-3aa61.firebaseapp.com", projectId: "geologpro-3aa61", storageBucket: "geologpro-3aa61.firebasestorage.app", messagingSenderId: "738819989330", appId: "1:738819989330:web:29a446953726300c11e48b", measurementId: "G-2P79TH49YB" };
     const app = initializeApp(firebaseConfig); window.db = getFirestore(app); window.auth = getAuth(app);
-    window.fsCollection = collection; window.fsAddDoc = addDoc; window.fsServerTimestamp = serverTimestamp;
+    window.fsCollection = collection; window.fsDoc = doc; window.fsUpdateDoc = updateDoc;
     
     document.addEventListener('DOMContentLoaded', () => { onAuthStateChanged(window.auth, user => { window.currentUser = user; }); });
 </script>
@@ -54,7 +53,7 @@ body {
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen">
 
-<!-- STREAMING_CHUNK:Header -->
+<!-- Header -->
 <header class="bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-md py-4 px-6 mb-6">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
         <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
@@ -76,7 +75,6 @@ body {
             <div class="w-px h-6 bg-slate-600 mx-1 hidden md:block"></div>
             <button onclick="saveProjectToCloud()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg font-semibold text-xs transition flex items-center gap-1.5 shadow"><i class="fa-solid fa-cloud-arrow-up"></i> Buluta Kaydet</button>
             <div class="w-px h-6 bg-slate-600 mx-1 hidden md:block"></div>
-            <button onclick="loadSampleData()" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-lg font-semibold text-xs transition flex items-center gap-1.5 shadow"><i class="fa-solid fa-database"></i> Şablon</button>
             <button onclick="clearAllData()" class="bg-rose-600 hover:bg-rose-500 text-white px-3 py-2 rounded-lg font-semibold text-xs transition flex items-center gap-1.5 shadow"><i class="fa-solid fa-eraser"></i> Sıfırla</button>
         </div>
     </div>
@@ -85,7 +83,7 @@ body {
 <main class="max-w-7xl mx-auto px-4 pb-16">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        <!-- STREAMING_CHUNK:Inputs Panel (ORİJİNAL) -->
+        <!-- Inputs Panel (ORİJİNAL) -->
         <div class="lg:col-span-4 flex flex-col gap-6">
             
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
@@ -129,7 +127,7 @@ body {
             </div>
         </div>
 
-        <!-- STREAMING_CHUNK:Chart and Results Panel (ORİJİNAL) -->
+        <!-- Chart and Results Panel (ORİJİNAL) -->
         <div class="lg:col-span-8 flex flex-col gap-6">
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col">
                 <div class="grid grid-cols-3 gap-4 mb-4 pb-4 border-b border-slate-100">
@@ -159,7 +157,7 @@ body {
     </div>
 </main>
 
-<!-- STREAMING_CHUNK:Print Area (ORİJİNAL) -->
+<!-- Print Area (ORİJİNAL) -->
 <div id="print-area">
     <div class="text-center font-bold text-[16px] mb-3 uppercase tracking-wider">SABİT SEVİYELİ DÜŞÜM DENEYİ</div>
     <table class="w-full print-table text-[11px] font-bold bg-white text-left mb-6">
@@ -201,18 +199,20 @@ body {
 
 <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-[150]"><span id="toastIcon"></span><span id="toastMessage" class="text-sm font-semibold"></span></div>
 
-<!-- STREAMING_CHUNK:Javascript Logic -->
 <script>
-let chartInstance = null; let dataPoints = [];
-const inputIdsToSave = [ 'p_il', 'p_ilce', 'p_mahalle', 'p_ada', 'p_parsel', 'p_sahip', 'p_muhendis', 'p_dsi', 'p_tarih', 'p_statik', 'p_debi', 'p_kalinlik', 'p_dinamik', 'p_t1', 'p_t2' ];
-const timeSteps = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 ];
+let chartInstance = null; let dataPoints = []; let activeProjectId = null; let fullProjectData = {inputs:{}};
 
-function showToast(message, type = 'info') {
-    const toast = document.getElementById('toast'); const iconSpan = document.getElementById('toastIcon'); const msgSpan = document.getElementById('toastMessage'); msgSpan.innerText = message;
-    if(type === 'success') { iconSpan.innerHTML = '<i class="fa-solid fa-circle-check text-green-400 text-lg"></i>'; toast.className = "fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-50 border-l-4 border-green-500"; }
-    else if(type === 'error') { iconSpan.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-rose-400 text-lg"></i>'; toast.className = "fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-50 border-l-4 border-rose-500"; }
-    else { iconSpan.innerHTML = '<i class="fa-solid fa-info-circle text-blue-400 text-lg"></i>'; toast.className = "fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-50 border-l-4 border-blue-500"; }
-    setTimeout(() => { toast.className = "fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-50"; }, 3000);
+const inputIdsToSave = [
+    'p_il', 'p_ilce', 'p_mahalle', 'p_ada', 'p_parsel', 'p_sahip', 'p_muhendis', 'p_dsi', 'p_tarih', 'p_statik', 'p_debi', 'p_kalinlik', 'p_dinamik', 'p_t1', 'p_t2'
+];
+
+const timeSteps = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
+
+function showToast(msg, type='info') {
+    const t = document.getElementById('toast'), i = document.getElementById('toastIcon'), m = document.getElementById('toastMessage');
+    m.innerText = msg; i.innerHTML = type==='success' ? '<i class="fa-solid fa-check text-green-400"></i>' : (type==='error' ? '<i class="fa-solid fa-exclamation text-rose-400"></i>' : '<i class="fa-solid fa-info text-blue-400"></i>');
+    t.className = `fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-[150] border-l-4 ${type==='success'?'border-green-500':(type==='error'?'border-rose-500':'border-blue-500')}`;
+    setTimeout(() => { t.classList.replace('translate-y-0', 'translate-y-20'); t.classList.replace('opacity-100', 'opacity-0'); }, 3000);
 }
 
 function generateData() {
@@ -230,7 +230,6 @@ function generateData() {
     });
     calculateResults();
 }
-
 function updateRow(index, field, value) {
     let val = parseFloat(value); if(isNaN(val)) return;
     let statik = Math.round(parseFloat(document.getElementById('p_statik').value) || 0);
@@ -240,7 +239,6 @@ function updateRow(index, field, value) {
     else if (field === 'debi') { dataPoints[index].debi = Math.round(val); }
     calculateResults();
 }
-
 function renderTable() {
     const tbody = document.getElementById('dataTableBody'); tbody.innerHTML = '';
     dataPoints.forEach((p, index) => {
@@ -250,7 +248,6 @@ function renderTable() {
         tbody.appendChild(tr);
     });
 }
-
 function getDrawdownAt(t) {
     if(dataPoints.length === 0) return 0;
     let exact = dataPoints.find(p => p.t === t); if (exact) return exact.dusum;
@@ -261,9 +258,7 @@ function getDrawdownAt(t) {
     if (p1.t === p2.t) return p1.dusum;
     let logT1 = Math.log10(p1.t); let logT2 = Math.log10(p2.t); let logT = Math.log10(t); let d = p1.dusum + (p2.dusum - p1.dusum) * ((logT - logT1) / (logT2 - logT1)); return Math.max(0, d);
 }
-
 function formatScientificHTML(num) { if (num === 0 || isNaN(num) || !isFinite(num)) return "0.00"; let [base, exp] = num.toExponential(1).split('e'); let exponent = parseInt(exp, 10); return `${base} &times; 10<sup>${exponent}</sup>`; }
-
 function calculateResults() {
     renderTable();
     let Q = parseFloat(document.getElementById('p_debi').value) || 0; let e = parseFloat(document.getElementById('p_kalinlik').value) || 1;
@@ -274,7 +269,6 @@ function calculateResults() {
     document.getElementById('ui_res_dd').innerText = deltaD > 0 ? Math.round(deltaD) : "0"; document.getElementById('ui_res_T').innerHTML = formatScientificHTML(T_msn); document.getElementById('ui_res_K').innerHTML = formatScientificHTML(K_msn);
     updateChart(t1, t2, d1, d2, deltaD);
 }
-
 function updateChart(t1, t2, d1, d2, deltaD) {
     const ctx = document.getElementById('drawdownChart'); if(!ctx) return;
     let plotData = dataPoints.map(p => ({ x: p.t, y: p.dusum })); let maxY = 35; if (plotData.length > 0) { let dataMax = Math.max(...plotData.map(p => p.y)); maxY = Math.ceil(dataMax + (dataMax * 0.05)); }
@@ -295,10 +289,9 @@ function prepareAndPrint() {
     if(dataPoints.length === 0) { showToast("Lütfen yazdırmadan önce deney verisi girin!", "error"); return; }
     showToast("PDF Hazırlanıyor...", "info");
     let il = document.getElementById('p_il').value || ""; let ilce = document.getElementById('p_ilce').value || ""; let mah = document.getElementById('p_mahalle').value || ""; let adresStr = [il, ilce, mah ? mah + " Mah." : ""].filter(Boolean).join(" / ");
-    document.getElementById('pdf_adres').innerText = adresStr || "-";
-    let ada = document.getElementById('p_ada').value || ""; let parsel = document.getElementById('p_parsel').value || ""; let adaParselStr = [];
-    if(ada) adaParselStr.push(ada + " Ada"); if(parsel) adaParselStr.push(parsel + " Parsel"); document.getElementById('pdf_ada').innerText = adaParselStr.length > 0 ? adaParselStr.join(" / ") : "-";
-    document.getElementById('pdf_sahip').innerText = document.getElementById('p_sahip').value || "-"; document.getElementById('pdf_muhendis').innerText = document.getElementById('p_muhendis').value || "-"; document.getElementById('pdf_imza_isim').innerText = document.getElementById('p_muhendis').value || ""; document.getElementById('pdf_dsi').innerText = document.getElementById('p_dsi').value || "-"; document.getElementById('pdf_tarih_val').innerText = document.getElementById('p_tarih').value || "-";
+    document.getElementById('pdf_adres').innerText = adresStr || "-"; document.getElementById('pdf_ada').innerText = document.getElementById('p_ada_parsel').value || "-";
+    document.getElementById('pdf_sahip').innerText = document.getElementById('p_sahip').value || "-"; document.getElementById('pdf_muhendis').innerText = document.getElementById('p_muhendis').value || "-"; document.getElementById('pdf_imza_isim').innerText = document.getElementById('p_muhendis').value || ""; document.getElementById('pdf_dsi').innerText = document.getElementById('p_dsi').value || "-";
+    const rawDate = document.getElementById('p_tarih').value; if (rawDate) { const [y, m, d] = rawDate.split('-'); document.getElementById('pdf_tarih_val').innerText = `${d}.${m}.${y}`; } else { document.getElementById('pdf_tarih_val').innerText = "-"; }
     document.getElementById('pdf_statik').innerText = (document.getElementById('p_statik').value || "0") + " m"; document.getElementById('pdf_dinamik').innerText = (document.getElementById('p_dinamik').value || "0") + " m"; document.getElementById('pdf_kalinlik').innerText = (document.getElementById('p_kalinlik').value || "0") + " m"; document.getElementById('pdf_debi').innerText = (document.getElementById('p_debi').value || "0") + " lt/sn";
     let Q = parseFloat(document.getElementById('p_debi').value) || 0; let t1 = parseFloat(document.getElementById('p_t1').value) || 10; let t2 = parseFloat(document.getElementById('p_t2').value) || 100;
     let d1 = getDrawdownAt(t1); let d2 = getDrawdownAt(t2); let deltaD = d2 - d1;
@@ -309,7 +302,7 @@ function prepareAndPrint() {
     dataPoints.forEach(p => { let tr = `<tr><td class="py-1.5">${p.t}</td><td class="py-1.5">${p.level}</td><td class="py-1.5">${p.dusum}</td><td class="py-1.5">${p.debi}</td></tr>`; tbody.innerHTML += tr; });
     const canvas = document.getElementById('drawdownChart'); const pdfImg = document.getElementById('pdf_chart_img'); const tempCanvas = document.createElement('canvas');
     tempCanvas.width = canvas.width; tempCanvas.height = canvas.height; const tCtx = tempCanvas.getContext('2d'); tCtx.fillStyle = '#ffffff'; tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height); tCtx.drawImage(canvas, 0, 0); pdfImg.src = tempCanvas.toDataURL('image/png', 1.0);
-    setTimeout(() => { const originalTitle = document.title; document.title = "Dusum_Zaman_Raporu"; window.print(); document.title = originalTitle; }, 500);
+    setTimeout(() => { window.print(); }, 500);
 }
 
 function getProjectData() { let data = { inputs: {}, points: dataPoints }; inputIdsToSave.forEach(id => { data.inputs[id] = document.getElementById(id).value; }); return data; }
@@ -331,13 +324,6 @@ function handleFileUpload(event) {
         catch (err) { showToast("Dosya hatası!", "error"); } event.target.value = ""; 
     }; reader.readAsText(file);
 }
-
-function loadSampleData() {
-    document.getElementById('p_il').value = "Bursa"; document.getElementById('p_ilce').value = "Yenişehir"; document.getElementById('p_mahalle').value = "Çeltikçi"; document.getElementById('p_ada').value = "102"; document.getElementById('p_parsel').value = "13"; document.getElementById('p_sahip').value = "Alper BULUT"; document.getElementById('p_muhendis').value = "Cevat MUTLU"; document.getElementById('p_dsi').value = "BRS.09.126"; document.getElementById('p_tarih').value = "16.07.2026";
-    document.getElementById('p_statik').value = "21"; document.getElementById('p_debi').value = "8"; document.getElementById('p_kalinlik').value = "120"; document.getElementById('p_dinamik').value = "47"; document.getElementById('p_t1').value = "10"; document.getElementById('p_t2').value = "100";
-    generateData(); showToast("Şablon yüklendi.", "success");
-}
-
 function clearAllData() {
     inputIdsToSave.forEach(id => { let el = document.getElementById(id); if(el && (el.type === "text" || el.type === "date")) el.value = ""; });
     document.getElementById('p_statik').value = "21"; document.getElementById('p_debi').value = "8"; document.getElementById('p_kalinlik').value = "120"; document.getElementById('p_dinamik').value = "47"; document.getElementById('p_t1').value = "10"; document.getElementById('p_t2').value = "100";
@@ -348,38 +334,64 @@ function clearAllData() {
 const originalOnLoad = window.onload;
 window.onload = function() {
     if (originalOnLoad) originalOnLoad();
-    const cloudDataStr = sessionStorage.getItem('cloudLoadData');
-    if (cloudDataStr) {
+    const activeStr = sessionStorage.getItem('activeProject');
+    if (activeStr) {
         try {
-            const data = JSON.parse(cloudDataStr);
-            if(data.inputs) {
+            const activeProj = JSON.parse(activeStr);
+            activeProjectId = activeProj.id;
+            fullProjectData = activeProj.data || {inputs:{}};
+            
+            if(fullProjectData.inputs) {
                 // Eşleşmeyen ID'ler için köprü kuruyoruz
-                if(data.inputs.p_muracaat) data.inputs.p_sahip = data.inputs.p_muracaat;
-                if(data.inputs.f_tek_ad) data.inputs.p_muhendis = data.inputs.f_tek_ad;
-                if(data.inputs.p_dsi_no) data.inputs.p_dsi = data.inputs.p_dsi_no;
+                if(fullProjectData.inputs.p_muracaat) fullProjectData.inputs.p_sahip = fullProjectData.inputs.p_muracaat;
+                if(fullProjectData.inputs.f_tek_ad) fullProjectData.inputs.p_muhendis = fullProjectData.inputs.f_tek_ad;
+                if(fullProjectData.inputs.p_dsi_no) fullProjectData.inputs.p_dsi = fullProjectData.inputs.p_dsi_no;
                 
-                for (const [id, value] of Object.entries(data.inputs)) {
+                for (const [id, value] of Object.entries(fullProjectData.inputs)) {
                     const el = document.getElementById(id);
                     if(el) el.value = value;
                 }
             }
-            if (data.points && data.points.length > 0) { dataPoints = data.points; }
-            calculateResults();
+            
+            // Eğer daha önceden kaydedilmiş deney verisi varsa onu çiz, YOKSA varsayılan grafiği oluştur!
+            if (fullProjectData.points && fullProjectData.points.length > 0) { 
+                dataPoints = fullProjectData.points; 
+                calculateResults();
+            } else {
+                generateData();
+            }
+            
             showToast("Ortak proje verileri otomatik aktarıldı.", "success");
-        } catch(e) { console.error(e); }
-        sessionStorage.removeItem('cloudLoadData');
+        } catch(e) { 
+            console.error(e); 
+            generateData();
+        }
+    } else {
+        // Eğer hiçbir proje seçilmediyse de varsayılan grafiği oluştur
+        generateData();
     }
 }
 
 async function saveProjectToCloud() {
-    if(!window.currentUser) { showToast("Giriş yapmanız gerekiyor.", "error"); return; }
-    let dataToSave = getProjectData();
-    let nameStr = [document.getElementById('p_ilce').value, document.getElementById('p_mahalle').value, document.getElementById('p_ada').value, document.getElementById('p_parsel').value].filter(Boolean).join(" ");
-    if(!nameStr.trim()) nameStr = document.getElementById('p_sahip').value || "İsimsiz Düşüm Projesi";
+    if(!window.currentUser || !activeProjectId) { showToast("Önce bir proje seçmelisiniz.", "error"); return; }
+    
+    inputIdsToSave.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) fullProjectData.inputs[id] = el.value;
+    });
+    fullProjectData.points = dataPoints;
+    
     try {
-        showToast("Buluta kaydediliyor...", "info");
-        await window.fsAddDoc(window.fsCollection(window.db, "projects"), { uid: window.currentUser.uid, name: nameStr, data: dataToSave, createdAt: window.fsServerTimestamp() });
-        showToast("Ortak projeye kaydedildi!", "success");
+        showToast("Projeye kaydediliyor...", "info");
+        await window.fsUpdateDoc(window.fsDoc(window.db, "projects", activeProjectId), { data: fullProjectData });
+        
+        let activeStr = sessionStorage.getItem('activeProject');
+        if(activeStr) {
+            let p = JSON.parse(activeStr); p.data = fullProjectData;
+            sessionStorage.setItem('activeProject', JSON.stringify(p));
+        }
+        
+        showToast("Değişiklikler projeye kaydedildi!", "success");
     } catch(e) { console.error(e); showToast("Kayıt hatası.", "error"); }
 }
 </script>
