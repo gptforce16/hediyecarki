@@ -12,17 +12,19 @@
 body { font-family: Arial, sans-serif; background: #e2e8f0; }
 @media print {
     @page { size: A4 portrait; margin: 0; }
-    body { background-color: white !important; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    html, body { background-color: white !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; height: 100vh !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     header, #noDataOverlay { display: none !important; }
     #pdf_container { 
         box-shadow: none !important; 
         border: none !important; 
         width: 210mm !important;
-        height: 297mm !important;
+        height: 296mm !important; 
+        max-height: 296mm !important;
         margin: 0 auto !important; 
         padding: 20mm !important;
         overflow: hidden !important; 
-        page-break-inside: avoid;
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
     }
 }
 .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; } 
