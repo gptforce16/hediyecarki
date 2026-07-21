@@ -16,9 +16,6 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
     header, #noDataOverlay { display: none !important; }
     #pdf_container { box-shadow: none !important; border: none !important; width: 100% !important; margin: 0 !important; padding: 0 !important; min-height: auto !important; }
 }
-.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
-.pdf-table td { padding: 3px 6px; vertical-align: middle; border: 1px solid #000; }
-.no-border td { border: none; }
 </style>
 </head>
 <body class="min-h-screen flex flex-col items-center pb-12">
@@ -36,68 +33,163 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             <p class="text-sm text-slate-500 mt-2">Lütfen Ana Sayfadan "Projelerim" menüsünü kullanarak bir proje seçin.</p>
         </div>
 
+        <!-- Başlık Kısmı -->
         <div class="text-center font-bold text-[15px] mb-1">YERALTI SUYU KULLANMA BELGESİ İSTEME FORMU</div>
         <div class="flex justify-between items-start mb-4">
             <div class="flex-1 text-center font-bold text-[13px] ml-16">
-                D.S.İ. <span id="prev_dsi_bolge">1. BÖLGE</span> MÜDÜRLÜĞÜ'NE<br><span id="prev_dsi_il">BURSA</span>
+                D.S.İ. <span id="prev_dsi_bolge">..............</span> MÜDÜRLÜĞÜ'NE<br><span id="prev_dsi_il">BURSA</span>
             </div>
             <div class="text-right text-[11px] font-bold">Form No: 2.7.3.</div>
         </div>
 
         <!-- 1 Müracaat -->
-        <table class="pdf-table no-border w-full mb-2">
-            <tr><td class="w-4 font-bold align-top">1</td><td class="w-[140px] font-bold align-top">Müracaat Sahibi</td><td class="w-2">:</td><td><span id="prev_muracaat" class="font-bold"></span></td></tr>
-            <tr><td></td><td class="pl-2 align-top">Vergi Daire-Vergi no</td><td>:</td><td><span id="prev_vergi"></span></td></tr>
-            <tr><td></td><td class="pl-2 align-top">Adres</td><td>:</td><td><span id="prev_adres"></span></td></tr>
+        <table class="w-full text-[11px] border-collapse border border-black mb-2">
+            <tr class="border-b border-black">
+                <td class="p-1.5 w-[150px] font-bold border-r border-black">1 Müracaat Sahibi</td>
+                <td class="p-1.5">: <span id="prev_muracaat" class="font-bold"></span></td>
+            </tr>
+            <tr class="border-b border-black">
+                <td class="p-1.5 font-bold border-r border-black">Vergi Daire-Vergi no</td>
+                <td class="p-1.5">: <span id="prev_vergi"></span></td>
+            </tr>
+            <tr>
+                <td class="p-1.5 font-bold border-r border-black align-top">Adres</td>
+                <td class="p-1.5 align-top">: <span id="prev_adres"></span></td>
+            </tr>
         </table>
         
-        <!-- 2 ve 3 Personel -->
-        <table class="pdf-table w-full text-[11px]">
-            <tr class="font-bold bg-gray-50"><td colspan="2">2 Teknik Sorumlu</td><td colspan="2">3 Sondör, Kuyucu, Galericinin</td></tr>
-            <tr><td class="text-left w-[20%]">a) Adı Soyadı</td><td class="w-[30%]"><span id="prev_tek_ad"></span></td><td class="text-left w-[20%]">a) Adı Soyadı</td><td class="w-[30%]"><span id="prev_son_ad"></span></td></tr>
-            <tr><td class="text-left">b) TC Kimlik No</td><td><span id="prev_tek_tc"></span></td><td class="text-left">b) TC Kimlik No</td><td><span id="prev_son_tc"></span></td></tr>
-            <tr><td class="text-left">c) Mesleği</td><td><span id="prev_tek_meslek"></span></td><td class="text-left text-[10px]">b) Yet. Belge Dalı Tarihi Ve No.</td><td><span id="prev_son_belge"></span></td></tr>
-            <tr><td class="text-left">d) Diploma - Oda Sicil No</td><td><span id="prev_tek_sicil"></span></td><td class="text-left align-top" rowspan="2">c) Adresi</td><td rowspan="2" class="align-top"><span id="prev_son_adres"></span></td></tr>
-            <tr><td class="text-left align-top">e) Adresi</td><td class="align-top"><span id="prev_tek_adres"></span></td></tr>
-            <tr><td colspan="2" class="text-right pr-6 py-2 italic text-gray-600">İmzası</td><td colspan="2" class="text-right pr-6 py-2 italic text-gray-600">İmzası</td></tr>
+        <!-- 2 ve 3 Personel Yan Yana -->
+        <table class="w-full text-[11px] border-collapse border border-black mb-2">
+            <tr class="border-b border-black">
+                <td colspan="2" class="p-1.5 border-r border-black font-bold">2 Teknik Sorumlu</td>
+                <td colspan="3" class="p-1.5 font-bold">3 Sondör, Kuyucu, Galericinin</td>
+            </tr>
+            <tr class="border-b border-black">
+                <td class="p-1.5 w-[18%]">a) Adı Soyadı</td>
+                <td class="p-1.5 w-[32%] border-r border-black"><span id="prev_tek_ad"></span></td>
+                <td class="p-1.5 w-[18%]">a) Adı Soyadı</td>
+                <td colspan="2" class="p-1.5 w-[32%]"><span id="prev_son_ad"></span></td>
+            </tr>
+            <tr class="border-b border-black">
+                <td class="p-1.5">b) TC Kimlik No</td>
+                <td class="p-1.5 border-r border-black"><span id="prev_tek_tc"></span></td>
+                <td class="p-1.5">b) TC Kimlik No</td>
+                <td colspan="2" class="p-1.5"><span id="prev_son_tc"></span></td>
+            </tr>
+            <tr class="border-b border-black">
+                <td class="p-1.5">c) Mesleği</td>
+                <td class="p-1.5 border-r border-black"><span id="prev_tek_meslek"></span></td>
+                <td class="p-1.5 leading-tight">b) Yet. Belge Dalı<br>Tarihi Ve No.</td>
+                <td colspan="2" class="p-1.5"><span id="prev_son_belge"></span></td>
+            </tr>
+            <tr class="border-b border-black">
+                <td class="p-1.5 leading-tight">d) Diploma -<br>Oda Sicil No</td>
+                <td class="p-1.5 border-r border-black"><span id="prev_tek_sicil"></span></td>
+                <td class="p-1.5 align-top" rowspan="2">c) Adresi</td>
+                <td colspan="2" class="p-1.5 align-top" rowspan="2"><span id="prev_son_adres"></span></td>
+            </tr>
+            <tr class="border-b border-black">
+                <td class="p-1.5 align-top">e) Adresi</td>
+                <td class="p-1.5 border-r border-black align-top"><span id="prev_tek_adres"></span></td>
+            </tr>
+            <tr>
+                <td colspan="2" class="p-1.5 border-r border-black text-right pr-6 italic text-gray-700">İmzası</td>
+                <td colspan="3" class="p-1.5 text-right pr-6 italic text-gray-700">İmzası</td>
+            </tr>
         </table>
         
         <!-- 4 Kuyu Yeri -->
-        <div class="font-bold mt-2 mb-1">4 Kuyu/Galeri Yeri</div>
-        <table class="pdf-table w-full">
-            <tr><td class="w-[35%] pl-2">İli</td><td><span id="prev_il"></span></td></tr>
-            <tr><td class="pl-2">İlçesi / Köy Veya Mah. / Mevkii</td><td><span id="prev_ilce"></span> / <span id="prev_mahalle"></span></td></tr>
-            <tr><td class="pl-2">Kuyunun D.S.İ.No.su</td><td class="font-mono text-[11px]"><span id="prev_dsi_no"></span></td></tr>
-            <tr><td class="pl-2">Koordinatı</td><td class="font-mono text-[11px]"><span id="prev_koordinat"></span></td></tr>
-            <tr><td class="pl-2">Havza Adı</td><td><span id="prev_havza"></span></td></tr>
-            <tr><td class="pl-2">Ova Adı</td><td><span id="prev_alt_havza"></span></td></tr>
+        <div class="font-bold text-[12px] mt-1 mb-1">4 Kuyu/Galeri Yeri</div>
+        <table class="w-full text-[11px] border-collapse border border-black mb-2">
+            <tr class="border-b border-black">
+                <td class="p-1.5 w-[35%] border-r border-black">İli</td>
+                <td class="p-1.5 w-[65%]"><span id="prev_il"></span></td>
+            </tr>
+            <tr class="border-b border-black">
+                <td class="p-1.5 border-r border-black">İlçesi / Köy Veya Mah. / Mevkii</td>
+                <td class="p-1.5"><span id="prev_ilce"></span> / <span id="prev_mahalle"></span></td>
+            </tr>
+            <tr class="border-b border-black">
+                <td class="p-1.5 border-r border-black">Kuyunun D.S.İ.No.su</td>
+                <td class="p-1.5 font-mono"><span id="prev_dsi_no"></span></td>
+            </tr>
+            <tr class="border-b border-black">
+                <td class="p-1.5 border-r border-black">Koordinatı</td>
+                <td class="p-1.5 font-mono"><span id="prev_koordinat"></span></td>
+            </tr>
+            <tr class="border-b border-black">
+                <td class="p-1.5 border-r border-black">Havza Adı</td>
+                <td class="p-1.5"><span id="prev_havza"></span></td>
+            </tr>
+            <tr>
+                <td class="p-1.5 border-r border-black">Ova Adı</td>
+                <td class="p-1.5"><span id="prev_alt_havza"></span></td>
+            </tr>
         </table>
         
         <!-- 5 Hidrolik Veriler -->
-        <div class="font-bold mt-2 mb-1">5 Kuyu/Galeri Verimi</div>
-        <table class="pdf-table w-full">
-            <tr><td class="w-[50%] pl-2">Pompajla</td><td class="w-[30%] text-center"><span id="prev_debi"></span></td><td class="w-[20%] text-center">lt/sn</td></tr>
-            <tr><td class="pl-2">Artezyen</td><td class="text-center"><span id="prev_artezyen"></span></td><td class="text-center">lt/sn</td></tr>
-            <tr><td class="pl-2">Statik Seviye</td><td class="text-center"><span id="prev_statik"></span></td><td class="text-center">m</td></tr>
-            <tr><td class="pl-2">Dinamik Seviye (Pompajda)</td><td class="text-center"><span id="prev_dinamik"></span></td><td class="text-center">m</td></tr>
-            <tr><td class="pl-2">Çekilecek Su Miktarı</td><td class="text-center"><span id="prev_cekilecek"></span></td><td class="text-center">t/g</td></tr>
-            <tr><td class="pl-2">Çekilecek Suyun Teminine<br>Yetecek Enerji Miktarı</td><td class="text-center"><span id="prev_enerji"></span></td><td class="text-center">kw/saat</td></tr>
-            <tr><td class="pl-2">Sayaç Numarası</td><td colspan="2" class="text-center"><span id="prev_sayac"></span></td></tr>
-            <tr><td class="pl-2">Kullanma Amacı</td><td colspan="2" class="font-bold text-center"><span id="prev_amaci"></span></td></tr>
+        <div class="font-bold text-[12px] mt-1 mb-1">5 Kuyu/Galeri Verimi</div>
+        <table class="w-full text-[11px] border-collapse border border-black mb-3">
+            <tr class="border-b border-black">
+                <td class="p-1.5 border-r border-black w-[50%]">Pompajla</td>
+                <td class="p-1.5 text-center w-[30%]"><span id="prev_debi"></span></td>
+                <td class="p-1.5 border-l border-black text-center w-[20%]">lt/sn</td>
+            </tr>
+            <tr class="border-b border-black">
+                <td class="p-1.5 border-r border-black">Artezyen</td>
+                <td class="p-1.5 text-center"><span id="prev_artezyen"></span></td>
+                <td class="p-1.5 border-l border-black text-center">lt/sn</td>
+            </tr>
+            <tr class="border-b border-black">
+                <td class="p-1.5 border-r border-black">Statik Seviye</td>
+                <td class="p-1.5 text-center"><span id="prev_statik"></span></td>
+                <td class="p-1.5 border-l border-black text-center">m</td>
+            </tr>
+            <tr class="border-b border-black">
+                <td class="p-1.5 border-r border-black">Dinamik Seviye (Pompajda)</td>
+                <td class="p-1.5 text-center"><span id="prev_dinamik"></span></td>
+                <td class="p-1.5 border-l border-black text-center">m</td>
+            </tr>
+            <tr class="border-b border-black">
+                <td class="p-1.5 border-r border-black">Çekilecek Su Miktarı</td>
+                <td class="p-1.5 text-center"><span id="prev_cekilecek"></span></td>
+                <td class="p-1.5 border-l border-black text-center">t/g</td>
+            </tr>
+            <tr class="border-b border-black">
+                <td class="p-1.5 border-r border-black">Çekilecek Suyun Teminine<br>Yetecek Enerji Miktarı</td>
+                <td class="p-1.5 text-center"><span id="prev_enerji"></span></td>
+                <td class="p-1.5 border-l border-black text-center">kw/saat</td>
+            </tr>
+            <tr class="border-b border-black">
+                <td class="p-1.5 border-r border-black">Sayaç Numarası</td>
+                <td colspan="2" class="p-1.5 text-center"><span id="prev_sayac"></span></td>
+            </tr>
+            <tr>
+                <td class="p-1.5 border-r border-black">Kullanma Amacı</td>
+                <td colspan="2" class="p-1.5 font-bold text-center"><span id="prev_amaci"></span></td>
+            </tr>
         </table>
         
         <!-- Metin -->
-        <div class="text-justify mt-3 leading-snug">
+        <div class="text-justify text-[11px] leading-snug mb-3">
             Yukarıda yeri ve ekli kuyu kütüğünde durumu açıklanan arazide bulunan su <span id="prev_amaci_metin" class="font-bold lowercase"></span> amacıyla kullanılmak istenmektedir. Bu hususta, 167 sayılı Yeraltı Suları Hakkında Kanun'un 10uncu maddesi gereğince tarafımıza yeraltı suyu kullanma belgesi verilmesini arz ederim.
         </div>
         
-        <div class="mt-4 font-bold">Ek:<br>1) Kuyu Kütüğü (2 Takım).<br>2) Pompaj Programı (2 Takım).<br>3) Analiz Raporu (Kullanma Amacına Uygun) (2 Takım).<br>4) Kuyu Açılan Arazinin Onaylı Fotokopisi.</div>
+        <div class="text-[11px] mb-4">
+            <span class="font-bold">Ek:</span><br>
+            1) Kuyu Kütüğü (2 Takım).<br>
+            2) Pompaj Programı (2 Takım).<br>
+            3) Analiz Raporu (Kullanma Amacına Uygun) (2 Takım).<br>
+            4) Kuyu Açılan Arazinin Onaylı Fotokopisi.
+        </div>
         
         <!-- İmza -->
-        <div class="absolute bottom-12 right-12 text-center">
-            <span class="block mb-2" id="prev_tarih">...../...../2026</span>
-            <span class="block mb-8 font-bold">Adı Soyadı<br>Müracaat Sahibi</span>
-            <span id="prev_imza_muracaat" class="italic font-bold"></span>
+        <div class="flex justify-between items-end px-10 mt-auto pt-2">
+            <div class="font-bold text-[11px]"><span id="prev_tarih">...../...../2026</span></div>
+            <div class="text-center text-[11px]">
+                <span class="block mb-6 font-bold">Adı Soyadı<br>Müracaat Sahibi</span>
+                <span id="prev_imza_muracaat" class="italic font-bold"></span>
+            </div>
         </div>
     </div>
 
