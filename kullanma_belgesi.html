@@ -132,36 +132,53 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
 
     <script>
         window.onload = function() {
-            // Veriyi bulmak için tüm hafızayı tarayan KESİN YÖNTEM
-            function findData() {
+            // Veriyi her formattan (düz metin veya JSON) okuyacak yeni birleştirici fonksiyon
+            function getAllData() {
+                let combinedData = {};
                 const storages = [sessionStorage, localStorage];
-                const targetKeys = ['p_muracaat', 'f_unvan', 'muracaat', 'p_il', 'il', 'v_debi', 'debi', 'f_dsi_bolge', 'p_tek_ad', 't_tek_ad'];
                 
                 for (let storage of storages) {
-                    for (let i = 0; i < storage.length; i++) {
-                        let key = storage.key(i);
-                        try {
+                    try {
+                        for (let i = 0; i < storage.length; i++) {
+                            let key = storage.key(i);
                             let val = storage.getItem(key);
-                            let parsed = JSON.parse(val);
-                            let dataToTest = parsed.inputs || parsed.form || parsed.data || parsed;
                             
-                            // Hedef anahtarlardan en az biri varsa bu bizim verimizdir
-                            for(let t of targetKeys) {
-                                if(dataToTest[t]) {
-                                    return dataToTest;
+                            try {
+                                // JSON olarak kaydedilmişse çöz
+                                let parsed = JSON.parse(val);
+                                if (typeof parsed === 'object' && parsed !== null) {
+                                    if (parsed.inputs) Object.assign(combinedData, parsed.inputs);
+                                    else if (parsed.form) Object.assign(combinedData, parsed.form);
+                                    else if (parsed.data) Object.assign(combinedData, parsed.data);
+                                    else Object.assign(combinedData, parsed);
+                                } else {
+                                    combinedData[key] = parsed;
                                 }
+                            } catch(e) {
+                                // JSON Parse hatası verirse, düz metin (flat string) olarak kaydedilmiştir, direkt al
+                                combinedData[key] = val;
                             }
-                        } catch(e) {
-                            // JSON değilse yoksay
                         }
+                    } catch(e) {
+                        console.warn("Storage erişimi kısıtlı:", e);
                     }
                 }
-                return null;
+                return combinedData;
             }
 
-            const inputs = findData();
+            const inputs = getAllData();
 
-            if (inputs) {
+            // Anahtar kelimelerden herhangi biri varsa form doludur
+            const targetKeys = ['p_muracaat', 'f_unvan', 'muracaat', 'p_il', 'il', 'v_debi', 'debi', 'f_dsi_bolge', 'p_tek_ad', 't_tek_ad', 'p_vergi', 'p_adres'];
+            let isValidDataFound = false;
+            for(let key of targetKeys) {
+                if(inputs[key]) {
+                    isValidDataFound = true;
+                    break;
+                }
+            }
+
+            if (isValidDataFound) {
                 const setVal = (id, possibleFields) => {
                     let el = document.getElementById(id);
                     if (el) {
@@ -243,7 +260,8 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             } else {
                 // Hiçbir storage alanında veri bulunamadıysa uyarı göster
                 document.getElementById('errorBanner').classList.remove('hidden');
-                console.error("Bulunamadı. Tarayıcı hafızasında beklenen anahtarlarda veri yok.");
+                // Hata mesajı konsolda sistemi durdurmasın diye 'warn' seviyesine çekildi
+                console.warn("Form verileri bulunamadı. Lütfen ana formu doldurduğunuzdan emin olun.");
             }
         }
     </script>
