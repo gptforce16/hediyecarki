@@ -564,14 +564,17 @@ body {
     }
 
     window.onload = function() {
-        const activeStr = sessionStorage.getItem('cloudLoadData');
+        const activeStr = sessionStorage.getItem('activeProject');
         if (activeStr) {
             try {
                 const activeProj = JSON.parse(activeStr);
                 activeProjectId = activeProj.id;
-                fullProjectData = activeProj;
+                
+                // fullProjectData'yı oluştur veya mevcut veriyi al
+                fullProjectData = activeProj.data || { inputs: {} };
                 
                 if(fullProjectData.inputs) {
+                    // Köprüler (Ana proje ID'lerini Düşüm zaman ID'lerine çevir)
                     if(fullProjectData.inputs.p_muracaat) fullProjectData.inputs.p_sahip = fullProjectData.inputs.p_muracaat;
                     if(fullProjectData.inputs.f_tek_ad) fullProjectData.inputs.p_muhendis = fullProjectData.inputs.f_tek_ad;
                     if(fullProjectData.inputs.p_dsi_no) fullProjectData.inputs.p_dsi = fullProjectData.inputs.p_dsi_no;
@@ -582,19 +585,19 @@ body {
                     }
                 }
                 
+                // Grafik noktalarını yükle
                 if (fullProjectData.points && fullProjectData.points.length > 0) { 
                     dataPoints = fullProjectData.points; 
                     calculateResults();
                 } else {
-                    generateData();
+                    generateData(); // Nokta yoksa varsayılanı üret
                 }
                 
                 showToast("Ortak proje verileri otomatik aktarıldı.", "success");
             } catch(e) { 
-                console.error(e); 
+                console.error("Veri yükleme hatası:", e); 
                 generateData();
             }
-            sessionStorage.removeItem('cloudLoadData');
         } else {
             generateData();
         }
@@ -606,6 +609,7 @@ body {
             return; 
         }
         
+        if(!fullProjectData.inputs) fullProjectData.inputs = {};
         inputIdsToSave.forEach(id => {
             const el = document.getElementById(id);
             if(el) fullProjectData.inputs[id] = el.value;
@@ -616,6 +620,15 @@ body {
         try {
             showToast("Projeye kaydediliyor...", "info");
             await window.fsUpdateDoc(window.fsDoc(window.db, "projects", activeProjectId), { data: fullProjectData });
+            
+            // Güncel veriyi tarayıcı hafızasına da yansıt ki diğer sekmelerde güncel kalsın
+            let activeStr = sessionStorage.getItem('activeProject');
+            if (activeStr) {
+                let activeProj = JSON.parse(activeStr);
+                activeProj.data = fullProjectData;
+                sessionStorage.setItem('activeProject', JSON.stringify(activeProj));
+            }
+            
             showToast("Değişiklikler projeye kaydedildi!", "success");
         } catch(e) { 
             console.error(e); 
