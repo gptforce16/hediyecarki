@@ -27,7 +27,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
 }
 .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; } 
 .pdf-table td { padding: 3px 4px; vertical-align: top; }
-/* ':' işaretlerindeki kalınlık kaldırıldı */
+/* ':' işaretlerindeki kalınlık tamamen kaldırıldı ve hizalandı */
 .pdf-colon { width: 10px; font-weight: normal; text-align: center; }
 </style>
 </head>
@@ -48,7 +48,6 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
 
         <div class="text-center font-bold text-[16px] mb-2">YER ALTI SUYU ARAMA BELGESİ İSTEME FORMU</div>
         
-        <!-- Form No Belge Tipinin Altına Alındı -->
         <div class="flex flex-col items-end text-[12px] font-bold mb-4">
             <span>Belge Tipi: A</span>
             <span>Form No: 2.7.1.</span>
@@ -58,7 +57,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
 
         <!-- 1. Müracaat -->
         <table class="pdf-table">
-            <tr><td class="font-bold w-[230px]">1. Müracaat Sahibi</td><td class="pdf-colon">:</td><td><span id="prev_muracaat" class="font-bold"></span></td></tr>
+            <tr><td class="font-bold w-[210px]">1. Müracaat Sahibi</td><td class="pdf-colon">:</td><td><span id="prev_muracaat" class="font-bold"></span></td></tr>
             <tr><td class="pl-4">Vergi Dairesi-Vergi No</td><td class="pdf-colon">:</td><td><span id="prev_vergi"></span></td></tr>
             <tr><td class="pl-4">Adresi</td><td class="pdf-colon">:</td><td><span id="prev_adres"></span></td></tr>
         </table>
@@ -67,8 +66,8 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
         <div class="font-bold mb-1 mt-1">2. Arazinin</div>
         <table class="pdf-table text-[13px]">
             <tr>
-                <td class="w-[230px] pl-4">a) İli</td><td class="pdf-colon">:</td><td class="w-[150px]"><span id="prev_il"></span></td>
-                <td class="w-[90px]">f) Pafta</td><td class="pdf-colon">:</td><td><span id="prev_pafta"></span></td>
+                <td class="w-[210px] pl-4">a) İli</td><td class="pdf-colon">:</td><td class="w-[140px]"><span id="prev_il"></span></td>
+                <td class="w-[100px]">f) Pafta</td><td class="pdf-colon">:</td><td><span id="prev_pafta"></span></td>
             </tr>
             <tr>
                 <td class="pl-4">b) İlçesi</td><td class="pdf-colon">:</td><td><span id="prev_ilce"></span></td>
@@ -91,7 +90,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
         <!-- 3. Mühendis -->
         <div class="font-bold mb-1 mt-1">3. Teknik Elemanın (Teknik Sorumlu)</div>
         <table class="pdf-table text-[13px]">
-            <tr><td class="w-[230px] pl-4">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_tek_ad"></span> <span class="float-right mr-10 text-gray-700">İmzası: .......................</span></td></tr>
+            <tr><td class="w-[210px] pl-4">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_tek_ad"></span> <span class="float-right mr-10 text-gray-700">İmzası: .......................</span></td></tr>
             <tr><td class="pl-4">b) TC Kimlik No</td><td class="pdf-colon">:</td><td><span id="prev_tek_tc"></span></td></tr>
             <tr><td class="pl-4">c) Mesleği</td><td class="pdf-colon">:</td><td><span id="prev_tek_meslek"></span></td></tr>
             <tr><td class="pl-4">d) Diploma-Oda Sicil No</td><td class="pdf-colon">:</td><td><span id="prev_tek_sicil"></span></td></tr>
@@ -101,7 +100,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
         <!-- 4. Sondör -->
         <div class="font-bold mb-1 mt-1">4. Sondör, Kuyucu, Galericinin</div>
         <table class="pdf-table text-[13px]">
-            <tr><td class="w-[230px] pl-4">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_son_ad"></span> <span class="float-right mr-10 text-gray-700">İmzası: .......................</span></td></tr>
+            <tr><td class="w-[210px] pl-4">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_son_ad"></span> <span class="float-right mr-10 text-gray-700">İmzası: .......................</span></td></tr>
             <tr><td class="pl-4">b) TC Kimlik No</td><td class="pdf-colon">:</td><td><span id="prev_son_tc"></span></td></tr>
             <tr><td class="pl-4">c) Yet. Belge dalı tarihi ve No</td><td class="pdf-colon">:</td><td><span id="prev_son_belge"></span></td></tr>
             <tr><td class="pl-4">d) Adresi</td><td class="pdf-colon">:</td><td><span id="prev_son_adres"></span></td></tr>
@@ -111,8 +110,8 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
         <div class="font-bold mt-2 mb-1">5. Kuyunun</div>
         <table class="pdf-table text-[13px] mb-3">
             <tr>
-                <td class="w-[230px] pl-4">a) Tipi</td><td class="pdf-colon">:</td><td class="w-[150px]"><span id="prev_tipi"></span></td>
-                <td class="w-[110px]">d) Kesiti</td><td class="pdf-colon">:</td><td><span id="prev_kesit"></span></td>
+                <td class="w-[210px] pl-4">a) Tipi</td><td class="pdf-colon">:</td><td class="w-[140px]"><span id="prev_tipi"></span></td>
+                <td class="w-[100px]">d) Kesiti</td><td class="pdf-colon">:</td><td><span id="prev_kesit"></span></td>
             </tr>
             <tr>
                 <td class="pl-4">b) Delme usulü</td><td class="pdf-colon">:</td><td><span id="prev_usul"></span></td>
@@ -124,7 +123,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             </tr>
         </table>
         
-        <!-- 6. Su Miktarı (Alt çizgi ve kalınlık kaldırıldı) -->
+        <!-- 6. Su Miktarı -->
         <div class="mt-2 mb-2">
             <span class="font-bold">6. Talep edilen su miktarı:</span> <span id="prev_su_gun"></span> m³/gün &nbsp;&nbsp; - &nbsp;&nbsp; <span id="prev_su_yil"></span> m³/yıl
         </div>
@@ -133,16 +132,15 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             Yukarıda belirtilen ve ilişikteki krokide sınırları gösterilen arazide <span id="prev_amaci" class="font-bold uppercase"></span> amacıyla yeraltı suyu aranmak istenmektedir. Bu hususta 167 sayılı Yeraltı Suları hakkındaki Kanunun 9'uncu maddesi gereğince tarafımıza bir yeraltı suyu arama belgesi verilmesini arz ederim.
         </div>
         
-        <!-- Ekler (Kalınlık kaldırıldı) -->
         <div class="mt-4 text-[12px] font-normal">
-            <strong>Ek:</strong><br>
+            Ek:<br>
             1) A tipi belge için hidrojeoloji raporu (2 takım).<br>
             2) Kuyu projesi (kuyu yeri krokili) (2 takım).<br>
             3) Kuyu açılacak arazinin onaylı tapu fotokopisi.<br>
             4) Su İhtiyaç belgesi.
         </div>
         
-        <!-- İmza (Sadece kalın müracaat sahibi adı ve tarih) -->
+        <!-- İmza -->
         <div class="absolute bottom-[20mm] right-[20mm] text-center">
             <span class="block mb-8 font-bold text-center">...../...../.....</span>
             <span id="prev_imza_muracaat" class="block font-bold text-[14px] uppercase"></span>
@@ -223,7 +221,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                         } else if (!bolgeVal.toUpperCase().includes('BÖLGE')) {
                             dsiBolgeEl.innerText = bolgeVal + " BÖLGE";
                         } else {
-                            dsiBolgeEl.innerText = bolgeVal;
+                            dsiBolgeEl.innerText = bolgeVal.toUpperCase();
                         }
                     }
 
