@@ -56,18 +56,18 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
         <div class="text-center font-bold text-[14px] mb-4 underline">DSİ <span id="prev_dsi_bolge">....................</span> MÜDÜRLÜĞÜNE<br><span id="prev_dsi_il">...........</span></div>
 
         <!-- 1. Müracaat -->
-        <table class="pdf-table">
-            <tr><td class="font-bold w-[210px]">1. Müracaat Sahibi</td><td class="pdf-colon">:</td><td><span id="prev_muracaat" class="font-bold"></span></td></tr>
+        <table class="pdf-table -ml-1">
+            <tr><td class="font-bold w-[190px]">1. Müracaat Sahibi</td><td class="pdf-colon">:</td><td><span id="prev_muracaat" class="font-bold"></span></td></tr>
             <tr><td class="pl-4">Vergi Dairesi-Vergi No</td><td class="pdf-colon">:</td><td><span id="prev_vergi"></span></td></tr>
             <tr><td class="pl-4">Adresi</td><td class="pdf-colon">:</td><td><span id="prev_adres"></span></td></tr>
         </table>
         
         <!-- 2. Arazi -->
         <div class="font-bold mb-1 mt-1">2. Arazinin</div>
-        <table class="pdf-table text-[13px]">
+        <table class="pdf-table text-[13px] -ml-1">
             <tr>
-                <td class="w-[210px] pl-4">a) İli</td><td class="pdf-colon">:</td><td class="w-[140px]"><span id="prev_il"></span></td>
-                <td class="w-[100px]">f) Pafta</td><td class="pdf-colon">:</td><td><span id="prev_pafta"></span></td>
+                <td class="w-[190px] pl-4">a) İli</td><td class="pdf-colon">:</td><td class="w-[140px]"><span id="prev_il"></span></td>
+                <td class="w-[110px]">f) Pafta</td><td class="pdf-colon">:</td><td><span id="prev_pafta"></span></td>
             </tr>
             <tr>
                 <td class="pl-4">b) İlçesi</td><td class="pdf-colon">:</td><td><span id="prev_ilce"></span></td>
@@ -89,8 +89,8 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
         
         <!-- 3. Mühendis -->
         <div class="font-bold mb-1 mt-1">3. Teknik Elemanın (Teknik Sorumlu)</div>
-        <table class="pdf-table text-[13px]">
-            <tr><td class="w-[210px] pl-4">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_tek_ad"></span> <span class="float-right mr-10 text-gray-700">İmzası: .......................</span></td></tr>
+        <table class="pdf-table text-[13px] -ml-1">
+            <tr><td class="w-[190px] pl-4">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_tek_ad"></span> <span class="float-right mr-10 text-gray-700">İmzası: .......................</span></td></tr>
             <tr><td class="pl-4">b) TC Kimlik No</td><td class="pdf-colon">:</td><td><span id="prev_tek_tc"></span></td></tr>
             <tr><td class="pl-4">c) Mesleği</td><td class="pdf-colon">:</td><td><span id="prev_tek_meslek"></span></td></tr>
             <tr><td class="pl-4">d) Diploma-Oda Sicil No</td><td class="pdf-colon">:</td><td><span id="prev_tek_sicil"></span></td></tr>
@@ -99,23 +99,23 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
         
         <!-- 4. Sondör -->
         <div class="font-bold mb-1 mt-1">4. Sondör, Kuyucu, Galericinin</div>
-        <table class="pdf-table text-[13px]">
-            <tr><td class="w-[210px] pl-4">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_son_ad"></span> <span class="float-right mr-10 text-gray-700">İmzası: .......................</span></td></tr>
+        <table class="pdf-table text-[13px] -ml-1">
+            <tr><td class="w-[190px] pl-4">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_son_ad"></span> <span class="float-right mr-10 text-gray-700">İmzası: .......................</span></td></tr>
             <tr><td class="pl-4">b) TC Kimlik No</td><td class="pdf-colon">:</td><td><span id="prev_son_tc"></span></td></tr>
-            <tr><td class="pl-4">c) Yet. Belge dalı tarihi ve No</td><td class="pdf-colon">:</td><td><span id="prev_son_belge"></span></td></tr>
+            <tr><td class="pl-4 whitespace-nowrap">c) Yet. Belge dalı tarihi ve No</td><td class="pdf-colon">:</td><td><span id="prev_son_belge"></span></td></tr>
             <tr><td class="pl-4">d) Adresi</td><td class="pdf-colon">:</td><td><span id="prev_son_adres"></span></td></tr>
         </table>
         
         <!-- 5. Kuyu -->
         <div class="font-bold mt-2 mb-1">5. Kuyunun</div>
-        <table class="pdf-table text-[13px] mb-3">
+        <table class="pdf-table text-[13px] mb-3 -ml-1">
             <tr>
-                <td class="w-[210px] pl-4">a) Tipi</td><td class="pdf-colon">:</td><td class="w-[140px]"><span id="prev_tipi"></span></td>
-                <td class="w-[100px]">d) Kesiti</td><td class="pdf-colon">:</td><td><span id="prev_kesit"></span></td>
+                <td class="w-[190px] pl-4">a) Tipi</td><td class="pdf-colon">:</td><td class="w-[140px]"><span id="prev_tipi"></span></td>
+                <td class="w-[145px]">d) Kesiti</td><td class="pdf-colon">:</td><td><span id="prev_kesit"></span></td>
             </tr>
             <tr>
                 <td class="pl-4">b) Delme usulü</td><td class="pdf-colon">:</td><td><span id="prev_usul"></span></td>
-                <td>e) Teçhiz Malzemesi</td><td class="pdf-colon">:</td><td><span id="prev_techiz"></span></td>
+                <td class="whitespace-nowrap">e) Teçhiz Malzemesi</td><td class="pdf-colon">:</td><td><span id="prev_techiz"></span></td>
             </tr>
             <tr>
                 <td class="pl-4">c) Adedi</td><td class="pdf-colon">:</td><td><span id="prev_adet"></span></td>
