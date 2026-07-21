@@ -17,15 +17,14 @@
 <!-- Proj4js (Precision Coordinate Transformation) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.js"></script>
 
-<!-- STREAMING_CHUNK:Firebase Init -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, collection, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     const firebaseConfig = { apiKey: "AIzaSyA8JR_mh0FaU_ZT16h6MRZICvYIlHdbZ78", authDomain: "geologpro-3aa61.firebaseapp.com", projectId: "geologpro-3aa61", storageBucket: "geologpro-3aa61.firebasestorage.app", messagingSenderId: "738819989330", appId: "1:738819989330:web:29a446953726300c11e48b", measurementId: "G-2P79TH49YB" };
     const app = initializeApp(firebaseConfig); window.db = getFirestore(app); window.auth = getAuth(app);
-    window.fsCollection = collection; window.fsAddDoc = addDoc; window.fsServerTimestamp = serverTimestamp;
+    window.fsCollection = collection; window.fsDoc = doc; window.fsUpdateDoc = updateDoc;
     
     document.addEventListener('DOMContentLoaded', () => { onAuthStateChanged(window.auth, user => { window.currentUser = user; }); });
 </script>
@@ -46,7 +45,6 @@ header, main, #toast { display: none !important; }
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen">
 
-<!-- Header -->
 <header class="bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-md py-4 px-6 mb-6">
 <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
 <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
@@ -65,7 +63,6 @@ header, main, #toast { display: none !important; }
     <div class="w-px h-6 bg-slate-600 mx-1 hidden md:block"></div>
     <button onclick="saveProjectToCloud()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg font-semibold text-xs transition flex items-center gap-1.5 shadow"><i class="fa-solid fa-cloud-arrow-up"></i> Buluta Kaydet</button>
     <div class="w-px h-6 bg-slate-600 mx-1 hidden md:block"></div>
-    <button onclick="loadSampleData()" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-lg font-semibold text-xs transition flex items-center gap-1.5 shadow"><i class="fa-solid fa-database"></i> Şablon</button>
     <button onclick="clearAllData()" class="bg-rose-600 hover:bg-rose-500 text-white px-3 py-2 rounded-lg font-semibold text-xs transition flex items-center gap-1.5 shadow"><i class="fa-solid fa-eraser"></i> Sıfırla</button>
 </div>
 </div>
@@ -74,7 +71,6 @@ header, main, #toast { display: none !important; }
 <main class="max-w-7xl mx-auto px-4 pb-16">
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-<!-- STREAMING_CHUNK:Inputs Panel (ORİJİNAL) -->
 <div class="lg:col-span-8 flex flex-col gap-6">
 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
 <div class="absolute top-0 right-0 bg-blue-100 text-blue-600 text-[10px] font-bold px-3 py-1 rounded-bl-lg">ANA PROJEDEN AKTARILDI</div>
@@ -152,7 +148,6 @@ header, main, #toast { display: none !important; }
 <tbody class="divide-y divide-slate-100" id="litoTableBody"><tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Litoloji tablosu boş.</td></tr></tbody>
 </table></div></div></div>
 
-<!-- STREAMING_CHUNK:Canvas Panel (ORİJİNAL) -->
 <div class="lg:col-span-4 flex flex-col gap-6">
 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 sticky top-4 flex flex-col justify-between">
 <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4"><div class="flex items-center gap-2"><i class="fa-solid fa-pencil-ruler text-slate-600"></i><h3 class="font-bold text-sm text-slate-800">Grafik Kuyu Şeması</h3></div><span id="canvasDepthIndicator" class="text-xs bg-slate-100 text-slate-700 font-mono font-bold border border-slate-200 px-2 py-0.5 rounded">0 m</span></div>
@@ -166,7 +161,6 @@ header, main, #toast { display: none !important; }
 </div>
 </main>
 
-<!-- STREAMING_CHUNK:Print PDF Area (ORİJİNAL) -->
 <div id="print-area" class="flex-col justify-between">
 <div class="border-b-2 border-black pb-1 mb-1.5 text-center"><h1 class="text-[18px] font-bold text-black uppercase">KUYU KÜTÜĞÜ</h1></div>
 <div class="grid grid-cols-12 gap-3 flex-1" style="height: 260mm;">
@@ -225,9 +219,8 @@ header, main, #toast { display: none !important; }
 
 <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-[150]"><span id="toastIcon"></span><span id="toastMessage" class="text-sm font-semibold"></span></div>
 
-<!-- STREAMING_CHUNK:Javascript Logic (ORİJİNAL + BULUT KANCASI) -->
 <script>
-let lithologies = []; let techLayers = []; let map; let kuyuMarker; let isSatellite = true;
+let lithologies = []; let techLayers = []; let map; let kuyuMarker; let isSatellite = true; let activeProjectId = null;
 
 const inputIdsToSave = [
     'firm_name', 'firm_engineer', 'eng_profession', 'driller_name', 'p_client', 'p_il', 'p_ilce', 'p_mahalle', 
@@ -284,6 +277,7 @@ function initMap() {
     map = L.map('map', { center: [currentLat, currentLon], zoom: 15, layers: [satelliteLayer], fadeAnimation: false, zoomAnimation: false });
     kuyuMarker = L.marker([currentLat, currentLon], {draggable: true}).addTo(map);
     kuyuMarker.on('dragend', function (e) { const position = kuyuMarker.getLatLng(); document.getElementById('p_lat').value = position.lat.toFixed(6); document.getElementById('p_lon').value = position.lng.toFixed(6); convertToUtm(); showToast("Kuyu konumu haritadan güncellendi.", "info"); });
+    setTimeout(() => { map.invalidateSize(); }, 500); // Harita Fix
 }
 function updateMapFromInputs() {
     const lat = parseFloat(document.getElementById('p_lat').value); const lon = parseFloat(document.getElementById('p_lon').value);
@@ -342,12 +336,6 @@ function clearAllData() {
     lithologies = []; techLayers = []; document.getElementById('litStartD').value = "0"; document.getElementById('filterDepthsInput').value = "";
     inputIdsToSave.forEach(id => { const el = document.getElementById(id); if(el) el.value = ""; });
     updateLitoTable(); autoGenerateBoringDesign(); showToast("Tüm veriler temizlendi.", "info");
-}
-function loadSampleData() {
-    document.getElementById('firm_name').value = "Mega Altyapı Sondaj & Geoteknik Müşavirlik"; document.getElementById('firm_engineer').value = "Kemal Alkan"; document.getElementById('eng_profession').value = "Jeoloji Mühendisi"; document.getElementById('driller_name').value = "Ahmet Yılmaz"; document.getElementById('p_client').value = "Yıldız Tekstil Sanayi Ltd. Şti."; document.getElementById('p_il').value = "Bursa"; document.getElementById('p_ilce').value = "Yenişehir"; document.getElementById('p_mahalle').value = "Çeltikçi"; document.getElementById('p_ada').value = "104"; document.getElementById('p_parsel').value = "12"; document.getElementById('p_derinlik').value = "160"; document.getElementById('p_dsi_no').value = "BRS.09.123"; document.getElementById('p_amaci').value = "Sulama"; document.getElementById('p_lat').value = "40.262500"; document.getElementById('p_lon').value = "29.663100"; updateMapFromInputs(); 
-    document.getElementById('v_debi').value = "24"; document.getElementById('v_statik').value = "22"; document.getElementById('v_dinamik').value = "54"; document.getElementById('v_sure').value = "48";
-    lithologies = [ { type: 'Bitkisel Toprak', start: 0, end: 8, thick: 8 }, { type: 'Alüvyon', start: 8, end: 15, thick: 7 }, { type: 'Kil', start: 15, end: 30, thick: 15 }, { type: 'Killi Kum', start: 30, end: 50, thick: 20 }, { type: 'Kum', start: 50, end: 75, thick: 25 }, { type: 'Kumtaşı', start: 75, end: 100, thick: 25 }, { type: 'Konglomera', start: 100, end: 130, thick: 30 }, { type: 'Kireçtaşı', start: 130, end: 160, thick: 30 } ];
-    updateLitoTable(); document.getElementById('filterDepthsInput').value = "52,68,84,100,116,132,148"; document.getElementById('tech_pipe_spec').value = "200 mm PVC"; document.getElementById('tech_hole_spec').value = "12 1/4\""; autoGenerateBoringDesign(); showToast("160m hazır firma şablon verileri yüklendi.", "success");
 }
 
 function createHatchPattern(ctx, type) {
@@ -490,41 +478,48 @@ function prepareAndPrint() {
     });
 }
 
-// Ana Proje Veri Yükleme (Orijinal Kodları Bozmadan Kanca Atılıyor)
 const originalOnLoad = window.onload;
 window.onload = function() {
+    initMap();
     if (originalOnLoad) originalOnLoad();
-    const cloudDataStr = sessionStorage.getItem('cloudLoadData');
-    if (cloudDataStr) {
+    const activeStr = sessionStorage.getItem('activeProject');
+    if (activeStr) {
         try {
-            const data = JSON.parse(cloudDataStr);
-            if(data.inputs) {
-                // Eşleşmeyen ID'ler için köprü kuruyoruz
-                if(data.inputs.p_muracaat) data.inputs.p_client = data.inputs.p_muracaat;
+            const activeProj = JSON.parse(activeStr);
+            activeProjectId = activeProj.id;
+            const fullProjectData = activeProj.data || {inputs:{}};
+            
+            if(fullProjectData.inputs) {
+                if(fullProjectData.inputs.p_muracaat) fullProjectData.inputs.p_client = fullProjectData.inputs.p_muracaat;
+                if(fullProjectData.inputs.f_tek_ad) fullProjectData.inputs.firm_engineer = fullProjectData.inputs.f_tek_ad;
+                if(fullProjectData.inputs.f_tek_meslek) fullProjectData.inputs.eng_profession = fullProjectData.inputs.f_tek_meslek;
+                if(fullProjectData.inputs.f_son_ad) fullProjectData.inputs.driller_name = fullProjectData.inputs.f_son_ad;
+                if(fullProjectData.inputs.f_firma) fullProjectData.inputs.firm_name = fullProjectData.inputs.f_firma;
                 
-                for (const [id, value] of Object.entries(data.inputs)) {
+                for (const [id, value] of Object.entries(fullProjectData.inputs)) {
                     const el = document.getElementById(id);
                     if(el) el.value = value;
                 }
             }
-            lithologies = data.lithologies || [];
+            lithologies = fullProjectData.lithologies || [];
             updateLitoTable(); autoGenerateBoringDesign();
             if(document.getElementById('p_lat').value && document.getElementById('p_lon').value) updateMapFromInputs();
             showToast("Ortak proje verileri otomatik aktarıldı.", "success");
         } catch(e) { console.error(e); }
-        sessionStorage.removeItem('cloudLoadData');
     }
 }
 
 async function saveProjectToCloud() {
-    if(!window.currentUser) { showToast("Giriş yapmanız gerekiyor.", "error"); return; }
-    let dataToSave = getProjectData();
-    let nameStr = [document.getElementById('p_ilce').value, document.getElementById('p_mahalle').value, document.getElementById('p_ada').value, document.getElementById('p_parsel').value].filter(Boolean).join(" ");
-    if(!nameStr.trim()) nameStr = document.getElementById('p_client').value || "İsimsiz Kuyu Projesi";
+    if(!window.currentUser || !activeProjectId) { showToast("Önce bir proje seçmelisiniz.", "error"); return; }
+    let fullProjectData = JSON.parse(sessionStorage.getItem('activeProject')).data || {inputs:{}};
+    inputIdsToSave.forEach(id => { const el = document.getElementById(id); if(el) fullProjectData.inputs[id] = el.value; });
+    fullProjectData.lithologies = lithologies;
     try {
-        showToast("Buluta kaydediliyor...", "info");
-        await window.fsAddDoc(window.fsCollection(window.db, "projects"), { uid: window.currentUser.uid, name: nameStr, data: dataToSave, createdAt: window.fsServerTimestamp() });
-        showToast("Ortak projeye kaydedildi!", "success");
+        showToast("Projeye kaydediliyor...", "info");
+        await window.fsUpdateDoc(window.fsDoc(window.db, "projects", activeProjectId), { data: fullProjectData });
+        let activeStr = sessionStorage.getItem('activeProject');
+        if(activeStr) { let p = JSON.parse(activeStr); p.data = fullProjectData; sessionStorage.setItem('activeProject', JSON.stringify(p)); }
+        showToast("Değişiklikler projeye kaydedildi!", "success");
     } catch(e) { console.error(e); showToast("Kayıt hatası.", "error"); }
 }
 </script>
