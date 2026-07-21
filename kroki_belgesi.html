@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GeoLog Pro - Kuyu Yeri Krokisi</title>
+<!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com"></script>
+<!-- FontAwesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 body { font-family: Arial, sans-serif; background: #e2e8f0; }
@@ -19,31 +21,36 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
 <body class="min-h-screen flex flex-col items-center">
     
     <header class="w-full bg-purple-900 text-white p-4 text-center shadow-md mb-6 sticky top-0 z-50 flex justify-between px-8">
-        <button onclick="window.location.href='index.html'" class="bg-slate-800 px-4 py-2 rounded text-sm hover:bg-slate-700"><i class="fa-solid fa-arrow-left"></i> Geri Dön</button>
+        <button onclick="window.location.href='index.html'" class="bg-slate-800 px-4 py-2 rounded text-sm hover:bg-slate-700 transition"><i class="fa-solid fa-arrow-left"></i> Geri Dön</button>
         <span class="font-bold text-lg"><i class="fa-solid fa-map-location-dot"></i> Kuyu Yeri Krokisi Önizleme</span>
-        <button onclick="window.print()" class="bg-purple-500 hover:bg-purple-400 text-slate-900 px-6 py-2 rounded font-bold shadow"><i class="fa-solid fa-print"></i> Yazdır (PDF)</button>
+        <button onclick="window.print()" class="bg-purple-500 hover:bg-purple-400 text-slate-900 px-6 py-2 rounded font-bold shadow transition"><i class="fa-solid fa-print"></i> Yazdır (PDF)</button>
     </header>
 
     <div id="upload_controls" class="w-[210mm] mb-4 flex gap-4">
         <input type="file" id="kroki_upload" accept="image/*" onchange="handleImageUpload(event)" class="hidden">
-        <button onclick="document.getElementById('kroki_upload').click()" class="flex-1 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-lg shadow-sm transition"><i class="fa-solid fa-cloud-arrow-up text-purple-600 mr-2"></i> Bilgisayardan Kroki Görseli Seç (Otomatik Oturur)</button>
+        <button onclick="document.getElementById('kroki_upload').click()" class="flex-1 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-lg shadow-sm transition">
+            <i class="fa-solid fa-cloud-arrow-up text-purple-600 mr-2"></i> Bilgisayardan Kroki Görseli Seç (Otomatik Oturur)
+        </button>
     </div>
 
     <div class="w-[210mm] h-[297mm] bg-white shadow-2xl p-[15mm] text-black text-[14px] flex flex-col relative mb-12" id="pdf_container">
+        <!-- Veri Bulunamadı Ekranı -->
         <div id="noDataOverlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
             <i class="fa-solid fa-file-circle-xmark text-6xl text-slate-300 mb-4"></i>
-            <p class="font-bold text-lg text-slate-600">Veri Bulunamadı!</p>
-            <p class="text-sm text-slate-500 mt-2">Lütfen Ana Sayfadan "Projelerim" ekranına gidip bir proje seçin.</p>
+            <p class="font-bold text-lg text-slate-600">Veri Bulunamadı Veya Proje Seçilmedi!</p>
+            <p class="text-sm text-slate-500 mt-2">Lütfen Ana Sayfadan "Projelerim" menüsünü kullanarak bir proje seçin.</p>
         </div>
 
         <div class="text-center font-bold text-[22px] mb-2 underline tracking-wider mt-4">AYRINTILI KUYU YERİ KROKİSİ</div>
         <div class="text-center font-bold text-[16px] mb-8">Pafta: <span id="prev_pafta">..................</span></div>
 
+        <!-- Görsel Çerçevesi -->
         <div class="flex-1 w-full border-2 border-black flex items-center justify-center bg-gray-50 mb-8 overflow-hidden relative">
             <img id="prev_kroki_img" src="" class="absolute inset-0 w-full h-full object-contain p-2 hidden">
             <span id="prev_kroki_placeholder" class="text-gray-400 font-bold"><i class="fa-solid fa-image text-3xl block text-center mb-2"></i>Görsel Bekleniyor</span>
         </div>
 
+        <!-- Açıklama Metni -->
         <div class="text-justify leading-relaxed mt-auto font-medium text-[15px] mb-4">
             Yukarıdaki krokide gösterilen arazide açılacak kuyu <span id="prev_il" class="font-bold">...........</span> İli, <span id="prev_ilce" class="font-bold">...........</span> İlçesi, <span id="prev_mahalle" class="font-bold">...........</span> Mahallesi'nde, <span id="prev_muracaat" class="font-bold">...........................</span>'ne ait olup, açılacak olan kuyulardan etkilenebilecek mesafede başka bir kuyu, kaynak, kaptaj vb. tesisler yoktur.
         </div>
@@ -51,18 +58,28 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
 
     <script>
         window.onload = function() {
-            const dataStr = sessionStorage.getItem('cloudLoadData');
-            if (dataStr) {
+            // Ana sistemden "Aktif Proje"yi çekiyoruz.
+            const activeStr = sessionStorage.getItem('activeProject');
+            
+            if (activeStr) {
                 document.getElementById('noDataOverlay').classList.add('hidden');
-                const data = JSON.parse(dataStr);
+                const activeProj = JSON.parse(activeStr);
+                const data = activeProj.data || {inputs:{}};
+                
                 if(data.inputs) {
                     ['muracaat','il','ilce','mahalle','pafta'].forEach(key => {
                         const el = document.getElementById('prev_'+key);
                         let val = data.inputs['p_'+key];
                         if(el && val) el.innerText = val;
                     });
+                    
+                    // Kroki görseli daha önce bu proje için yüklendiyse geri getir (sessionStorage'dan)
+                    if(data.inputs.kroki_img_base64) {
+                        document.getElementById('prev_kroki_img').src = data.inputs.kroki_img_base64;
+                        document.getElementById('prev_kroki_img').classList.remove('hidden');
+                        document.getElementById('prev_kroki_placeholder').classList.add('hidden');
+                    }
                 }
-                sessionStorage.removeItem('cloudLoadData');
             }
         }
 
@@ -72,9 +89,20 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             const reader = new FileReader();
             reader.onload = function(e) {
                 const b64 = e.target.result;
+                // Görseli UI'a aktar
                 document.getElementById('prev_kroki_img').src = b64;
                 document.getElementById('prev_kroki_img').classList.remove('hidden');
                 document.getElementById('prev_kroki_placeholder').classList.add('hidden');
+                
+                // Seçilen görseli aktif projeye (tarayıcı hafızasına) kaydet
+                const activeStr = sessionStorage.getItem('activeProject');
+                if(activeStr) {
+                    const activeProj = JSON.parse(activeStr);
+                    if(!activeProj.data) activeProj.data = {inputs:{}};
+                    if(!activeProj.data.inputs) activeProj.data.inputs = {};
+                    activeProj.data.inputs.kroki_img_base64 = b64;
+                    sessionStorage.setItem('activeProject', JSON.stringify(activeProj));
+                }
             };
             reader.readAsDataURL(file);
         }
