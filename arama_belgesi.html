@@ -72,20 +72,18 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             </tr>
             <tr>
                 <td class="pl-4">b) İlçesi</td><td class="text-center">:</td><td><span id="prev_ilce"></span></td>
-                <td>g) Ada / Parsel</td><td class="text-center">:</td><td><span id="prev_ada_parsel"></span></td>
+                <td>g) Yüzölçümü</td><td class="text-center">:</td><td><span id="prev_yuzolcumu"></span></td>
             </tr>
             <tr>
-                <td class="pl-4">c) Köy veya Mah.</td><td class="text-center">:</td><td><span id="prev_mahalle_2"></span></td>
-                <td>h) Yüzölçümü</td><td class="text-center">:</td><td><span id="prev_yuzolcumu"></span></td>
+                <td class="pl-4">c) Mahallesi</td><td class="text-center">:</td><td><span id="prev_mahalle_2"></span></td>
+                <td>h) Koordinatı</td><td class="text-center">:</td><td><span id="prev_koordinat"></span></td>
             </tr>
             <tr>
-                <!-- Mevkii formdan p_mahalle verisiyle doluyor -->
                 <td class="pl-4">d) Mevkii</td><td class="text-center">:</td><td><span id="prev_mahalle"></span></td>
-                <!-- Koordinat fontu düzeltildi -->
-                <td>ı) Koordinatı</td><td class="text-center">:</td><td><span id="prev_koordinat"></span></td>
+                <td>ı) Havza Adı</td><td class="text-center">:</td><td><span id="prev_havza"></span></td>
             </tr>
             <tr>
-                <td class="pl-4">e) Havza Adı</td><td class="text-center">:</td><td><span id="prev_havza"></span></td>
+                <td class="pl-4">e) Ada / Parsel</td><td class="text-center">:</td><td><span id="prev_ada_parsel"></span></td>
                 <td>i) Alt Havza Adı</td><td class="text-center">:</td><td><span id="prev_alt_havza"></span></td>
             </tr>
         </table>
@@ -93,7 +91,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
         <!-- 3. Mühendis -->
         <div class="font-bold mb-1 mt-1">3. Teknik Elemanın (Teknik Sorumlu)</div>
         <table class="pdf-table text-[13px]">
-            <tr><td class="w-[180px] pl-4">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_tek_ad"></span> <span class="float-right mr-10 text-gray-700">İmzası: .......................</span></td></tr>
+            <tr><td class="w-[210px] pl-4">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_tek_ad"></span> <span class="float-right mr-10 text-gray-700">İmzası: .......................</span></td></tr>
             <tr><td class="pl-4">b) TC Kimlik No</td><td class="pdf-colon">:</td><td><span id="prev_tek_tc"></span></td></tr>
             <tr><td class="pl-4">c) Mesleği</td><td class="pdf-colon">:</td><td><span id="prev_tek_meslek"></span></td></tr>
             <tr><td class="pl-4">d) Diploma-Oda Sicil No</td><td class="pdf-colon">:</td><td><span id="prev_tek_sicil"></span></td></tr>
@@ -103,7 +101,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
         <!-- 4. Sondör -->
         <div class="font-bold mb-1 mt-1">4. Sondör, Kuyucu, Galericinin</div>
         <table class="pdf-table text-[13px]">
-            <tr><td class="w-[180px] pl-4">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_son_ad"></span> <span class="float-right mr-10 text-gray-700">İmzası: .......................</span></td></tr>
+            <tr><td class="w-[210px] pl-4">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_son_ad"></span> <span class="float-right mr-10 text-gray-700">İmzası: .......................</span></td></tr>
             <tr><td class="pl-4">b) TC Kimlik No</td><td class="pdf-colon">:</td><td><span id="prev_son_tc"></span></td></tr>
             <tr><td class="pl-4 align-top">c) Yet. Belge dalı <br>tarihi ve No</td><td class="pdf-colon align-top">:</td><td class="align-top"><span id="prev_son_belge"></span></td></tr>
             <tr><td class="pl-4 align-top">d) Adresi</td><td class="pdf-colon align-top">:</td><td class="align-top"><span id="prev_son_adres"></span></td></tr>
@@ -127,8 +125,8 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
         </table>
         
         <!-- 6. Su Miktarı (Alt çizgi ve kalınlık kaldırıldı) -->
-        <div class="font-bold mt-2 mb-2">
-            6. Talep edilen su miktarı: <span id="prev_su_gun" class="font-normal"></span> m³/gün &nbsp;&nbsp; - &nbsp;&nbsp; <span id="prev_su_yil" class="font-normal"></span> m³/yıl
+        <div class="mt-2 mb-2">
+            <span class="font-bold">6. Talep edilen su miktarı:</span> <span id="prev_su_gun"></span> m³/gün &nbsp;&nbsp; - &nbsp;&nbsp; <span id="prev_su_yil"></span> m³/yıl
         </div>
 
         <div class="text-justify mt-3 leading-snug">
