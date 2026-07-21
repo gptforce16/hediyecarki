@@ -33,7 +33,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
         max-height: 295mm !important; 
         margin: 0 !important; 
         padding: 20mm !important; 
-        padding-bottom: 30mm !important; /* Alt boşluk artırıldı */
+        padding-bottom: 40mm !important; /* Alt boşluk artırıldı */
         overflow: hidden !important; 
         page-break-after: avoid !important;
         page-break-inside: avoid !important; 
@@ -55,8 +55,8 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
 
     <!-- Mobil Uyumlu Yatay Kaydırma (Scroll) Sarmalayıcı -->
     <div class="w-full max-w-full overflow-x-auto flex justify-start lg:justify-center px-4 lg:px-0 mb-4 pb-4">
-        <!-- A4 Konteyner: Boyutlar kesinlikle A4'e sabit, alt boşluk 30mm yapıldı -->
-        <div class="w-[210mm] min-w-[210mm] h-[295mm] bg-white shadow-2xl p-[20mm] pb-[30mm] text-black text-[12px] leading-snug relative flex flex-col shrink-0" id="pdf_container">
+        <!-- A4 Konteyner: Boyutlar kesinlikle A4'e sabit, alt boşluk 40mm yapıldı -->
+        <div class="w-[210mm] min-w-[210mm] h-[295mm] bg-white shadow-2xl p-[20mm] pb-[40mm] text-black text-[12px] leading-snug relative flex flex-col shrink-0" id="pdf_container">
             
             <div id="noDataOverlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
                 <i class="fa-solid fa-file-circle-xmark text-6xl text-slate-300 mb-4"></i>
@@ -138,10 +138,12 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                 4) Kuyu Açılan Arazinin Onaylı Fotokopisi.
             </div>
 
-            <!-- İmza (Sayfanın sağ altına hizalandı, fontlar ince, alt boşluk 30mm) -->
-            <div class="absolute bottom-[30mm] right-[20mm] text-center">
-                <span class="block mb-8 font-normal text-center">...../...../.....</span>
-                <span id="prev_imza_muracaat" class="block font-normal text-[13px]"></span>
+            <!-- İmza (Çakışmayı önlemek için mt-auto ile en alta itildi) -->
+            <div class="mt-auto flex justify-end w-full pt-2">
+                <div class="text-center pr-[10mm]">
+                    <span class="block mb-8 font-normal text-center">...../...../.....</span>
+                    <span id="prev_imza_muracaat" class="block font-normal text-[13px]"></span>
+                </div>
             </div>
         </div>
     </div>
