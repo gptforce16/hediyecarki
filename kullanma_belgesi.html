@@ -2,41 +2,25 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+<!-- Mobil uyumluluk için viewport -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GeoLog Pro - Kullanma Belgesi</title>
+<!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com"></script>
+<!-- FontAwesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 body { font-family: Arial, sans-serif; background: #e2e8f0; }
-
 @media print {
     @page { size: A4 portrait; margin: 0; }
-    html, body { 
-        background-color: white !important; 
-        margin: 0 !important; 
-        padding: 0 !important; 
-        height: 100% !important; 
-        overflow: hidden !important; 
-        -webkit-print-color-adjust: exact !important; 
-        print-color-adjust: exact !important; 
-    }
+    body { background-color: white !important; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     header, #noDataOverlay { display: none !important; }
-    #pdf_container { 
-        box-shadow: none !important; 
-        border: none !important; 
-        width: 210mm !important; 
-        height: 295mm !important; 
-        max-height: 295mm !important; 
-        margin: 0 !important; 
-        padding: 15mm !important; /* Alt/üst boşluklar daraltıldı */
-        overflow: hidden !important; 
-        page-break-after: avoid !important;
-        page-break-inside: avoid !important; 
-    }
+    /* İkinci sayfaya taşmayı engellemek için yükseklik ve kenar boşlukları ayarlandı */
+    #pdf_container { box-shadow: none !important; border: none !important; width: 210mm !important; height: 296mm !important; margin: 0 !important; padding: 20mm !important; overflow: hidden !important; page-break-inside: avoid; }
 }
-
-.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 4px; } /* Tablo altı boşluk azaltıldı */
-.pdf-table td { padding: 1.5px 4px; vertical-align: top; } /* Satır içi boşluklar daraltıldı */
+.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 6px; } 
+.pdf-table td { padding: 3px 6px; vertical-align: top; }
+/* Etiket genişlikleri ve iki nokta ayarları Arama Belgesi ile aynı yapıldı */
 .pdf-label { width: 190px; font-weight: normal; } 
 .pdf-colon { width: 10px; font-weight: normal; }
 </style>
@@ -50,9 +34,8 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
 
     <!-- Mobil Uyumlu Yatay Kaydırma (Scroll) Sarmalayıcı -->
     <div class="w-full max-w-full overflow-x-auto flex justify-start lg:justify-center px-4 lg:px-0 mb-4 pb-4">
-        
-        <!-- A4 Konteyner -->
-        <div class="w-[210mm] min-w-[210mm] h-[295mm] bg-white shadow-2xl p-[15mm] text-black text-[12px] leading-snug relative flex flex-col shrink-0" id="pdf_container">
+        <!-- A4 Konteyner: 210x296mm, padding 20mm -->
+        <div class="w-[210mm] min-w-[210mm] h-[296mm] bg-white shadow-2xl p-[20mm] text-black text-[12px] leading-snug relative flex flex-col shrink-0" id="pdf_container">
             
             <div id="noDataOverlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
                 <i class="fa-solid fa-file-circle-xmark text-6xl text-slate-300 mb-4"></i>
@@ -61,25 +44,25 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             </div>
 
             <!-- Başlık -->
-            <div class="text-center font-bold text-[15px] mb-2">YERALTI SUYU KULLANMA BELGESİ İSTEME FORMU</div>
+            <div class="text-center font-bold text-[16px] mb-4">YERALTI SUYU KULLANMA BELGESİ İSTEME FORMU</div>
             
-            <div class="text-center font-bold text-[13px] mb-3 underline">
-                DSİ <span id="prev_dsi_bolge">..............</span> BÖLGE MÜDÜRLÜĞÜNE<br><span id="prev_dsi_il">..................</span>
+            <div class="text-center font-bold text-[14px] mb-2 underline">
+                D.S.İ. <span id="prev_dsi_bolge">..............</span> MÜDÜRLÜĞÜ'NE<br><span id="prev_dsi_il">..................</span>
             </div>
 
+            <!-- Form No (1. Müracaat Sahibinin üstünde, sağa yaslı) -->
             <div class="text-right text-[11px] font-bold mb-1">Form No: 2.7.3.</div>
 
-            <!-- 1 Müracaat Sahibi -->
+            <!-- 1 Müracaat -->
             <table class="pdf-table">
-                <tr><td class="pdf-label font-bold whitespace-nowrap" colspan="3">1. Müracaat Sahibi</td></tr>
-                <tr><td class="pdf-label pl-4 whitespace-nowrap">Adı Soyadı / Unvanı</td><td class="pdf-colon">:</td><td><span id="prev_muracaat"></span></td></tr>
+                <tr><td class="pdf-label font-bold whitespace-nowrap">1. Müracaat Sahibi</td><td class="pdf-colon">:</td><td><span id="prev_muracaat" class="font-bold"></span></td></tr>
                 <tr><td class="pl-4 whitespace-nowrap">Vergi Dairesi-Vergi no</td><td class="pdf-colon">:</td><td><span id="prev_vergi"></span></td></tr>
                 <tr><td class="pl-4 whitespace-nowrap">Adres</td><td class="pdf-colon">:</td><td><span id="prev_adres"></span></td></tr>
             </table>
 
             <!-- 2 Teknik Sorumlu -->
+            <div class="font-bold mt-1 mb-1">2. Teknik Sorumlu</div>
             <table class="pdf-table">
-                <tr><td class="font-bold" colspan="3">2. Teknik Sorumlu</td></tr>
                 <tr><td class="pdf-label pl-4 whitespace-nowrap">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_tek_ad"></span> <span class="float-right mr-10 italic text-gray-600">İmzası: .......................</span></td></tr>
                 <tr><td class="pl-4 whitespace-nowrap">b) TC Kimlik No</td><td class="pdf-colon">:</td><td><span id="prev_tek_tc"></span></td></tr>
                 <tr><td class="pl-4 whitespace-nowrap">c) Mesleği</td><td class="pdf-colon">:</td><td><span id="prev_tek_meslek"></span></td></tr>
@@ -88,8 +71,8 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             </table>
 
             <!-- 3 Sondör, Kuyucu, Galericinin -->
+            <div class="font-bold mt-1 mb-1">3. Sondör, Kuyucu, Galericinin</div>
             <table class="pdf-table">
-                <tr><td class="font-bold" colspan="3">3. Sondör, Kuyucu, Galericinin</td></tr>
                 <tr><td class="pdf-label pl-4 whitespace-nowrap">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_son_ad"></span> <span class="float-right mr-10 italic text-gray-600">İmzası: .......................</span></td></tr>
                 <tr><td class="pl-4 whitespace-nowrap">b) TC Kimlik No</td><td class="pdf-colon">:</td><td><span id="prev_son_tc"></span></td></tr>
                 <tr><td class="pl-4 whitespace-nowrap">c) Yet. Belge Dalı Tarihi Ve No.</td><td class="pdf-colon">:</td><td><span id="prev_son_belge"></span></td></tr>
@@ -97,43 +80,36 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             </table>
 
             <!-- 4 Kuyu Yeri -->
+            <div class="font-bold mt-1 mb-1">4. Kuyu/Galeri Yeri</div>
             <table class="pdf-table">
-                <tr><td class="font-bold" colspan="3">4. Kuyu/Galeri Yeri</td></tr>
                 <tr><td class="pdf-label pl-4 whitespace-nowrap">İli</td><td class="pdf-colon">:</td><td><span id="prev_il"></span></td></tr>
                 <tr><td class="pl-4 whitespace-nowrap">İlçesi / Köy Veya Mah.</td><td class="pdf-colon">:</td><td><span id="prev_ilce"></span> / <span id="prev_mahalle"></span></td></tr>
                 <tr><td class="pl-4 whitespace-nowrap">Kuyunun D.S.İ.No.su</td><td class="pdf-colon">:</td><td><span id="prev_dsi_no"></span></td></tr>
                 <tr><td class="pl-4 whitespace-nowrap">Koordinatı</td><td class="pdf-colon">:</td><td><span id="prev_koordinat"></span></td></tr>
-                <tr><td class="pl-4 whitespace-nowrap">Havza / Alt Havza Adı</td><td class="pdf-colon">:</td><td><span id="prev_havza"></span> / <span id="prev_alt_havza"></span></td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">Havza / Ova Adı</td><td class="pdf-colon">:</td><td><span id="prev_havza"></span> / <span id="prev_alt_havza"></span></td></tr>
             </table>
 
             <!-- 5 Hidrolik Veriler -->
+            <div class="font-bold mt-1 mb-1">5. Kuyu/Galeri Verimi</div>
             <table class="pdf-table">
-                <tr><td class="font-bold" colspan="3">5. Kuyu/Galeri Verimi</td></tr>
                 <tr><td class="pdf-label pl-4 whitespace-nowrap">Pompajla</td><td class="pdf-colon">:</td><td><span id="prev_debi"></span> lt/sn</td></tr>
                 <tr><td class="pl-4 whitespace-nowrap">Artezyen</td><td class="pdf-colon">:</td><td><span id="prev_artezyen"></span> lt/sn</td></tr>
                 <tr><td class="pl-4 whitespace-nowrap">Statik Seviye</td><td class="pdf-colon">:</td><td><span id="prev_statik"></span> m</td></tr>
                 <tr><td class="pl-4 whitespace-nowrap">Dinamik Seviye (Pompajda)</td><td class="pdf-colon">:</td><td><span id="prev_dinamik"></span> m</td></tr>
                 <tr><td class="pl-4 whitespace-nowrap">Çekilecek Su Miktarı</td><td class="pdf-colon">:</td><td><span id="prev_cekilecek"></span> t/g</td></tr>
-                <tr><td class="pl-4 whitespace-nowrap">Çekilecek Suyun Teminine<br>Yetecek Enerji Miktarı</td><td class="pdf-colon align-top pt-1">:</td><td class="align-top pt-1"><span id="prev_enerji"></span> kw/saat</td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">Çekilecek Suyun Teminine<br>Yetecek Enerji Miktarı</td><td class="pdf-colon align-top pt-2">:</td><td class="align-top pt-2"><span id="prev_enerji"></span> kw/saat</td></tr>
                 <tr><td class="pl-4 whitespace-nowrap">Sayaç Numarası</td><td class="pdf-colon">:</td><td><span id="prev_sayac"></span></td></tr>
-                <tr><td class="pl-4 whitespace-nowrap">Kullanma Amacı</td><td class="pdf-colon">:</td><td><span id="prev_amaci"></span></td></tr>
+                <!-- Kullanma amacı satırı inceltildi ve ilk harf büyük yapılacak şekilde ayarlandı -->
+                <tr><td class="pl-4 font-normal whitespace-nowrap pt-2">Kullanma Amacı</td><td class="pdf-colon pt-2">:</td><td class="font-normal pt-2"><span id="prev_amaci"></span></td></tr>
             </table>
 
-            <!-- Alt Metin -->
-            <div class="text-justify mt-1 leading-snug text-[11px]">
+            <!-- Alt Metin (SULAMA ibaresi koyu ve büyük yapıldı) -->
+            <div class="text-justify mt-2 leading-snug text-[12px]">
                 Yukarıda yeri ve ekli kuyu kütüğünde durumu açıklanan arazide bulunan su <span id="prev_amaci_metin" class="font-bold uppercase"></span> amacıyla kullanılmak istenmektedir. Bu hususta, 167 sayılı Yeraltı Suları Hakkında Kanun'un 10uncu maddesi gereğince tarafımıza yeraltı suyu kullanma belgesi verilmesini arz ederim.
             </div>
 
-            <!-- İmza (Ekin Üstünde) -->
-            <div class="flex justify-end w-full mt-4">
-                <div class="text-center pr-[10mm]">
-                    <span class="block mb-8 font-normal text-center text-[12px]">...../...../.....</span>
-                    <span id="prev_imza_muracaat" class="block font-normal text-[12px]"></span>
-                </div>
-            </div>
-
-            <!-- Ek Alanı (Sayfanın En Altında) -->
-            <div class="mt-auto text-[11px] font-normal pb-2">
+            <!-- Ek Alanı font-normal yapılarak inceltildi -->
+            <div class="mt-4 text-[12px] font-normal">
                 Ek:<br>
                 1) Kuyu Kütüğü (2 Takım).<br>
                 2) Pompaj Programı (2 Takım).<br>
@@ -141,127 +117,117 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                 4) Kuyu Açılan Arazinin Onaylı Fotokopisi.
             </div>
 
+            <!-- İmza (Sayfanın sağ altına hizalandı, fontlar inceltildi) -->
+            <div class="absolute bottom-[20mm] right-[20mm] text-center">
+                <span class="block mb-8 font-normal text-center">...../...../.....</span>
+                <span id="prev_imza_muracaat" class="block font-normal text-[13px]"></span>
+            </div>
         </div>
     </div>
 
     <script>
         window.onload = function() {
-            const activeStr = sessionStorage.getItem('activeProject') || localStorage.getItem('activeProject');
-            let dataFound = false;
-            let pData = { inputs: {} };
-
+            const activeStr = sessionStorage.getItem('activeProject');
+            
             if (activeStr) {
-                try {
-                    const parsed = JSON.parse(activeStr);
-                    if (parsed && parsed.data && parsed.data.inputs) {
-                        pData = parsed.data;
-                        dataFound = true;
-                    }
-                } catch(e) {}
-            }
-
-            if (!dataFound) {
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    const val = localStorage.getItem(key);
-                    if (val && (val.includes('p_muracaat') || val.includes('f_tek_ad'))) {
-                        try {
-                            const parsed = JSON.parse(val);
-                            if (parsed.inputs || (parsed.data && parsed.data.inputs)) {
-                                pData = parsed.data || parsed;
-                                dataFound = true;
-                                break;
-                            }
-                        } catch(e) {}
-                    }
-                }
-            }
-
-            if (dataFound && pData.inputs) {
                 document.getElementById('noDataOverlay').classList.add('hidden');
-                const inputs = pData.inputs;
+                const activeProj = JSON.parse(activeStr);
+                const data = activeProj.data || {inputs: {}};
                 
-                const setVal = (id, possibleFields) => {
-                    let el = document.getElementById(id);
-                    if (el) {
-                        for (let field of possibleFields) {
-                            if (inputs[field] !== undefined && inputs[field] !== "") { 
-                                el.innerText = inputs[field]; 
-                                return; 
+                if(data.inputs) {
+                    const inputs = data.inputs;
+                    
+                    const setVal = (id, possibleFields) => {
+                        let el = document.getElementById(id);
+                        if (el) {
+                            for (let field of possibleFields) {
+                                if (inputs[field] !== undefined && inputs[field] !== "") { 
+                                    el.innerText = inputs[field]; 
+                                    return; 
+                                }
+                            }
+                        }
+                    };
+
+                    // Genel Bilgiler
+                    setVal('prev_muracaat', ['p_muracaat']);
+                    setVal('prev_vergi', ['p_vergi']);
+                    setVal('prev_adres', ['p_adres']);
+                    setVal('prev_dsi_bolge', ['p_dsi_bolge']);
+                    setVal('prev_dsi_il', ['p_il']);
+                    
+                    // Kuyu Yeri Bilgileri
+                    setVal('prev_il', ['p_il']);
+                    setVal('prev_ilce', ['p_ilce']);
+                    setVal('prev_mahalle', ['p_mahalle']);
+                    setVal('prev_dsi_no', ['p_dsi_no']);
+                    setVal('prev_koordinat', ['p_koordinat']);
+                    setVal('prev_havza', ['p_havza']);
+                    setVal('prev_alt_havza', ['p_alt_havza']);
+
+                    // Teknik Sorumlu
+                    setVal('prev_tek_ad', ['f_tek_ad']);
+                    setVal('prev_tek_tc', ['f_tek_tc']);
+                    setVal('prev_tek_meslek', ['f_tek_meslek']);
+                    setVal('prev_tek_sicil', ['f_tek_sicil']);
+                    setVal('prev_tek_adres', ['f_tek_adres']);
+
+                    // Sondör
+                    setVal('prev_son_ad', ['f_son_ad']);
+                    setVal('prev_son_tc', ['f_son_tc']);
+                    setVal('prev_son_belge', ['f_son_belge']);
+                    setVal('prev_son_adres', ['f_son_adres']);
+
+                    // Hidrolik Veriler
+                    setVal('prev_debi', ['v_debi']);
+                    setVal('prev_artezyen', ['v_artezyen']);
+                    setVal('prev_statik', ['v_statik']);
+                    setVal('prev_dinamik', ['v_dinamik']);
+                    setVal('prev_cekilecek', ['t_su_gun']);
+                    setVal('prev_enerji', ['v_enerji']);
+                    setVal('prev_sayac', ['v_sayac']);
+
+                    // Kullanma Amacı Özel İşlemler
+                    let amaciVal = (inputs['p_amaci'] || "").trim();
+                    if(amaciVal) {
+                        // Tablo için (Sadece ilk harf büyük: "Sulama")
+                        let prevAmaci = document.getElementById('prev_amaci');
+                        if (prevAmaci) {
+                            prevAmaci.innerText = amaciVal.charAt(0).toUpperCase() + amaciVal.slice(1).toLowerCase();
+                        }
+                        
+                        // Alt paragraf için (Tamamı büyük ve kalın: "SULAMA")
+                        let amaciMetinEl = document.getElementById('prev_amaci_metin');
+                        if (amaciMetinEl) {
+                            amaciMetinEl.innerText = amaciVal.toUpperCase();
+                        }
+                    }
+                    
+                    // DSİ Bölge Formatlama
+                    let dsiBolgeEl = document.getElementById('prev_dsi_bolge');
+                    if (dsiBolgeEl) {
+                        let bolgeTxt = (inputs['p_dsi_bolge'] || "").trim();
+                        if (bolgeTxt) {
+                            if (/^\d+$/.test(bolgeTxt)) {
+                                dsiBolgeEl.innerText = bolgeTxt + ". BÖLGE"; 
+                            } else {
+                                // Kullanıcı "3. BÖLGE" falan yazdıysa direkt aktar, yoksa sadece rakamsa BÖLGE ekle.
+                                if (!bolgeTxt.toUpperCase().includes('BÖLGE')) {
+                                   dsiBolgeEl.innerText = bolgeTxt + " BÖLGE";
+                                } else {
+                                   dsiBolgeEl.innerText = bolgeTxt.toUpperCase();
+                                }
                             }
                         }
                     }
-                };
 
-                // Genel Bilgiler
-                setVal('prev_muracaat', ['p_muracaat', 'muracaat']);
-                setVal('prev_vergi', ['p_vergi', 'vergi']);
-                setVal('prev_adres', ['p_adres', 'adres']);
-                
-                // Kuyu Yeri Bilgileri
-                setVal('prev_il', ['p_il', 'il']);
-                setVal('prev_ilce', ['p_ilce', 'ilce']);
-                setVal('prev_mahalle', ['p_mahalle', 'mahalle']);
-                setVal('prev_dsi_no', ['p_dsi_no', 'dsi_no']);
-                setVal('prev_koordinat', ['p_koordinat', 'koordinat']);
-                setVal('prev_havza', ['p_havza', 'havza']);
-                setVal('prev_alt_havza', ['p_alt_havza', 'alt_havza']);
-
-                // Teknik Sorumlu
-                setVal('prev_tek_ad', ['f_tek_ad', 'tek_ad']);
-                setVal('prev_tek_tc', ['f_tek_tc', 'tek_tc']);
-                setVal('prev_tek_meslek', ['f_tek_meslek', 'tek_meslek']);
-                setVal('prev_tek_sicil', ['f_tek_sicil', 'tek_sicil']);
-                setVal('prev_tek_adres', ['f_tek_adres', 'tek_adres']);
-
-                // Sondör
-                setVal('prev_son_ad', ['f_son_ad', 'son_ad']);
-                setVal('prev_son_tc', ['f_son_tc', 'son_tc']);
-                setVal('prev_son_belge', ['f_son_belge', 'son_belge']);
-                setVal('prev_son_adres', ['f_son_adres', 'son_adres']);
-
-                // Hidrolik Veriler
-                setVal('prev_debi', ['v_debi', 'debi']);
-                setVal('prev_artezyen', ['v_artezyen', 'artezyen']);
-                setVal('prev_statik', ['v_statik', 'statik']);
-                setVal('prev_dinamik', ['v_dinamik', 'dinamik']);
-                setVal('prev_cekilecek', ['t_su_gun', 'su_gun']);
-                setVal('prev_enerji', ['v_enerji', 'enerji']);
-                setVal('prev_sayac', ['v_sayac', 'sayac']);
-
-                // Kullanma Amacı
-                let amaciVal = (inputs['p_amaci'] || inputs['amaci'] || "").trim();
-                if(amaciVal) {
-                    let prevAmaci = document.getElementById('prev_amaci');
-                    if (prevAmaci) {
-                        prevAmaci.innerText = amaciVal.charAt(0).toUpperCase() + amaciVal.slice(1).toLowerCase();
-                    }
-                    let amaciMetinEl = document.getElementById('prev_amaci_metin');
-                    if (amaciMetinEl) {
-                        amaciMetinEl.innerText = amaciVal.toUpperCase();
-                    }
+                    // İl büyük harf yapma ve imza alanı
+                    let prevDsiIl = document.getElementById('prev_dsi_il');
+                    if(prevDsiIl && prevDsiIl.innerText) prevDsiIl.innerText = prevDsiIl.innerText.toUpperCase();
+                    
+                    // İmza sahibi
+                    setVal('prev_imza_muracaat', ['p_muracaat']);
                 }
-                
-                // DSİ Bölge ve İl
-                let dsiBolgeEl = document.getElementById('prev_dsi_bolge');
-                if (dsiBolgeEl) {
-                    let bolgeTxt = (inputs['p_dsi_bolge'] || inputs['dsi_bolge'] || "").trim();
-                    if (bolgeTxt) {
-                        let numOnly = bolgeTxt.replace(/[^0-9]/g, '');
-                        if(numOnly) {
-                            dsiBolgeEl.innerText = numOnly + ".";
-                        } else {
-                            dsiBolgeEl.innerText = bolgeTxt.toUpperCase();
-                        }
-                    }
-                }
-
-                let prevDsiIl = document.getElementById('prev_dsi_il');
-                let ilTxt = (inputs['p_il'] || inputs['il'] || "").trim();
-                if(prevDsiIl && ilTxt) prevDsiIl.innerText = ilTxt.toUpperCase();
-                
-                // İmza
-                setVal('prev_imza_muracaat', ['p_muracaat', 'muracaat']);
             }
         }
     </script>
