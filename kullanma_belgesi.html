@@ -2,123 +2,126 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+<!-- Mobil uyumluluk için viewport -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GeoLog Pro - Kullanma Belgesi</title>
+<!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com"></script>
+<!-- FontAwesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 body { font-family: Arial, sans-serif; background: #e2e8f0; }
 @media print {
-    @page { size: A4 portrait; margin: 0; } 
+    @page { size: A4 portrait; margin: 0; }
     body { background-color: white !important; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     header, #noDataOverlay { display: none !important; }
-    #pdf_container { 
-        box-shadow: none !important; 
-        border: none !important; 
-        width: 210mm !important;
-        height: 297mm !important;
-        margin: 0 auto !important; 
-        padding: 15mm !important;
-        overflow: hidden !important; 
-        page-break-inside: avoid;
-    }
+    /* İkinci sayfaya taşmayı engellemek için yükseklik ve kenar boşlukları ayarlandı */
+    #pdf_container { box-shadow: none !important; border: none !important; width: 210mm !important; height: 296mm !important; margin: 0 !important; padding: 20mm !important; overflow: hidden !important; page-break-inside: avoid; }
 }
-.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 4px; }
-.pdf-table td { padding: 1px 4px; vertical-align: top; border: none !important; }
-.pdf-colon { width: 10px; font-weight: bold; }
+.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 6px; } 
+.pdf-table td { padding: 3px 6px; vertical-align: top; }
+/* Etiket genişlikleri ve iki nokta ayarları Arama Belgesi ile aynı yapıldı */
+.pdf-label { width: 190px; font-weight: normal; } 
+.pdf-colon { width: 10px; font-weight: normal; }
 </style>
 </head>
-<body class="min-h-screen flex flex-col items-center pb-12">
+<body class="min-h-screen flex flex-col items-center pb-12 bg-slate-200">
     <header class="w-full bg-amber-900 text-white p-4 text-center shadow-md mb-8 sticky top-0 z-50 flex justify-between px-8">
         <button onclick="window.location.href='index.html'" class="bg-slate-800 px-4 py-2 rounded text-sm hover:bg-slate-700 transition"><i class="fa-solid fa-arrow-left"></i> Geri Dön</button>
         <span class="font-bold text-lg"><i class="fa-solid fa-file-signature"></i> Kullanma Belgesi Önizleme</span>
         <button onclick="window.print()" class="bg-amber-500 hover:bg-amber-400 text-slate-900 px-6 py-2 rounded font-bold shadow transition"><i class="fa-solid fa-print"></i> Yazdır (PDF)</button>
     </header>
 
-    <!-- A4 Container: 210x297mm -->
-    <div class="w-[210mm] h-[297mm] bg-white shadow-2xl p-[15mm] text-black text-[13px] relative flex flex-col overflow-hidden" id="pdf_container">
-        
-        <div id="noDataOverlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
-            <i class="fa-solid fa-file-circle-xmark text-6xl text-slate-300 mb-4"></i>
-            <p class="font-bold text-lg text-slate-600">Veri Bulunamadı Veya Proje Seçilmedi!</p>
-            <p class="text-sm text-slate-500 mt-2">Lütfen Ana Sayfadan "Projelerim" menüsünü kullanarak bir proje seçin.</p>
-        </div>
+    <!-- Mobil Uyumlu Yatay Kaydırma (Scroll) Sarmalayıcı -->
+    <div class="w-full max-w-full overflow-x-auto flex justify-start lg:justify-center px-4 lg:px-0 mb-4 pb-4">
+        <!-- A4 Konteyner: 210x296mm, padding 20mm -->
+        <div class="w-[210mm] min-w-[210mm] h-[296mm] bg-white shadow-2xl p-[20mm] text-black text-[12px] leading-snug relative flex flex-col shrink-0" id="pdf_container">
+            
+            <div id="noDataOverlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
+                <i class="fa-solid fa-file-circle-xmark text-6xl text-slate-300 mb-4"></i>
+                <p class="font-bold text-lg text-slate-600">Veri Bulunamadı Veya Proje Seçilmedi!</p>
+                <p class="text-sm text-slate-500 mt-2">Lütfen Ana Sayfadan "Projelerim" menüsünü kullanarak bir proje seçin.</p>
+            </div>
 
-        <div class="text-center font-bold text-[15px] mb-2">YERALTI SUYU KULLANMA BELGESİ İSTEME FORMU</div>
-        
-        <div class="flex justify-between items-start mb-4">
-            <div class="flex-1 text-center font-bold text-[14px] pl-16">
+            <!-- Başlık -->
+            <div class="text-center font-bold text-[16px] mb-4">YERALTI SUYU KULLANMA BELGESİ İSTEME FORMU</div>
+            
+            <div class="text-center font-bold text-[14px] mb-2 underline">
                 D.S.İ. <span id="prev_dsi_bolge">..............</span> MÜDÜRLÜĞÜ'NE<br><span id="prev_dsi_il">..................</span>
             </div>
-            <div class="text-right text-[12px] font-bold">Form No: 2.7.3.</div>
-        </div>
 
-        <!-- 1 Müracaat -->
-        <table class="pdf-table">
-            <tr><td class="font-bold w-[180px]">1. Müracaat Sahibi</td><td class="pdf-colon">:</td><td><span id="prev_muracaat" class="font-bold"></span></td></tr>
-            <tr><td class="pl-4">Vergi Dairesi-Vergi no</td><td>:</td><td><span id="prev_vergi"></span></td></tr>
-            <tr><td class="pl-4">Adres</td><td>:</td><td><span id="prev_adres"></span></td></tr>
-        </table>
+            <!-- Form No (1. Müracaat Sahibinin üstünde, sağa yaslı) -->
+            <div class="text-right text-[11px] font-bold mb-1">Form No: 2.7.3.</div>
 
-        <!-- 2 Teknik Sorumlu -->
-        <div class="font-bold mt-1 mb-1">2. Teknik Sorumlu</div>
-        <table class="pdf-table text-[12px]">
-            <tr><td class="w-[180px] pl-4">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_tek_ad"></span> <span class="float-right mr-10 text-gray-700">İmzası: .......................</span></td></tr>
-            <tr><td class="pl-4">b) TC Kimlik No</td><td>:</td><td><span id="prev_tek_tc"></span></td></tr>
-            <tr><td class="pl-4">c) Mesleği</td><td>:</td><td><span id="prev_tek_meslek"></span></td></tr>
-            <tr><td class="pl-4">d) Diploma - Sicil No</td><td>:</td><td><span id="prev_tek_sicil"></span></td></tr>
-            <tr><td class="pl-4 align-top">e) Adresi</td><td class="align-top">:</td><td class="align-top"><span id="prev_tek_adres"></span></td></tr>
-        </table>
+            <!-- 1 Müracaat -->
+            <table class="pdf-table">
+                <tr><td class="pdf-label font-bold whitespace-nowrap">1. Müracaat Sahibi</td><td class="pdf-colon">:</td><td><span id="prev_muracaat" class="font-bold"></span></td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">Vergi Dairesi-Vergi no</td><td class="pdf-colon">:</td><td><span id="prev_vergi"></span></td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">Adres</td><td class="pdf-colon">:</td><td><span id="prev_adres"></span></td></tr>
+            </table>
 
-        <!-- 3 Sondör, Kuyucu, Galericinin -->
-        <div class="font-bold mt-1 mb-1">3. Sondör, Kuyucu, Galericinin</div>
-        <table class="pdf-table text-[12px]">
-            <tr><td class="w-[180px] pl-4">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_son_ad"></span> <span class="float-right mr-10 text-gray-700">İmzası: .......................</span></td></tr>
-            <tr><td class="pl-4">b) TC Kimlik No</td><td>:</td><td><span id="prev_son_tc"></span></td></tr>
-            <tr><td class="pl-4 align-top">c) Yet. Belge Dalı<br>Tarihi Ve No.</td><td class="align-top">:</td><td class="align-top"><span id="prev_son_belge"></span></td></tr>
-            <tr><td class="pl-4 align-top">d) Adresi</td><td class="align-top">:</td><td class="align-top"><span id="prev_son_adres"></span></td></tr>
-        </table>
+            <!-- 2 Teknik Sorumlu -->
+            <div class="font-bold mt-1 mb-1">2. Teknik Sorumlu</div>
+            <table class="pdf-table">
+                <tr><td class="pdf-label pl-4 whitespace-nowrap">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_tek_ad"></span> <span class="float-right mr-10 italic text-gray-600">İmzası: .......................</span></td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">b) TC Kimlik No</td><td class="pdf-colon">:</td><td><span id="prev_tek_tc"></span></td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">c) Mesleği</td><td class="pdf-colon">:</td><td><span id="prev_tek_meslek"></span></td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">d) Diploma - Sicil No</td><td class="pdf-colon">:</td><td><span id="prev_tek_sicil"></span></td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">e) Adresi</td><td class="pdf-colon">:</td><td><span id="prev_tek_adres"></span></td></tr>
+            </table>
 
-        <!-- 4 Kuyu Yeri -->
-        <div class="font-bold mt-1 mb-1">4. Kuyu/Galeri Yeri</div>
-        <table class="pdf-table text-[12px]">
-            <tr><td class="w-[180px] pl-4">İli</td><td class="pdf-colon">:</td><td><span id="prev_il"></span></td></tr>
-            <tr><td class="pl-4">İlçesi / Köy Veya Mah.</td><td>:</td><td><span id="prev_ilce"></span> / <span id="prev_mahalle"></span></td></tr>
-            <tr><td class="pl-4">Kuyunun D.S.İ.No.su</td><td>:</td><td><span id="prev_dsi_no"></span></td></tr>
-            <tr><td class="pl-4">Koordinatı</td><td>:</td><td><span id="prev_koordinat"></span></td></tr>
-            <tr><td class="pl-4">Havza / Ova Adı</td><td>:</td><td><span id="prev_havza"></span> / <span id="prev_alt_havza"></span></td></tr>
-        </table>
+            <!-- 3 Sondör, Kuyucu, Galericinin -->
+            <div class="font-bold mt-1 mb-1">3. Sondör, Kuyucu, Galericinin</div>
+            <table class="pdf-table">
+                <tr><td class="pdf-label pl-4 whitespace-nowrap">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_son_ad"></span> <span class="float-right mr-10 italic text-gray-600">İmzası: .......................</span></td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">b) TC Kimlik No</td><td class="pdf-colon">:</td><td><span id="prev_son_tc"></span></td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">c) Yet. Belge Dalı Tarihi Ve No.</td><td class="pdf-colon">:</td><td><span id="prev_son_belge"></span></td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">d) Adresi</td><td class="pdf-colon">:</td><td><span id="prev_son_adres"></span></td></tr>
+            </table>
 
-        <!-- 5 Hidrolik Veriler -->
-        <div class="font-bold mt-1 mb-1">5. Kuyu/Galeri Verimi</div>
-        <table class="pdf-table text-[12px]">
-            <tr><td class="w-[200px] pl-4">Pompajla</td><td class="pdf-colon">:</td><td class="w-[50px]"><span id="prev_debi"></span></td><td>lt/sn</td></tr>
-            <tr><td class="pl-4">Artezyen</td><td>:</td><td><span id="prev_artezyen"></span></td><td>lt/sn</td></tr>
-            <tr><td class="pl-4">Statik Seviye</td><td>:</td><td><span id="prev_statik"></span></td><td>m</td></tr>
-            <tr><td class="pl-4">Dinamik Seviye (Pompajda)</td><td>:</td><td><span id="prev_dinamik"></span></td><td>m</td></tr>
-            <tr><td class="pl-4">Çekilecek Su Miktarı</td><td>:</td><td><span id="prev_cekilecek"></span></td><td>t/g</td></tr>
-            <tr><td class="pl-4">Çekilecek Suyun Teminine<br>Yetecek Enerji Miktarı</td><td class="align-top pt-2">:</td><td class="align-top pt-2"><span id="prev_enerji"></span></td><td class="align-top pt-2">kw/saat</td></tr>
-            <tr><td class="pl-4">Sayaç Numarası</td><td>:</td><td colspan="2"><span id="prev_sayac"></span></td></tr>
-            <tr><td class="pl-4 font-bold text-black pt-2">Kullanma Amacı</td><td class="pt-2">:</td><td colspan="2" class="font-bold text-black uppercase pt-2"><span id="prev_amaci"></span></td></tr>
-        </table>
+            <!-- 4 Kuyu Yeri -->
+            <div class="font-bold mt-1 mb-1">4. Kuyu/Galeri Yeri</div>
+            <table class="pdf-table">
+                <tr><td class="pdf-label pl-4 whitespace-nowrap">İli</td><td class="pdf-colon">:</td><td><span id="prev_il"></span></td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">İlçesi / Köy Veya Mah.</td><td class="pdf-colon">:</td><td><span id="prev_ilce"></span> / <span id="prev_mahalle"></span></td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">Kuyunun D.S.İ.No.su</td><td class="pdf-colon">:</td><td><span id="prev_dsi_no"></span></td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">Koordinatı</td><td class="pdf-colon">:</td><td><span id="prev_koordinat"></span></td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">Havza / Ova Adı</td><td class="pdf-colon">:</td><td><span id="prev_havza"></span> / <span id="prev_alt_havza"></span></td></tr>
+            </table>
 
-        <!-- Alt Metin -->
-        <div class="text-justify mt-2 leading-snug text-[12px]">
-            Yukarıda yeri ve ekli kuyu kütüğünde durumu açıklanan arazide bulunan su <span id="prev_amaci_metin" class="font-bold lowercase"></span> amacıyla kullanılmak istenmektedir. Bu hususta, 167 sayılı Yeraltı Suları Hakkında Kanun'un 10uncu maddesi gereğince tarafımıza yeraltı suyu kullanma belgesi verilmesini arz ederim.
-        </div>
+            <!-- 5 Hidrolik Veriler -->
+            <div class="font-bold mt-1 mb-1">5. Kuyu/Galeri Verimi</div>
+            <table class="pdf-table">
+                <tr><td class="pdf-label pl-4 whitespace-nowrap">Pompajla</td><td class="pdf-colon">:</td><td><span id="prev_debi"></span> lt/sn</td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">Artezyen</td><td class="pdf-colon">:</td><td><span id="prev_artezyen"></span> lt/sn</td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">Statik Seviye</td><td class="pdf-colon">:</td><td><span id="prev_statik"></span> m</td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">Dinamik Seviye (Pompajda)</td><td class="pdf-colon">:</td><td><span id="prev_dinamik"></span> m</td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">Çekilecek Su Miktarı</td><td class="pdf-colon">:</td><td><span id="prev_cekilecek"></span> t/g</td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">Çekilecek Suyun Teminine<br>Yetecek Enerji Miktarı</td><td class="pdf-colon align-top pt-2">:</td><td class="align-top pt-2"><span id="prev_enerji"></span> kw/saat</td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">Sayaç Numarası</td><td class="pdf-colon">:</td><td><span id="prev_sayac"></span></td></tr>
+                <!-- Kullanma amacı satırı inceltildi ve ilk harf büyük yapılacak şekilde ayarlandı -->
+                <tr><td class="pl-4 font-normal whitespace-nowrap pt-2">Kullanma Amacı</td><td class="pdf-colon pt-2">:</td><td class="font-normal pt-2"><span id="prev_amaci"></span></td></tr>
+            </table>
 
-        <div class="mt-3 text-[12px] font-bold">
-            Ek:<br>
-            1) Kuyu Kütüğü (2 Takım).<br>
-            2) Pompaj Programı (2 Takım).<br>
-            3) Analiz Raporu (Kullanma Amacına Uygun) (2 Takım).<br>
-            4) Kuyu Açılan Arazinin Onaylı Fotokopisi.
-        </div>
+            <!-- Alt Metin (SULAMA ibaresi koyu ve büyük yapıldı) -->
+            <div class="text-justify mt-2 leading-snug text-[12px]">
+                Yukarıda yeri ve ekli kuyu kütüğünde durumu açıklanan arazide bulunan su <span id="prev_amaci_metin" class="font-bold uppercase"></span> amacıyla kullanılmak istenmektedir. Bu hususta, 167 sayılı Yeraltı Suları Hakkında Kanun'un 10uncu maddesi gereğince tarafımıza yeraltı suyu kullanma belgesi verilmesini arz ederim.
+            </div>
 
-        <!-- İmza (Sayfanın en altına sağ köşeye sabitlendi) -->
-        <div class="absolute bottom-[15mm] right-[20mm] text-center">
-            <span class="block mb-8 font-bold text-center">...../...../.....</span>
-            <span id="prev_imza_muracaat" class="block font-bold text-[13px] uppercase"></span>
+            <!-- Ek Alanı font-normal yapılarak inceltildi -->
+            <div class="mt-4 text-[12px] font-normal">
+                Ek:<br>
+                1) Kuyu Kütüğü (2 Takım).<br>
+                2) Pompaj Programı (2 Takım).<br>
+                3) Analiz Raporu (Kullanma Amacına Uygun) (2 Takım).<br>
+                4) Kuyu Açılan Arazinin Onaylı Fotokopisi.
+            </div>
+
+            <!-- İmza (Sayfanın sağ altına hizalandı, fontlar inceltildi) -->
+            <div class="absolute bottom-[20mm] right-[20mm] text-center">
+                <span class="block mb-8 font-normal text-center">...../...../.....</span>
+                <span id="prev_imza_muracaat" class="block font-normal text-[13px]"></span>
+            </div>
         </div>
     </div>
 
@@ -183,24 +186,38 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                     setVal('prev_cekilecek', ['t_su_gun']);
                     setVal('prev_enerji', ['v_enerji']);
                     setVal('prev_sayac', ['v_sayac']);
-                    setVal('prev_amaci', ['p_amaci']);
 
-                    // Özel Metin İşlemleri
-                    let amaciMetinEl = document.getElementById('prev_amaci_metin');
-                    if(amaciMetinEl) {
-                        let amaciVal = inputs['p_amaci'] || "";
-                        amaciMetinEl.innerText = amaciVal.toLowerCase();
+                    // Kullanma Amacı Özel İşlemler
+                    let amaciVal = (inputs['p_amaci'] || "").trim();
+                    if(amaciVal) {
+                        // Tablo için (Sadece ilk harf büyük: "Sulama")
+                        let prevAmaci = document.getElementById('prev_amaci');
+                        if (prevAmaci) {
+                            prevAmaci.innerText = amaciVal.charAt(0).toUpperCase() + amaciVal.slice(1).toLowerCase();
+                        }
+                        
+                        // Alt paragraf için (Tamamı büyük ve kalın: "SULAMA")
+                        let amaciMetinEl = document.getElementById('prev_amaci_metin');
+                        if (amaciMetinEl) {
+                            amaciMetinEl.innerText = amaciVal.toUpperCase();
+                        }
                     }
                     
-                    // DSİ Bölge Formatlama (Sadece Rakam Girildiyse)
+                    // DSİ Bölge Formatlama
                     let dsiBolgeEl = document.getElementById('prev_dsi_bolge');
-                    if (dsiBolgeEl && dsiBolgeEl.innerText && dsiBolgeEl.innerText !== "..............") {
-                        let bolgeTxt = dsiBolgeEl.innerText.trim();
-                        // Sadece rakamsa direkt ekle
-                        if (/^\d+$/.test(bolgeTxt)) {
-                            dsiBolgeEl.innerText = bolgeTxt + ". BÖLGE";
-                        } else if (!bolgeTxt.toUpperCase().includes('BÖLGE')) {
-                            dsiBolgeEl.innerText = bolgeTxt + " BÖLGE";
+                    if (dsiBolgeEl) {
+                        let bolgeTxt = (inputs['p_dsi_bolge'] || "").trim();
+                        if (bolgeTxt) {
+                            if (/^\d+$/.test(bolgeTxt)) {
+                                dsiBolgeEl.innerText = bolgeTxt + ". BÖLGE"; 
+                            } else {
+                                // Kullanıcı "3. BÖLGE" falan yazdıysa direkt aktar, yoksa sadece rakamsa BÖLGE ekle.
+                                if (!bolgeTxt.toUpperCase().includes('BÖLGE')) {
+                                   dsiBolgeEl.innerText = bolgeTxt + " BÖLGE";
+                                } else {
+                                   dsiBolgeEl.innerText = bolgeTxt.toUpperCase();
+                                }
+                            }
                         }
                     }
 
@@ -208,6 +225,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                     let prevDsiIl = document.getElementById('prev_dsi_il');
                     if(prevDsiIl && prevDsiIl.innerText) prevDsiIl.innerText = prevDsiIl.innerText.toUpperCase();
                     
+                    // İmza sahibi
                     setVal('prev_imza_muracaat', ['p_muracaat']);
                 }
             }
