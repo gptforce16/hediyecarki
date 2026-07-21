@@ -5,51 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GeoLog Pro - Hidrojeolojik Dokümantasyon Platformu</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- STREAMING_CHUNK:Firebase Init -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, getDocs, doc, deleteDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyA8JR_mh0FaU_ZT16h6MRZICvYIlHdbZ78",
-            authDomain: "geologpro-3aa61.firebaseapp.com",
-            projectId: "geologpro-3aa61",
-            storageBucket: "geologpro-3aa61.firebasestorage.app",
-            messagingSenderId: "738819989330",
-            appId: "1:738819989330:web:29a446953726300c11e48b",
-            measurementId: "G-2P79TH49YB"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        window.db = getFirestore(app);
-        window.auth = getAuth(app);
-        window.currentUser = null;
-        window.fsCollection = collection; window.fsGetDocs = getDocs; window.fsDoc = doc; window.fsDeleteDoc = deleteDoc; window.fsQuery = query; window.fsWhere = where; window.fsOrderBy = orderBy;
-        window.fsGoogleProvider = new GoogleAuthProvider();
-        window.fsSignInWithPopup = signInWithPopup;
-        window.fsSignOut = signOut;
+        const firebaseConfig = { apiKey: "AIzaSyA8JR_mh0FaU_ZT16h6MRZICvYIlHdbZ78", authDomain: "geologpro-3aa61.firebaseapp.com", projectId: "geologpro-3aa61", storageBucket: "geologpro-3aa61.firebasestorage.app", messagingSenderId: "738819989330", appId: "1:738819989330:web:29a446953726300c11e48b", measurementId: "G-2P79TH49YB" };
+        const app = initializeApp(firebaseConfig); window.db = getFirestore(app); window.auth = getAuth(app);
+        window.currentUser = null; window.fsCollection = collection; window.fsGetDocs = getDocs; window.fsDoc = doc; window.fsDeleteDoc = deleteDoc; window.fsQuery = query; window.fsWhere = where; window.fsOrderBy = orderBy;
+        window.fsGoogleProvider = new GoogleAuthProvider(); window.fsSignInWithPopup = signInWithPopup; window.fsSignOut = signOut;
 
         document.addEventListener('DOMContentLoaded', () => {
             onAuthStateChanged(window.auth, user => {
                 window.currentUser = user;
-                const loggedOut = document.getElementById('loggedOutNav');
-                const loggedIn = document.getElementById('loggedInNav');
-                const emailDisp = document.getElementById('userEmailDisplay');
+                const loggedOut = document.getElementById('loggedOutNav'); const loggedIn = document.getElementById('loggedInNav'); const emailDisp = document.getElementById('userEmailDisplay');
                 if (user) {
-                    if (loggedOut) loggedOut.classList.add('hidden');
-                    if (loggedIn) loggedIn.classList.remove('hidden');
+                    if (loggedOut) loggedOut.classList.add('hidden'); if (loggedIn) loggedIn.classList.remove('hidden');
                     if (emailDisp) emailDisp.innerText = user.displayName || user.email;
                 } else {
-                    if (loggedOut) loggedOut.classList.remove('hidden');
-                    if (loggedIn) loggedIn.classList.add('hidden');
+                    if (loggedOut) loggedOut.classList.remove('hidden'); if (loggedIn) loggedIn.classList.add('hidden');
                 }
             });
+            updateActiveProjectUI();
         });
     </script>
 
@@ -60,10 +41,12 @@
         .delay-100 { animation-delay: 100ms; } .delay-200 { animation-delay: 200ms; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .app-card { transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        .app-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5); }
+        .app-card:not(.disabled-card):hover { transform: translateY(-5px); box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5); }
         .icon-wrapper { transition: transform 0.4s ease; }
-        .app-card:hover .icon-wrapper { transform: scale(1.1) rotate(-5deg); }
+        .app-card:not(.disabled-card):hover .icon-wrapper { transform: scale(1.1) rotate(-5deg); }
+        .text-gradient { background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-image: linear-gradient(to right, #60a5fa, #a78bfa); }
         ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #f1f1f1; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .disabled-card { opacity: 0.5; filter: grayscale(100%); cursor: not-allowed; }
     </style>
 </head>
 
@@ -72,7 +55,7 @@
     <div class="fixed inset-0 bg-grid-pattern opacity-60 z-0 pointer-events-none"></div>
     <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[800px] md:h-[500px] bg-blue-600/10 blur-[100px] md:blur-[120px] rounded-full pointer-events-none z-0"></div>
 
-    <nav class="relative z-40 w-full py-6 px-4 flex justify-between items-center shrink-0 max-w-7xl mx-auto">
+    <nav class="relative z-40 w-full py-6 px-4 flex justify-between items-center shrink-0 max-w-7xl mx-auto border-b border-white/10 mb-6">
         <div class="flex items-center gap-3 fade-in-up">
             <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-2.5 rounded-xl shadow-lg shadow-blue-900/40 text-white flex items-center justify-center border border-white/10">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 2v13" /><path d="M9 15h6l-3 5-3-5z" fill="currentColor"/><path d="M3 9h18" /><path d="M4 14h4" /><path d="M16 14h4" /><path d="M5 19h3" /><path d="M16 19h3" /></svg>
@@ -89,69 +72,110 @@
             <div id="loggedInNav" class="hidden flex items-center gap-3">
                 <span id="userEmailDisplay" class="text-xs font-bold text-slate-400 hidden md:inline"></span>
                 <button onclick="openDashboard()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-blue-500/30">
-                    <i class="fa-solid fa-cloud"></i> <span class="hidden md:inline">Projelerim</span>
+                    <i class="fa-solid fa-folder-open"></i> <span class="hidden md:inline">Projelerim</span>
                 </button>
                 <button onclick="logoutUser()" class="bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white px-3 py-2 rounded-xl text-sm transition"><i class="fa-solid fa-right-from-bracket"></i></button>
             </div>
         </div>
     </nav>
 
-    <main class="flex-grow flex flex-col items-center w-full max-w-7xl mx-auto px-4 md:px-8 relative z-20 py-8">
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 md:px-8 relative z-20">
         
-        <!-- STREAMING_CHUNK:Hero -->
-        <div class="text-center mb-12 fade-in-up delay-100">
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-6 leading-tight">
-                <span class="text-gradient">Hidrojeolojik</span><br/>Dokümantasyon Platformu
-            </h1>
-            <p class="text-base md:text-lg text-slate-300 font-light max-w-2xl mx-auto leading-relaxed mb-8">
-                Tüm verilerinizi tek bir "Ana Proje" altında toplayın. Arama, kullanma, kroki, log ve düşüm analiz belgelerinizi ortak verilerle saniyeler içinde otomatik oluşturun.
-            </p>
-            <button onclick="window.location.href='proje_bilgileri.html'" class="bg-white text-slate-900 hover:bg-slate-100 px-8 py-4 rounded-full font-extrabold text-lg transition shadow-xl shadow-white/10 flex items-center gap-3 mx-auto">
-                <i class="fa-solid fa-folder-plus text-blue-600"></i> Yeni Ana Proje Oluştur
-            </button>
+        <!-- Aktif Proje Paneli -->
+        <div class="bg-slate-800/80 backdrop-blur border border-slate-700 rounded-2xl p-6 mb-10 flex flex-col md:flex-row justify-between items-center gap-4 fade-in-up">
+            <div class="flex items-center gap-4">
+                <div id="activeProjectIcon" class="bg-slate-700 text-slate-400 w-12 h-12 rounded-full flex items-center justify-center text-xl"><i class="fa-solid fa-folder"></i></div>
+                <div>
+                    <p class="text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">AKTİF PROJE</p>
+                    <h2 id="activeProjectName" class="text-xl font-bold text-white">Proje Seçilmedi</h2>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button id="btnEditProject" onclick="editActiveProject()" class="hidden bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition border border-slate-600"><i class="fa-solid fa-pen-to-square mr-1"></i> Projeyi Düzenle</button>
+                <button id="btnClearProject" onclick="clearActiveProject()" class="hidden bg-rose-600/20 hover:bg-rose-600/40 text-rose-400 px-4 py-2 rounded-lg text-sm font-bold transition border border-rose-500/30"><i class="fa-solid fa-times mr-1"></i> Kapat</button>
+                <button onclick="createNewProject()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2 rounded-lg text-sm font-bold transition shadow-lg shadow-emerald-600/30 flex items-center gap-2"><i class="fa-solid fa-plus"></i> Yeni Proje Oluştur</button>
+            </div>
         </div>
 
+        <div class="text-center mb-8 fade-in-up delay-100">
+            <h1 class="text-3xl font-extrabold text-white tracking-tight mb-2">Uygulamalar</h1>
+            <p id="appInstruction" class="text-amber-400 text-sm font-medium">Uygulamaları kullanabilmek için yukarıdan bir proje seçin veya oluşturun.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in-up delay-200">
+            
+            <a onclick="routeToApp('arama_belgesi.html')" class="app-card disabled-card bg-white rounded-3xl p-6 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group">
+                <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-emerald-50 rounded-full blur-3xl opacity-50 group-hover:bg-emerald-100 transition-colors pointer-events-none"></div>
+                <div class="icon-wrapper bg-emerald-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-md shadow-emerald-500/20 mb-4"><i class="fa-solid fa-file-contract text-white text-lg"></i></div>
+                <h2 class="text-lg font-bold text-slate-800 mb-2">Arama Belgesi</h2>
+                <p class="text-slate-500 text-sm leading-relaxed mb-4 flex-grow">Yer altı suyu arama belgesi isteme formunu DSİ standartlarında otomatik oluşturun.</p>
+            </a>
+
+            <a onclick="routeToApp('kullanma_belgesi.html')" class="app-card disabled-card bg-white rounded-3xl p-6 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group">
+                <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-amber-50 rounded-full blur-3xl opacity-50 group-hover:bg-amber-100 transition-colors pointer-events-none"></div>
+                <div class="icon-wrapper bg-amber-500 w-12 h-12 rounded-xl flex items-center justify-center shadow-md shadow-amber-500/20 mb-4"><i class="fa-solid fa-file-signature text-white text-lg"></i></div>
+                <h2 class="text-lg font-bold text-slate-800 mb-2">Kullanma Belgesi</h2>
+                <p class="text-slate-500 text-sm leading-relaxed mb-4 flex-grow">Kullanma belgesini (Form 2.7.3) hazırlayın.</p>
+            </a>
+
+            <a onclick="routeToApp('kroki_belgesi.html')" class="app-card disabled-card bg-white rounded-3xl p-6 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group">
+                <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-purple-50 rounded-full blur-3xl opacity-50 group-hover:bg-purple-100 transition-colors pointer-events-none"></div>
+                <div class="icon-wrapper bg-purple-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-md shadow-purple-500/20 mb-4"><i class="fa-solid fa-map-location-dot text-white text-lg"></i></div>
+                <h2 class="text-lg font-bold text-slate-800 mb-2">Kuyu Yeri Krokisi</h2>
+                <p class="text-slate-500 text-sm leading-relaxed mb-4 flex-grow">Ayrıntılı kuyu yeri krokisi oluşturun.</p>
+            </a>
+
+            <a onclick="routeToApp('kuyu_logu.html')" class="app-card disabled-card bg-white rounded-3xl p-6 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group lg:col-span-1 md:col-span-2">
+                <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-slate-100 rounded-full blur-3xl opacity-50 group-hover:bg-slate-200 transition-colors pointer-events-none"></div>
+                <div class="icon-wrapper bg-slate-800 w-12 h-12 rounded-xl flex items-center justify-center shadow-md mb-4"><i class="fa-solid fa-layer-group text-white text-lg"></i></div>
+                <h2 class="text-lg font-bold text-slate-800 mb-2">Kuyu Logu Editörü</h2>
+                <p class="text-slate-500 text-sm leading-relaxed mb-4 flex-grow">Litolojik birimleri ve kuyu teçhizini görselleştirerek raporunuzu tamamlayın.</p>
+            </a>
+
+            <a onclick="routeToApp('dusum_zaman.html')" class="app-card disabled-card bg-white rounded-3xl p-6 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group lg:col-span-2 md:col-span-2">
+                <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-blue-50 rounded-full blur-3xl opacity-50 group-hover:bg-blue-100 transition-colors pointer-events-none"></div>
+                <div class="icon-wrapper bg-blue-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/20 mb-4"><i class="fa-solid fa-chart-line text-white text-lg"></i></div>
+                <h2 class="text-lg font-bold text-slate-800 mb-2">Düşüm Zaman Analizi</h2>
+                <p class="text-slate-500 text-sm leading-relaxed mb-4 flex-grow">T ve K hidrolik parametrelerini otomatik hesaplatıp logaritmik eğriyi çizin.</p>
+            </a>
+
+        </div>
     </main>
 
-    <!-- STREAMING_CHUNK:Dashboard Modal -->
+    <footer class="relative z-40 w-full border-t border-white/10 py-5 mt-auto flex items-center justify-center bg-slate-900/50 backdrop-blur-sm shrink-0">
+        <div class="w-full px-4 md:px-8 flex justify-center items-center">
+            <p class="text-slate-500 text-xs md:text-sm text-center">&copy; 2026 | Emre Mermutlu | Tüm hakları saklıdır</p>
+        </div>
+    </footer>
+
+    <!-- Projelerim Modal -->
     <div id="dashboardModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
-        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-6xl flex flex-col max-h-[90vh] overflow-hidden transform scale-95 transition-transform duration-300" id="dashboardContent">
-            
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-5xl flex flex-col max-h-[90vh] overflow-hidden transform scale-95 transition-transform duration-300" id="dashboardContent">
             <div class="flex items-center justify-between border-b border-slate-200 p-5 bg-slate-50">
                 <div class="flex items-center gap-3">
                     <div class="bg-blue-100 text-blue-600 p-2 rounded-lg"><i class="fa-solid fa-folder-open text-xl"></i></div>
-                    <h2 class="text-xl font-bold text-slate-800">Bulut Projelerim (Ana Hafıza)</h2>
+                    <h2 class="text-xl font-bold text-slate-800">Bulut Projelerim</h2>
                 </div>
                 <div class="flex items-center gap-3">
                     <button onclick="loadDashboardProjects()" class="bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-semibold transition shadow-sm"><i class="fa-solid fa-rotate-right"></i> Yenile</button>
                     <button onclick="closeDashboard()" class="text-slate-400 hover:text-slate-700 transition p-2"><i class="fa-solid fa-times text-xl"></i></button>
                 </div>
             </div>
-
             <div class="p-5 overflow-y-auto flex-1 bg-white">
                 <div class="overflow-x-auto rounded-xl border border-slate-200">
                     <table class="w-full text-left text-sm border-collapse">
                         <thead class="bg-slate-100 text-slate-700 font-bold sticky top-0">
-                            <tr>
-                                <th class="p-4 border-b border-slate-200">Proje Adı / Lokasyon</th>
-                                <th class="p-4 border-b border-slate-200">Kayıt Tarihi</th>
-                                <th class="p-4 border-b border-slate-200 text-right">Projeyi Modüllerde Aç</th>
-                            </tr>
+                            <tr><th class="p-4 border-b border-slate-200">Proje Adı / Lokasyon</th><th class="p-4 border-b border-slate-200">Kayıt Tarihi</th><th class="p-4 border-b border-slate-200 text-right">İşlem</th></tr>
                         </thead>
-                        <tbody id="dashboardTableBody" class="divide-y divide-slate-100 bg-white">
-                        </tbody>
+                        <tbody id="dashboardTableBody" class="divide-y divide-slate-100 bg-white"></tbody>
                     </table>
                 </div>
-            </div>
-            <div class="bg-slate-50 p-4 border-t border-slate-200 text-xs text-slate-500 text-center">
-                Listeden açtığınız projenin verileri, seçtiğiniz dokümana otomatik olarak yapıştırılacaktır.
             </div>
         </div>
     </div>
 
     <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-[150]"><span id="toastIcon"></span><span id="toastMessage" class="text-sm font-semibold"></span></div>
 
-    <!-- STREAMING_CHUNK:Javascript Logic -->
     <script>
         function showToast(msg, type='info') {
             const t = document.getElementById('toast'), i = document.getElementById('toastIcon'), m = document.getElementById('toastMessage');
@@ -161,10 +185,7 @@
             setTimeout(() => { t.classList.replace('translate-y-0', 'translate-y-20'); t.classList.replace('opacity-100', 'opacity-0'); }, 3000);
         }
 
-        async function loginWithGoogle() {
-            try { await window.fsSignInWithPopup(window.auth, window.fsGoogleProvider); showToast("Giriş başarılı.", "success"); } 
-            catch(err) { showToast("Giriş hatası: " + err.message, "error"); }
-        }
+        async function loginWithGoogle() { try { await window.fsSignInWithPopup(window.auth, window.fsGoogleProvider); showToast("Giriş başarılı.", "success"); } catch(err) { showToast("Giriş hatası: " + err.message, "error"); } }
         async function logoutUser() { await window.fsSignOut(window.auth); showToast("Çıkış yapıldı.", "info"); }
 
         function openDashboard() {
@@ -179,13 +200,13 @@
 
         async function loadDashboardProjects() {
             const tbody = document.getElementById('dashboardTableBody');
-            if(!window.currentUser || !window.db) { tbody.innerHTML = '<tr><td colspan="3" class="p-8 text-center text-rose-500"><i class="fa-solid fa-circle-exclamation mb-2"></i> Lütfen giriş yapın.</td></tr>'; return; }
+            if(!window.currentUser || !window.db) { tbody.innerHTML = '<tr><td colspan="3" class="p-8 text-center text-rose-500">Lütfen önce giriş yapın.</td></tr>'; return; }
             tbody.innerHTML = '<tr><td colspan="3" class="p-8 text-center text-slate-500"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2 block"></i> Yükleniyor...</td></tr>';
             try {
                 const q = window.fsQuery(window.fsCollection(window.db, "projects"), window.fsWhere("uid", "==", window.currentUser.uid), window.fsOrderBy("createdAt", "desc"));
                 const querySnapshot = await window.fsGetDocs(q);
                 tbody.innerHTML = '';
-                if(querySnapshot.empty) { tbody.innerHTML = '<tr><td colspan="3" class="p-8 text-center text-slate-500 italic">Kayıtlı projeniz yok.</td></tr>'; return; }
+                if(querySnapshot.empty) { tbody.innerHTML = '<tr><td colspan="3" class="p-8 text-center text-slate-500 italic">Bulutta henüz kaydedilmiş projeniz yok.</td></tr>'; return; }
 
                 querySnapshot.forEach((doc) => {
                     const p = doc.data(); const dateStr = p.createdAt ? new Date(p.createdAt.toDate()).toLocaleDateString('tr-TR') : "Yeni";
@@ -194,29 +215,73 @@
                         <td class="p-4 font-semibold text-slate-700">${p.name}</td>
                         <td class="p-4 text-slate-500 text-sm">${dateStr}</td>
                         <td class="p-4 text-right whitespace-nowrap">
-                            <button onclick="openCloudProject('${doc.id}', 'arama_belgesi')" class="bg-emerald-50 text-emerald-600 px-2.5 py-1.5 rounded text-xs font-bold mr-1 border border-emerald-200">Arama</button>
-                            <button onclick="openCloudProject('${doc.id}', 'kullanma_belgesi')" class="bg-amber-50 text-amber-600 px-2.5 py-1.5 rounded text-xs font-bold mr-1 border border-amber-200">Kullanma</button>
-                            <button onclick="openCloudProject('${doc.id}', 'kroki_belgesi')" class="bg-purple-50 text-purple-600 px-2.5 py-1.5 rounded text-xs font-bold mr-1 border border-purple-200">Kroki</button>
-                            <button onclick="openCloudProject('${doc.id}', 'kuyu_logu')" class="bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded text-xs font-bold mr-1 border border-slate-300">Log</button>
-                            <button onclick="openCloudProject('${doc.id}', 'dusum_zaman')" class="bg-blue-50 text-blue-600 px-2.5 py-1.5 rounded text-xs font-bold mr-4 border border-blue-200">Düşüm</button>
-                            
-                            <button onclick="deleteProject('${doc.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-2.5 py-1.5 rounded text-xs font-bold border border-rose-200"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="selectProject('${doc.id}')" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-lg text-xs font-bold mr-2 shadow transition">Projeyi Seç</button>
+                            <button onclick="deleteProject('${doc.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold border border-rose-200 transition"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     `;
-                    tbody.appendChild(tr); window[`cloud_proj_${doc.id}`] = p.data;
+                    tbody.appendChild(tr); window[`cloud_proj_${doc.id}`] = { id: doc.id, ...p };
                 });
-            } catch(e) { console.error(e); tbody.innerHTML = '<tr><td colspan="3" class="p-8 text-center text-rose-500">Hata oluştu!</td></tr>'; }
+            } catch(e) { console.error(e); tbody.innerHTML = '<tr><td colspan="3" class="p-8 text-center text-rose-500">Projeler yüklenirken hata oluştu!</td></tr>'; }
         }
 
-        function openCloudProject(docId, targetApp) {
-            const data = window[`cloud_proj_${docId}`]; if(!data) return;
-            sessionStorage.setItem('cloudLoadData', JSON.stringify(data));
-            window.location.href = targetApp + '.html';
+        function selectProject(id) {
+            const proj = window[`cloud_proj_${id}`];
+            sessionStorage.setItem('activeProject', JSON.stringify(proj));
+            updateActiveProjectUI();
+            closeDashboard();
+            showToast("Proje aktif edildi. Uygulamaları seçebilirsiniz.", "success");
+        }
+
+        function updateActiveProjectUI() {
+            const activeStr = sessionStorage.getItem('activeProject');
+            const cards = document.querySelectorAll('.app-card');
+            const icon = document.getElementById('activeProjectIcon');
+            const nameEl = document.getElementById('activeProjectName');
+            const btnEdit = document.getElementById('btnEditProject');
+            const btnClear = document.getElementById('btnClearProject');
+            const instruction = document.getElementById('appInstruction');
+
+            if (activeStr) {
+                const proj = JSON.parse(activeStr);
+                icon.className = "bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl shadow-lg shadow-blue-500/30";
+                nameEl.innerText = proj.name;
+                btnEdit.classList.remove('hidden'); btnClear.classList.remove('hidden');
+                instruction.className = "text-emerald-400 text-sm font-medium"; instruction.innerText = "Modüller kullanıma hazır.";
+                cards.forEach(c => { c.classList.remove('disabled-card'); c.style.cursor = 'pointer'; });
+            } else {
+                icon.className = "bg-slate-700 text-slate-400 w-12 h-12 rounded-full flex items-center justify-center text-xl";
+                nameEl.innerText = "Proje Seçilmedi";
+                btnEdit.classList.add('hidden'); btnClear.classList.add('hidden');
+                instruction.className = "text-amber-400 text-sm font-medium"; instruction.innerText = "Uygulamaları kullanabilmek için yukarıdan bir proje seçin veya oluşturun.";
+                cards.forEach(c => { c.classList.add('disabled-card'); c.style.cursor = 'not-allowed'; });
+            }
+        }
+
+        function clearActiveProject() {
+            sessionStorage.removeItem('activeProject');
+            updateActiveProjectUI();
+        }
+
+        function routeToApp(url) {
+            if (sessionStorage.getItem('activeProject')) { window.location.href = url; } 
+            else { showToast("Lütfen önce bir proje seçin!", "error"); }
+        }
+
+        function createNewProject() {
+            sessionStorage.removeItem('activeProject');
+            window.location.href = 'proje_bilgileri.html?mode=new';
+        }
+
+        function editActiveProject() {
+            window.location.href = 'proje_bilgileri.html?mode=edit';
         }
 
         async function deleteProject(docId) {
-            if(!confirm("Kalıcı olarak silinecek. Emin misiniz?")) return;
-            await window.fsDeleteDoc(window.fsDoc(window.db, "projects", docId)); loadDashboardProjects(); showToast("Proje silindi.", "info");
+            if(!confirm("Proje kalıcı olarak silinecek. Emin misiniz?")) return;
+            await window.fsDeleteDoc(window.fsDoc(window.db, "projects", docId)); 
+            const activeStr = sessionStorage.getItem('activeProject');
+            if(activeStr && JSON.parse(activeStr).id === docId) clearActiveProject();
+            loadDashboardProjects(); showToast("Proje silindi.", "info");
         }
     </script>
 </body>
