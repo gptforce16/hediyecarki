@@ -4,211 +4,129 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GeoLog Pro - Kullanma Belgesi</title>
-<!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com"></script>
-<!-- FontAwesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 body { font-family: Arial, sans-serif; background: #e2e8f0; }
 @media print {
-    @page { size: A4 portrait; margin: 10mm; }
-    body { background-color: white !important; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-    header, #noDataOverlay { display: none !important; }
-    #pdf_container { box-shadow: none !important; border: none !important; width: 100% !important; margin: 0 !important; padding: 0 !important; min-height: auto !important; }
+    @page { size: A4 portrait; margin: 15mm; }
+    body { background-color: white !important; }
+    header, #toast { display: none !important; }
+    #pdf_container { box-shadow: none !important; border: none !important; width: 100% !important; margin: 0 !important; }
 }
+.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+.pdf-table td { padding: 4px 6px; vertical-align: top; border: none !important; }
+.pdf-label { font-weight: normal; }
+.pdf-colon { width: 10px; font-weight: bold; }
 </style>
 </head>
-<body class="min-h-screen flex flex-col items-center pb-12">
+<body class="min-h-screen flex flex-col items-center">
     <header class="w-full bg-amber-900 text-white p-4 text-center shadow-md mb-8 sticky top-0 z-50 flex justify-between px-8">
-        <button onclick="window.location.href='index.html'" class="bg-slate-800 px-4 py-2 rounded text-sm hover:bg-slate-700 transition"><i class="fa-solid fa-arrow-left"></i> Geri Dön</button>
+        <button onclick="window.location.href='index.html'" class="bg-slate-800 px-4 py-2 rounded text-sm hover:bg-slate-700"><i class="fa-solid fa-arrow-left"></i> Geri Dön</button>
         <span class="font-bold text-lg"><i class="fa-solid fa-file-signature"></i> Kullanma Belgesi Önizleme</span>
-        <button onclick="window.print()" class="bg-amber-500 hover:bg-amber-400 text-slate-900 px-6 py-2 rounded font-bold shadow transition"><i class="fa-solid fa-print"></i> Yazdır (PDF)</button>
+        <button onclick="window.print()" class="bg-amber-500 hover:bg-amber-400 text-slate-900 px-6 py-2 rounded font-bold shadow"><i class="fa-solid fa-print"></i> Yazdır (PDF)</button>
     </header>
 
-    <div class="w-[210mm] h-[297mm] bg-white shadow-2xl p-[12mm] text-black text-[12px] leading-snug relative flex flex-col" id="pdf_container">
-        <!-- Veri Bulunamadı Ekranı -->
+    <div class="w-[210mm] min-h-[297mm] bg-white shadow-2xl p-[15mm] text-black text-[13px] relative mb-12" id="pdf_container">
         <div id="noDataOverlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
             <i class="fa-solid fa-file-circle-xmark text-6xl text-slate-300 mb-4"></i>
-            <p class="font-bold text-lg text-slate-600">Veri Bulunamadı Veya Proje Seçilmedi!</p>
-            <p class="text-sm text-slate-500 mt-2">Lütfen Ana Sayfadan "Projelerim" menüsünü kullanarak bir proje seçin.</p>
+            <p class="font-bold text-lg text-slate-600">Veri Bulunamadı!</p>
+            <p class="text-sm text-slate-500 mt-2">Lütfen Ana Sayfadan "Projelerim" ekranına gidip bir proje seçin.</p>
         </div>
 
-        <!-- Başlık Kısmı -->
-        <div class="text-center font-bold text-[15px] mb-1">YERALTI SUYU KULLANMA BELGESİ İSTEME FORMU</div>
-        <div class="flex justify-between items-start mb-4">
-            <div class="flex-1 text-center font-bold text-[13px] ml-16">
+        <div class="text-center font-bold text-[16px] mb-2">YERALTI SUYU KULLANMA BELGESİ İSTEME FORMU</div>
+        <div class="flex justify-between items-start mb-6">
+            <div class="flex-1 text-center font-bold text-[14px] pl-16">
                 D.S.İ. <span id="prev_dsi_bolge">..............</span> MÜDÜRLÜĞÜ'NE<br><span id="prev_dsi_il">BURSA</span>
             </div>
-            <div class="text-right text-[11px] font-bold">Form No: 2.7.3.</div>
+            <div class="text-right text-[12px] font-bold">Form No: 2.7.3.</div>
         </div>
 
         <!-- 1 Müracaat -->
-        <table class="w-full text-[11px] border-collapse border border-black mb-2">
-            <tr class="border-b border-black">
-                <td class="p-1.5 w-[150px] font-bold border-r border-black">1 Müracaat Sahibi</td>
-                <td class="p-1.5">: <span id="prev_muracaat" class="font-bold"></span></td>
-            </tr>
-            <tr class="border-b border-black">
-                <td class="p-1.5 font-bold border-r border-black">Vergi Daire-Vergi no</td>
-                <td class="p-1.5">: <span id="prev_vergi"></span></td>
-            </tr>
-            <tr>
-                <td class="p-1.5 font-bold border-r border-black align-top">Adres</td>
-                <td class="p-1.5 align-top">: <span id="prev_adres"></span></td>
-            </tr>
+        <table class="pdf-table">
+            <tr><td class="font-bold w-[200px]">1. Müracaat Sahibi</td><td class="pdf-colon">:</td><td><span id="prev_muracaat" class="font-bold"></span></td></tr>
+            <tr><td class="pl-4">Vergi Dairesi-Vergi no</td><td>:</td><td><span id="prev_vergi"></span></td></tr>
+            <tr><td class="pl-4">Adres</td><td>:</td><td><span id="prev_adres"></span></td></tr>
         </table>
-        
-        <!-- 2 ve 3 Personel Yan Yana -->
-        <table class="w-full text-[11px] border-collapse border border-black mb-2">
-            <tr class="border-b border-black">
-                <td colspan="2" class="p-1.5 border-r border-black font-bold">2 Teknik Sorumlu</td>
-                <td colspan="3" class="p-1.5 font-bold">3 Sondör, Kuyucu, Galericinin</td>
-            </tr>
-            <tr class="border-b border-black">
-                <td class="p-1.5 w-[18%]">a) Adı Soyadı</td>
-                <td class="p-1.5 w-[32%] border-r border-black"><span id="prev_tek_ad"></span></td>
-                <td class="p-1.5 w-[18%]">a) Adı Soyadı</td>
-                <td colspan="2" class="p-1.5 w-[32%]"><span id="prev_son_ad"></span></td>
-            </tr>
-            <tr class="border-b border-black">
-                <td class="p-1.5">b) TC Kimlik No</td>
-                <td class="p-1.5 border-r border-black"><span id="prev_tek_tc"></span></td>
-                <td class="p-1.5">b) TC Kimlik No</td>
-                <td colspan="2" class="p-1.5"><span id="prev_son_tc"></span></td>
-            </tr>
-            <tr class="border-b border-black">
-                <td class="p-1.5">c) Mesleği</td>
-                <td class="p-1.5 border-r border-black"><span id="prev_tek_meslek"></span></td>
-                <td class="p-1.5 leading-tight">b) Yet. Belge Dalı<br>Tarihi Ve No.</td>
-                <td colspan="2" class="p-1.5"><span id="prev_son_belge"></span></td>
-            </tr>
-            <tr class="border-b border-black">
-                <td class="p-1.5 leading-tight">d) Diploma -<br>Oda Sicil No</td>
-                <td class="p-1.5 border-r border-black"><span id="prev_tek_sicil"></span></td>
-                <td class="p-1.5 align-top" rowspan="2">c) Adresi</td>
-                <td colspan="2" class="p-1.5 align-top" rowspan="2"><span id="prev_son_adres"></span></td>
-            </tr>
-            <tr class="border-b border-black">
-                <td class="p-1.5 align-top">e) Adresi</td>
-                <td class="p-1.5 border-r border-black align-top"><span id="prev_tek_adres"></span></td>
-            </tr>
-            <tr>
-                <td colspan="2" class="p-1.5 border-r border-black text-right pr-6 italic text-gray-700">İmzası</td>
-                <td colspan="3" class="p-1.5 text-right pr-6 italic text-gray-700">İmzası</td>
-            </tr>
-        </table>
-        
+
+        <!-- 2 ve 3 Personel Yan Yana (Bordersiz Hizalama) -->
+        <div class="flex justify-between w-full mb-3 mt-2">
+            <div class="w-[48%]">
+                <div class="font-bold mb-1">2. Teknik Sorumlu</div>
+                <table class="w-full text-[13px]">
+                    <tr><td class="w-[130px] pl-4">a) Adı Soyadı</td><td class="w-[10px]">:</td><td><span id="prev_tek_ad"></span></td></tr>
+                    <tr><td class="pl-4">b) TC Kimlik No</td><td>:</td><td><span id="prev_tek_tc"></span></td></tr>
+                    <tr><td class="pl-4">c) Mesleği</td><td>:</td><td><span id="prev_tek_meslek"></span></td></tr>
+                    <tr><td class="pl-4">d) Diploma - Sicil No</td><td>:</td><td><span id="prev_tek_sicil"></span></td></tr>
+                    <tr><td class="pl-4 align-top">e) Adresi</td><td class="align-top">:</td><td class="align-top"><span id="prev_tek_adres"></span></td></tr>
+                    <tr><td colspan="3" class="text-right pr-6 italic pt-4 text-gray-700">İmzası: .......................</td></tr>
+                </table>
+            </div>
+            <div class="w-[48%]">
+                <div class="font-bold mb-1">3. Sondör, Kuyucu, Galericinin</div>
+                <table class="w-full text-[13px]">
+                    <tr><td class="w-[130px] pl-4">a) Adı Soyadı</td><td class="w-[10px]">:</td><td><span id="prev_son_ad"></span></td></tr>
+                    <tr><td class="pl-4">b) TC Kimlik No</td><td>:</td><td><span id="prev_son_tc"></span></td></tr>
+                    <tr><td class="pl-4 leading-tight align-top">c) Yet. Belge Dalı<br>Tarihi Ve No.</td><td class="align-top">:</td><td class="align-top"><span id="prev_son_belge"></span></td></tr>
+                    <tr><td class="pl-4 align-top">d) Adresi</td><td class="align-top">:</td><td class="align-top"><span id="prev_son_adres"></span></td></tr>
+                    <tr><td colspan="3" class="text-right pr-6 italic pt-6 text-gray-700">İmzası: .......................</td></tr>
+                </table>
+            </div>
+        </div>
+
         <!-- 4 Kuyu Yeri -->
-        <div class="font-bold text-[12px] mt-1 mb-1">4 Kuyu/Galeri Yeri</div>
-        <table class="w-full text-[11px] border-collapse border border-black mb-2">
-            <tr class="border-b border-black">
-                <td class="p-1.5 w-[35%] border-r border-black">İli</td>
-                <td class="p-1.5 w-[65%]"><span id="prev_il"></span></td>
-            </tr>
-            <tr class="border-b border-black">
-                <td class="p-1.5 border-r border-black">İlçesi / Köy Veya Mah. / Mevkii</td>
-                <td class="p-1.5"><span id="prev_ilce"></span> / <span id="prev_mahalle"></span></td>
-            </tr>
-            <tr class="border-b border-black">
-                <td class="p-1.5 border-r border-black">Kuyunun D.S.İ.No.su</td>
-                <td class="p-1.5 font-mono"><span id="prev_dsi_no"></span></td>
-            </tr>
-            <tr class="border-b border-black">
-                <td class="p-1.5 border-r border-black">Koordinatı</td>
-                <td class="p-1.5 font-mono"><span id="prev_koordinat"></span></td>
-            </tr>
-            <tr class="border-b border-black">
-                <td class="p-1.5 border-r border-black">Havza Adı</td>
-                <td class="p-1.5"><span id="prev_havza"></span></td>
-            </tr>
-            <tr>
-                <td class="p-1.5 border-r border-black">Ova Adı</td>
-                <td class="p-1.5"><span id="prev_alt_havza"></span></td>
-            </tr>
+        <div class="font-bold mt-2 mb-1">4. Kuyu/Galeri Yeri</div>
+        <table class="pdf-table">
+            <tr><td class="w-[200px] pl-4">İli</td><td class="pdf-colon">:</td><td><span id="prev_il"></span></td></tr>
+            <tr><td class="pl-4">İlçesi / Köy Veya Mah. / Mevkii</td><td>:</td><td><span id="prev_ilce"></span> / <span id="prev_mahalle"></span></td></tr>
+            <tr><td class="pl-4">Kuyunun D.S.İ.No.su</td><td>:</td><td class="font-mono"><span id="prev_dsi_no"></span></td></tr>
+            <tr><td class="pl-4">Koordinatı</td><td>:</td><td class="font-mono"><span id="prev_koordinat"></span></td></tr>
+            <tr><td class="pl-4">Havza Adı</td><td>:</td><td><span id="prev_havza"></span></td></tr>
+            <tr><td class="pl-4">Ova Adı</td><td>:</td><td><span id="prev_alt_havza"></span></td></tr>
         </table>
-        
+
         <!-- 5 Hidrolik Veriler -->
-        <div class="font-bold text-[12px] mt-1 mb-1">5 Kuyu/Galeri Verimi</div>
-        <table class="w-full text-[11px] border-collapse border border-black mb-3">
-            <tr class="border-b border-black">
-                <td class="p-1.5 border-r border-black w-[50%]">Pompajla</td>
-                <td class="p-1.5 text-center w-[30%]"><span id="prev_debi"></span></td>
-                <td class="p-1.5 border-l border-black text-center w-[20%]">lt/sn</td>
-            </tr>
-            <tr class="border-b border-black">
-                <td class="p-1.5 border-r border-black">Artezyen</td>
-                <td class="p-1.5 text-center"><span id="prev_artezyen"></span></td>
-                <td class="p-1.5 border-l border-black text-center">lt/sn</td>
-            </tr>
-            <tr class="border-b border-black">
-                <td class="p-1.5 border-r border-black">Statik Seviye</td>
-                <td class="p-1.5 text-center"><span id="prev_statik"></span></td>
-                <td class="p-1.5 border-l border-black text-center">m</td>
-            </tr>
-            <tr class="border-b border-black">
-                <td class="p-1.5 border-r border-black">Dinamik Seviye (Pompajda)</td>
-                <td class="p-1.5 text-center"><span id="prev_dinamik"></span></td>
-                <td class="p-1.5 border-l border-black text-center">m</td>
-            </tr>
-            <tr class="border-b border-black">
-                <td class="p-1.5 border-r border-black">Çekilecek Su Miktarı</td>
-                <td class="p-1.5 text-center"><span id="prev_cekilecek"></span></td>
-                <td class="p-1.5 border-l border-black text-center">t/g</td>
-            </tr>
-            <tr class="border-b border-black">
-                <td class="p-1.5 border-r border-black">Çekilecek Suyun Teminine<br>Yetecek Enerji Miktarı</td>
-                <td class="p-1.5 text-center"><span id="prev_enerji"></span></td>
-                <td class="p-1.5 border-l border-black text-center">kw/saat</td>
-            </tr>
-            <tr class="border-b border-black">
-                <td class="p-1.5 border-r border-black">Sayaç Numarası</td>
-                <td colspan="2" class="p-1.5 text-center"><span id="prev_sayac"></span></td>
-            </tr>
-            <tr>
-                <td class="p-1.5 border-r border-black">Kullanma Amacı</td>
-                <td colspan="2" class="p-1.5 font-bold text-center"><span id="prev_amaci"></span></td>
-            </tr>
+        <div class="font-bold mt-2 mb-1">5. Kuyu/Galeri Verimi</div>
+        <table class="pdf-table">
+            <tr><td class="w-[250px] pl-4">Pompajla</td><td class="pdf-colon">:</td><td class="w-[50px]"><span id="prev_debi"></span></td><td>lt/sn</td></tr>
+            <tr><td class="pl-4">Artezyen</td><td>:</td><td><span id="prev_artezyen"></span></td><td>lt/sn</td></tr>
+            <tr><td class="pl-4">Statik Seviye</td><td>:</td><td><span id="prev_statik"></span></td><td>m</td></tr>
+            <tr><td class="pl-4">Dinamik Seviye (Pompajda)</td><td>:</td><td><span id="prev_dinamik"></span></td><td>m</td></tr>
+            <tr><td class="pl-4">Çekilecek Su Miktarı</td><td>:</td><td><span id="prev_cekilecek"></span></td><td>t/g</td></tr>
+            <tr><td class="pl-4 leading-tight align-top">Çekilecek Suyun Teminine<br>Yetecek Enerji Miktarı</td><td class="align-top">:</td><td class="align-top"><span id="prev_enerji"></span></td><td class="align-top">kw/saat</td></tr>
+            <tr><td class="pl-4">Sayaç Numarası</td><td>:</td><td colspan="2"><span id="prev_sayac"></span></td></tr>
+            <tr><td class="pl-4 text-black">Kullanma Amacı</td><td>:</td><td colspan="2" class="font-bold text-black uppercase"><span id="prev_amaci"></span></td></tr>
         </table>
-        
-        <!-- Metin -->
-        <div class="text-justify text-[11px] leading-snug mb-3">
+
+        <!-- Alt Metin -->
+        <div class="text-justify mt-5 leading-relaxed text-[12px]">
             Yukarıda yeri ve ekli kuyu kütüğünde durumu açıklanan arazide bulunan su <span id="prev_amaci_metin" class="font-bold lowercase"></span> amacıyla kullanılmak istenmektedir. Bu hususta, 167 sayılı Yeraltı Suları Hakkında Kanun'un 10uncu maddesi gereğince tarafımıza yeraltı suyu kullanma belgesi verilmesini arz ederim.
         </div>
-        
-        <div class="text-[11px] mb-4">
-            <span class="font-bold">Ek:</span><br>
+
+        <div class="mt-6 text-[12px] font-bold">
+            Ek:<br>
             1) Kuyu Kütüğü (2 Takım).<br>
             2) Pompaj Programı (2 Takım).<br>
             3) Analiz Raporu (Kullanma Amacına Uygun) (2 Takım).<br>
             4) Kuyu Açılan Arazinin Onaylı Fotokopisi.
         </div>
-        
+
         <!-- İmza -->
-        <div class="flex justify-between items-end px-10 mt-auto pt-2">
-            <div class="font-bold text-[11px]"><span id="prev_tarih">...../...../2026</span></div>
-            <div class="text-center text-[11px]">
-                <span class="block mb-6 font-bold">Adı Soyadı<br>Müracaat Sahibi</span>
-                <span id="prev_imza_muracaat" class="italic font-bold"></span>
-            </div>
+        <div class="absolute bottom-10 right-10 text-center">
+            <span class="block mb-2 font-bold text-left"><span id="prev_tarih">...../...../2026</span></span>
+            <span class="block mb-6 font-bold">Adı Soyadı<br>Müracaat Sahibi</span>
+            <span id="prev_imza_muracaat" class="italic"></span>
         </div>
     </div>
 
     <script>
         window.onload = function() {
-            const activeStr = sessionStorage.getItem('activeProject');
-            
-            if (activeStr) {
+            const dataStr = sessionStorage.getItem('cloudLoadData');
+            if (dataStr) {
                 document.getElementById('noDataOverlay').classList.add('hidden');
-                const activeProj = JSON.parse(activeStr);
-                const data = activeProj.data || {inputs:{}};
-                
+                const data = JSON.parse(dataStr);
                 if(data.inputs) {
-                    const ids = [
-                        'muracaat','vergi','adres','dsi_bolge','il','ilce','mahalle','dsi_no',
-                        'koordinat','havza','alt_havza','tek_ad','tek_tc','tek_meslek','tek_sicil','tek_adres',
-                        'son_ad','son_tc','son_belge','son_adres','amaci'
-                    ];
-                    
+                    const ids = ['muracaat','vergi','adres','dsi_bolge','il','ilce','mahalle','dsi_no','koordinat','havza','alt_havza','tek_ad','tek_tc','tek_meslek','tek_sicil','tek_adres','son_ad','son_tc','son_belge','son_adres','amaci'];
                     ids.forEach(key => {
                         const el = document.getElementById('prev_'+key);
                         let val = data.inputs['p_'+key] || data.inputs['f_'+key] || data.inputs['t_'+key];
@@ -219,10 +137,11 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                     document.getElementById('prev_amaci_metin').innerText = (data.inputs.p_amaci || "").toLowerCase();
                     document.getElementById('prev_imza_muracaat').innerText = data.inputs.p_muracaat || "";
                     
-                    document.getElementById('prev_debi').innerText = data.inputs.v_debi || data.inputs.p_debi || "";
+                    // Dusum baglantisi
+                    document.getElementById('prev_debi').innerText = data.inputs.v_debi || "";
                     document.getElementById('prev_artezyen').innerText = data.inputs.h_artezyen || "";
-                    document.getElementById('prev_statik').innerText = data.inputs.v_statik || data.inputs.p_statik || "";
-                    document.getElementById('prev_dinamik').innerText = data.inputs.v_dinamik || data.inputs.p_dinamik || "";
+                    document.getElementById('prev_statik').innerText = data.inputs.v_statik || "";
+                    document.getElementById('prev_dinamik').innerText = data.inputs.v_dinamik || "";
                     document.getElementById('prev_cekilecek').innerText = data.inputs.h_cekilecek || "";
                     document.getElementById('prev_enerji').innerText = data.inputs.h_enerji || "";
                     document.getElementById('prev_sayac').innerText = data.inputs.h_sayac || "";
@@ -231,11 +150,9 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                     if(dateStr) { 
                         const [y, m, d] = dateStr.split('-'); 
                         document.getElementById('prev_tarih').innerText = `${d}.${m}.${y}`; 
-                    } else {
-                        const today = new Date();
-                        document.getElementById('prev_tarih').innerText = `${today.getDate().toString().padStart(2,'0')}.${(today.getMonth()+1).toString().padStart(2,'0')}.${today.getFullYear()}`;
                     }
                 }
+                sessionStorage.removeItem('cloudLoadData');
             }
         }
     </script>
