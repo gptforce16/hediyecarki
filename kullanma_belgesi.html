@@ -9,20 +9,16 @@
 <style>
 body { font-family: Arial, sans-serif; background: #e2e8f0; }
 @media print {
-    /* Kenar boşluğunu sıfırlayıp padding ile tam kontrol sağlıyoruz */
-    @page { size: A4 portrait; margin: 0; } 
-    body { background-color: white !important; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    header, #errorBanner { display: none !important; }
+    @page { size: A4 portrait; margin: 10mm; } 
+    body { background-color: white !important; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    header, #noDataOverlay { display: none !important; }
     #pdf_container { 
         box-shadow: none !important; 
         border: none !important; 
-        width: 210mm !important; 
-        height: 297mm !important;
+        width: 100% !important;
         margin: 0 !important; 
-        padding: 20mm !important; /* Dengelemek için 20mm'ye çektik */
-        page-break-after: avoid;
-        page-break-before: avoid;
-        overflow: hidden !important; /* Taşmaları kesin engeller */
+        padding: 0 !important;
+        min-height: auto !important;
     }
 }
 .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 6px; }
@@ -30,21 +26,23 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
 .pdf-colon { width: 10px; font-weight: bold; }
 </style>
 </head>
-<body class="min-h-screen flex flex-col items-center">
+<body class="min-h-screen flex flex-col items-center pb-12">
     <header class="w-full bg-amber-900 text-white p-4 text-center shadow-md mb-8 sticky top-0 z-50 flex justify-between px-8">
-        <button onclick="window.location.href='index.html'" class="bg-slate-800 px-4 py-2 rounded text-sm hover:bg-slate-700"><i class="fa-solid fa-arrow-left"></i> Geri Dön</button>
+        <button onclick="window.location.href='index.html'" class="bg-slate-800 px-4 py-2 rounded text-sm hover:bg-slate-700 transition"><i class="fa-solid fa-arrow-left"></i> Geri Dön</button>
         <span class="font-bold text-lg"><i class="fa-solid fa-file-signature"></i> Kullanma Belgesi Önizleme</span>
-        <button onclick="window.print()" class="bg-amber-500 hover:bg-amber-400 text-slate-900 px-6 py-2 rounded font-bold shadow"><i class="fa-solid fa-print"></i> Yazdır (PDF)</button>
+        <button onclick="window.print()" class="bg-amber-500 hover:bg-amber-400 text-slate-900 px-6 py-2 rounded font-bold shadow transition"><i class="fa-solid fa-print"></i> Yazdır (PDF)</button>
     </header>
 
-    <!-- Hata Bildirimi (Veri Yoksa) -->
-    <div id="errorBanner" class="w-[210mm] bg-red-100 text-red-800 p-3 mb-4 rounded border border-red-300 text-center text-sm font-semibold hidden print:hidden">
-        <i class="fa-solid fa-triangle-exclamation mr-2"></i> Sistemde kayıtlı veri bulunamadı! Lütfen ana forma dönüp bilgileri doldurunuz.
-    </div>
-
     <!-- A4 Container: 210x297mm -->
-    <div class="w-[210mm] h-[297mm] bg-white shadow-2xl p-[25mm] text-black text-[13px] relative mb-12 box-border" id="pdf_container">
+    <div class="w-[210mm] h-[297mm] bg-white shadow-2xl p-[15mm] text-black text-[13px] relative flex flex-col" id="pdf_container">
         
+        <!-- Veri Bulunamadı Ekranı (Arama Belgesindeki Gibi) -->
+        <div id="noDataOverlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
+            <i class="fa-solid fa-file-circle-xmark text-6xl text-slate-300 mb-4"></i>
+            <p class="font-bold text-lg text-slate-600">Veri Bulunamadı Veya Proje Seçilmedi!</p>
+            <p class="text-sm text-slate-500 mt-2">Lütfen Ana Sayfadan "Projelerim" menüsünü kullanarak bir proje seçin.</p>
+        </div>
+
         <div class="text-center font-bold text-[15px] mb-2">YERALTI SUYU KULLANMA BELGESİ İSTEME FORMU</div>
         
         <div class="flex justify-between items-start mb-4">
@@ -132,136 +130,96 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
 
     <script>
         window.onload = function() {
-            // Veriyi her formattan (düz metin veya JSON) okuyacak yeni birleştirici fonksiyon
-            function getAllData() {
-                let combinedData = {};
-                const storages = [sessionStorage, localStorage];
+            // Arama Belgesi çalışma prensibi: Seçili projeyi (activeProject) al
+            const activeStr = sessionStorage.getItem('activeProject');
+            
+            if (activeStr) {
+                // Proje varsa uyarı ekranını gizle
+                document.getElementById('noDataOverlay').classList.add('hidden');
+                const activeProj = JSON.parse(activeStr);
+                const data = activeProj.data || {inputs: {}};
                 
-                for (let storage of storages) {
-                    try {
-                        for (let i = 0; i < storage.length; i++) {
-                            let key = storage.key(i);
-                            let val = storage.getItem(key);
-                            
-                            try {
-                                // JSON olarak kaydedilmişse çöz
-                                let parsed = JSON.parse(val);
-                                if (typeof parsed === 'object' && parsed !== null) {
-                                    if (parsed.inputs) Object.assign(combinedData, parsed.inputs);
-                                    else if (parsed.form) Object.assign(combinedData, parsed.form);
-                                    else if (parsed.data) Object.assign(combinedData, parsed.data);
-                                    else Object.assign(combinedData, parsed);
-                                } else {
-                                    combinedData[key] = parsed;
+                if(data.inputs) {
+                    const inputs = data.inputs;
+                    
+                    const setVal = (id, possibleFields) => {
+                        let el = document.getElementById(id);
+                        if (el) {
+                            for (let field of possibleFields) {
+                                if (inputs[field] !== undefined && inputs[field] !== "") { 
+                                    el.innerText = inputs[field]; 
+                                    return; 
                                 }
-                            } catch(e) {
-                                // JSON Parse hatası verirse, düz metin (flat string) olarak kaydedilmiştir, direkt al
-                                combinedData[key] = val;
                             }
                         }
-                    } catch(e) {
-                        console.warn("Storage erişimi kısıtlı:", e);
+                    };
+
+                    // Genel Bilgiler
+                    setVal('prev_muracaat', ['p_muracaat', 'muracaat', 'f_unvan']);
+                    setVal('prev_vergi', ['p_vergi', 'vergi', 'f_vergi_no']);
+                    setVal('prev_adres', ['p_adres', 'adres', 'f_adres']);
+                    setVal('prev_dsi_bolge', ['p_dsi_bolge', 'dsi_bolge', 'f_dsi_bolge']);
+                    setVal('prev_dsi_il', ['p_il', 'il', 'f_il']);
+                    
+                    // Kuyu Yeri Bilgileri
+                    setVal('prev_il', ['p_il', 'il', 'f_il']);
+                    setVal('prev_ilce', ['p_ilce', 'ilce', 'f_ilce']);
+                    setVal('prev_mahalle', ['p_mahalle', 'mahalle', 'f_mahalle']);
+                    setVal('prev_dsi_no', ['p_dsi_no', 'dsi_no', 'f_kuyu_no']);
+                    setVal('prev_koordinat', ['p_koordinat', 'koordinat', 'f_koordinat_x']);
+                    setVal('prev_havza', ['p_havza', 'havza', 'f_havza']);
+                    setVal('prev_alt_havza', ['p_alt_havza', 'alt_havza', 'f_alt_havza']);
+
+                    // Teknik Sorumlu
+                    setVal('prev_tek_ad', ['t_tek_ad', 'tek_ad', 'p_tek_ad']);
+                    setVal('prev_tek_tc', ['t_tek_tc', 'tek_tc', 'p_tek_tc']);
+                    setVal('prev_tek_meslek', ['t_tek_meslek', 'tek_meslek', 'p_tek_meslek']);
+                    setVal('prev_tek_sicil', ['t_tek_sicil', 'tek_sicil', 'p_tek_sicil']);
+                    setVal('prev_tek_adres', ['t_tek_adres', 'tek_adres', 'p_tek_adres']);
+
+                    // Sondör
+                    setVal('prev_son_ad', ['t_son_ad', 'son_ad', 'p_son_ad']);
+                    setVal('prev_son_tc', ['t_son_tc', 'son_tc', 'p_son_tc']);
+                    setVal('prev_son_belge', ['t_son_belge', 'son_belge', 'p_son_belge']);
+                    setVal('prev_son_adres', ['t_son_adres', 'son_adres', 'p_son_adres']);
+
+                    // Hidrolik Veriler
+                    setVal('prev_debi', ['v_debi', 'debi', 'h_debi']);
+                    setVal('prev_artezyen', ['h_artezyen', 'artezyen', 'v_artezyen']);
+                    setVal('prev_statik', ['v_statik', 'statik', 'h_statik']);
+                    setVal('prev_dinamik', ['v_dinamik', 'dinamik', 'h_dinamik']);
+                    setVal('prev_cekilecek', ['h_cekilecek', 'cekilecek', 'v_cekilecek']);
+                    setVal('prev_enerji', ['h_enerji', 'enerji', 'v_enerji']);
+                    setVal('prev_sayac', ['h_sayac', 'sayac', 'v_sayac']);
+                    setVal('prev_amaci', ['p_amaci', 'amaci', 'f_amaci']);
+
+                    // Özel Text Dönüşümleri
+                    let amaciMetinEl = document.getElementById('prev_amaci_metin');
+                    if(amaciMetinEl) {
+                        let amaciVal = inputs['p_amaci'] || inputs['amaci'] || inputs['f_amaci'] || "";
+                        amaciMetinEl.innerText = amaciVal.toLowerCase();
                     }
-                }
-                return combinedData;
-            }
 
-            const inputs = getAllData();
+                    setVal('prev_imza_muracaat', ['p_muracaat', 'muracaat', 'f_unvan']);
 
-            // Anahtar kelimelerden herhangi biri varsa form doludur
-            const targetKeys = ['p_muracaat', 'f_unvan', 'muracaat', 'p_il', 'il', 'v_debi', 'debi', 'f_dsi_bolge', 'p_tek_ad', 't_tek_ad', 'p_vergi', 'p_adres'];
-            let isValidDataFound = false;
-            for(let key of targetKeys) {
-                if(inputs[key]) {
-                    isValidDataFound = true;
-                    break;
-                }
-            }
-
-            if (isValidDataFound) {
-                const setVal = (id, possibleFields) => {
-                    let el = document.getElementById(id);
-                    if (el) {
-                        for (let field of possibleFields) {
-                            if (inputs[field]) { 
-                                el.innerText = inputs[field]; 
-                                return; 
-                            }
+                    // Tarih İşleme
+                    const dateStr = inputs.p_tarih || inputs.tarih || inputs.f_tarih;
+                    if(dateStr) { 
+                        const parts = dateStr.split('-'); 
+                        if(parts.length === 3) {
+                            const [y, m, d] = parts;
+                            document.getElementById('prev_tarih').innerText = `${d}.${m}.${y}`; 
+                        } else {
+                            document.getElementById('prev_tarih').innerText = dateStr;
                         }
                     }
-                };
-
-                // Genel Bilgiler
-                setVal('prev_muracaat', ['p_muracaat', 'muracaat', 'f_unvan']);
-                setVal('prev_vergi', ['p_vergi', 'vergi', 'f_vergi_no']);
-                setVal('prev_adres', ['p_adres', 'adres', 'f_adres']);
-                setVal('prev_dsi_bolge', ['p_dsi_bolge', 'dsi_bolge', 'f_dsi_bolge']);
-                setVal('prev_dsi_il', ['p_il', 'il', 'f_il']);
-                
-                // Kuyu Yeri Bilgileri
-                setVal('prev_il', ['p_il', 'il', 'f_il']);
-                setVal('prev_ilce', ['p_ilce', 'ilce', 'f_ilce']);
-                setVal('prev_mahalle', ['p_mahalle', 'mahalle', 'f_mahalle']);
-                setVal('prev_dsi_no', ['p_dsi_no', 'dsi_no', 'f_kuyu_no']);
-                setVal('prev_koordinat', ['p_koordinat', 'koordinat', 'f_koordinat_x']);
-                setVal('prev_havza', ['p_havza', 'havza', 'f_havza']);
-                setVal('prev_alt_havza', ['p_alt_havza', 'alt_havza', 'f_alt_havza']);
-
-                // Teknik Sorumlu
-                setVal('prev_tek_ad', ['t_tek_ad', 'tek_ad', 'p_tek_ad']);
-                setVal('prev_tek_tc', ['t_tek_tc', 'tek_tc', 'p_tek_tc']);
-                setVal('prev_tek_meslek', ['t_tek_meslek', 'tek_meslek', 'p_tek_meslek']);
-                setVal('prev_tek_sicil', ['t_tek_sicil', 'tek_sicil', 'p_tek_sicil']);
-                setVal('prev_tek_adres', ['t_tek_adres', 'tek_adres', 'p_tek_adres']);
-
-                // Sondör
-                setVal('prev_son_ad', ['t_son_ad', 'son_ad', 'p_son_ad']);
-                setVal('prev_son_tc', ['t_son_tc', 'son_tc', 'p_son_tc']);
-                setVal('prev_son_belge', ['t_son_belge', 'son_belge', 'p_son_belge']);
-                setVal('prev_son_adres', ['t_son_adres', 'son_adres', 'p_son_adres']);
-
-                // Hidrolik Veriler
-                setVal('prev_debi', ['v_debi', 'debi', 'h_debi']);
-                setVal('prev_artezyen', ['h_artezyen', 'artezyen', 'v_artezyen']);
-                setVal('prev_statik', ['v_statik', 'statik', 'h_statik']);
-                setVal('prev_dinamik', ['v_dinamik', 'dinamik', 'h_dinamik']);
-                setVal('prev_cekilecek', ['h_cekilecek', 'cekilecek', 'v_cekilecek']);
-                setVal('prev_enerji', ['h_enerji', 'enerji', 'v_enerji']);
-                setVal('prev_sayac', ['h_sayac', 'sayac', 'v_sayac']);
-                setVal('prev_amaci', ['p_amaci', 'amaci', 'f_amaci']);
-
-                // Özel Text Dönüşümleri
-                let amaciMetinEl = document.getElementById('prev_amaci_metin');
-                if(amaciMetinEl) {
-                    let amaciVal = inputs['p_amaci'] || inputs['amaci'] || inputs['f_amaci'] || "";
-                    amaciMetinEl.innerText = amaciVal.toLowerCase();
-                }
-
-                setVal('prev_imza_muracaat', ['p_muracaat', 'muracaat', 'f_unvan']);
-
-                // Tarih İşleme
-                const dateStr = inputs.p_tarih || inputs.tarih || inputs.f_tarih;
-                if(dateStr) { 
-                    const parts = dateStr.split('-'); 
-                    if(parts.length === 3) {
-                        const [y, m, d] = parts;
-                        document.getElementById('prev_tarih').innerText = `${d}.${m}.${y}`; 
-                    } else {
-                        document.getElementById('prev_tarih').innerText = dateStr;
+                    
+                    // Form DSI İl kısmını büyük harfe çevirme
+                    let prevDsiIl = document.getElementById('prev_dsi_il');
+                    if(prevDsiIl && prevDsiIl.innerText) {
+                        prevDsiIl.innerText = prevDsiIl.innerText.toUpperCase();
                     }
                 }
-                
-                // Form DSI İl kısmını büyük harfe çevirme
-                let prevDsiIl = document.getElementById('prev_dsi_il');
-                if(prevDsiIl && prevDsiIl.innerText) {
-                    prevDsiIl.innerText = prevDsiIl.innerText.toUpperCase();
-                }
-
-            } else {
-                // Hiçbir storage alanında veri bulunamadıysa uyarı göster
-                document.getElementById('errorBanner').classList.remove('hidden');
-                // Hata mesajı konsolda sistemi durdurmasın diye 'warn' seviyesine çekildi
-                console.warn("Form verileri bulunamadı. Lütfen ana formu doldurduğunuzdan emin olun.");
             }
         }
     </script>
