@@ -35,7 +35,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
     <!-- Mobil Uyumlu Yatay Kaydırma (Scroll) Sarmalayıcı -->
     <div class="w-full max-w-full overflow-x-auto flex justify-start lg:justify-center px-4 lg:px-0 mb-4 pb-4">
         <!-- A4 Konteyner: 210x296mm, padding 20mm -->
-        <div class="w-[210mm] min-w-[210mm] h-[296mm] bg-white shadow-2xl p-[20mm] text-black text-[12px] leading-snug relative flex flex-col shrink-0" id="pdf_container">
+        <div class="w-[210mm] min-w-[210mm] h-[296mm] bg-white shadow-2xl px-[20mm] pt-[12mm] pb-[20mm] text-black text-[12px] leading-snug relative flex flex-col shrink-0" id="pdf_container">
             
             <div id="noDataOverlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
                 <i class="fa-solid fa-file-circle-xmark text-6xl text-slate-300 mb-4"></i>
@@ -44,18 +44,19 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             </div>
 
             <!-- Başlık -->
-            <div class="text-center font-bold text-[16px] mb-4">YERALTI SUYU KULLANMA BELGESİ İSTEME FORMU</div>
+            <div class="text-center font-bold text-[16px] mb-2">YERALTI SUYU KULLANMA BELGESİ İSTEME FORMU</div>
             
-            <div class="text-center font-bold text-[14px] mb-2 underline">
-                D.S.İ. <span id="prev_dsi_bolge">..............</span> MÜDÜRLÜĞÜ'NE<br><span id="prev_dsi_il">..................</span>
-            </div>
-
-            <!-- Form No (1. Müracaat Sahibinin üstünde, sağa yaslı) -->
+            <!-- Form No -->
             <div class="text-right text-[11px] font-bold mb-1">Form No: 2.7.3.</div>
 
+            <div class="text-center font-bold text-[14px] mb-2 underline">
+                DSİ <span id="prev_dsi_bolge">..............</span> MÜDÜRLÜĞÜNE<br><span id="prev_dsi_il">..................</span>
+            </div>
+
             <!-- 1 Müracaat -->
+            <div class="font-bold mt-1 mb-1">1. Müracaat Sahibi</div>
             <table class="pdf-table">
-                <tr><td class="pdf-label font-bold whitespace-nowrap">1. Müracaat Sahibi</td><td class="pdf-colon">:</td><td><span id="prev_muracaat" class="font-bold"></span></td></tr>
+                <tr><td class="pdf-label pl-4 whitespace-nowrap">Adı Soyadı / Unvanı</td><td class="pdf-colon">:</td><td><span id="prev_muracaat" class="font-bold"></span></td></tr>
                 <tr><td class="pl-4 whitespace-nowrap">Vergi Dairesi-Vergi no</td><td class="pdf-colon">:</td><td><span id="prev_vergi"></span></td></tr>
                 <tr><td class="pl-4 whitespace-nowrap">Adres</td><td class="pdf-colon">:</td><td><span id="prev_adres"></span></td></tr>
             </table>
@@ -120,7 +121,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             <!-- İmza (Sayfanın sağ altına hizalandı, fontlar inceltildi) -->
             <div class="absolute bottom-[20mm] right-[20mm] text-center">
                 <span class="block mb-8 font-normal text-center">...../...../.....</span>
-                <span id="prev_imza_muracaat" class="block font-normal text-[13px]"></span>
+                <span id="prev_imza_muracaat" class="block font-normal text-[13px] uppercase"></span>
             </div>
         </div>
     </div>
