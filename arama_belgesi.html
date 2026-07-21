@@ -14,6 +14,9 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
     @page { size: A4 portrait; margin: 0; }
     html, body { background-color: white !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; height: 100vh !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     header, #noDataOverlay { display: none !important; }
+    /* Mobil wrapper'ın yazdırmayı bozmaması için kurallar */
+    .print-wrapper { display: block !important; overflow: visible !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+    
     #pdf_container { 
         box-shadow: none !important; 
         border: none !important; 
@@ -40,112 +43,116 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
         <button onclick="window.print()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-900 px-6 py-2 rounded font-bold shadow transition"><i class="fa-solid fa-print"></i> Yazdır (PDF)</button>
     </header>
 
-    <div class="w-[210mm] h-[297mm] bg-white shadow-2xl p-[20mm] text-black text-[13px] leading-snug relative flex flex-col overflow-hidden" id="pdf_container">
-        <!-- Veri Bulunamadı Ekranı -->
-        <div id="noDataOverlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
-            <i class="fa-solid fa-file-circle-xmark text-6xl text-slate-300 mb-4"></i>
-            <p class="font-bold text-lg text-slate-600">Veri Bulunamadı Veya Proje Seçilmedi!</p>
-            <p class="text-sm text-slate-500 mt-2">Lütfen Ana Sayfadan "Projelerim" menüsünü kullanarak bir proje seçin.</p>
-        </div>
+    <div class="w-full max-w-full overflow-x-auto flex justify-start lg:justify-center px-2 lg:px-0 pb-4 print-wrapper">
+        
+        <!-- A4 Konteyner (min-w ve shrink-0 eklendi) -->
+        <div class="w-[210mm] min-w-[210mm] shrink-0 h-[297mm] bg-white shadow-2xl p-[20mm] text-black text-[13px] leading-snug relative flex flex-col overflow-hidden" id="pdf_container">
+            <!-- Veri Bulunamadı Ekranı -->
+            <div id="noDataOverlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
+                <i class="fa-solid fa-file-circle-xmark text-6xl text-slate-300 mb-4"></i>
+                <p class="font-bold text-lg text-slate-600">Veri Bulunamadı Veya Proje Seçilmedi!</p>
+                <p class="text-sm text-slate-500 mt-2">Lütfen Ana Sayfadan "Projelerim" menüsünü kullanarak bir proje seçin.</p>
+            </div>
 
-        <div class="text-center font-bold text-[16px] mb-2">YER ALTI SUYU ARAMA BELGESİ İSTEME FORMU</div>
-        
-        <div class="flex flex-col items-end text-[12px] font-bold mb-4">
-            <span>Belge Tipi: A</span>
-            <span>Form No: 2.7.1.</span>
-        </div>
-        
-        <div class="text-center font-bold text-[14px] mb-4 underline">DSİ <span id="prev_dsi_bolge">....................</span> MÜDÜRLÜĞÜNE<br><span id="prev_dsi_il">...........</span></div>
+            <div class="text-center font-bold text-[16px] mb-2">YER ALTI SUYU ARAMA BELGESİ İSTEME FORMU</div>
+            
+            <div class="flex flex-col items-end text-[12px] font-bold mb-4">
+                <span>Belge Tipi: A</span>
+                <span>Form No: 2.7.1.</span>
+            </div>
+            
+            <div class="text-center font-bold text-[14px] mb-4 underline">DSİ <span id="prev_dsi_bolge">....................</span> MÜDÜRLÜĞÜNE<br><span id="prev_dsi_il">...........</span></div>
 
-        <!-- 1. Müracaat -->
-        <table class="pdf-table -ml-1">
-            <tr><td class="font-bold w-[190px]">1. Müracaat Sahibi</td><td class="pdf-colon">:</td><td><span id="prev_muracaat" class="font-bold"></span></td></tr>
-            <tr><td class="pl-4">Vergi Dairesi-Vergi No</td><td class="pdf-colon">:</td><td><span id="prev_vergi"></span></td></tr>
-            <tr><td class="pl-4">Adresi</td><td class="pdf-colon">:</td><td><span id="prev_adres"></span></td></tr>
-        </table>
-        
-        <!-- 2. Arazi -->
-        <div class="font-bold mb-1 mt-1">2. Arazinin</div>
-        <table class="pdf-table text-[13px] -ml-1">
-            <tr>
-                <td class="w-[190px] pl-4">a) İli</td><td class="pdf-colon">:</td><td class="w-[140px]"><span id="prev_il"></span></td>
-                <td class="w-[110px]">f) Pafta</td><td class="pdf-colon">:</td><td><span id="prev_pafta"></span></td>
-            </tr>
-            <tr>
-                <td class="pl-4">b) İlçesi</td><td class="pdf-colon">:</td><td><span id="prev_ilce"></span></td>
-                <td>g) Yüzölçümü</td><td class="pdf-colon">:</td><td><span id="prev_yuzolcumu"></span></td>
-            </tr>
-            <tr>
-                <td class="pl-4">c) Mahallesi</td><td class="pdf-colon">:</td><td><span id="prev_mahalle_2"></span></td>
-                <td>h) Koordinatı</td><td class="pdf-colon">:</td><td><span id="prev_koordinat"></span></td>
-            </tr>
-            <tr>
-                <td class="pl-4">d) Mevkii</td><td class="pdf-colon">:</td><td><span id="prev_mahalle"></span></td>
-                <td>ı) Havza Adı</td><td class="pdf-colon">:</td><td><span id="prev_havza"></span></td>
-            </tr>
-            <tr>
-                <td class="pl-4">e) Ada / Parsel</td><td class="pdf-colon">:</td><td><span id="prev_ada_parsel"></span></td>
-                <td>i) Alt Havza Adı</td><td class="pdf-colon">:</td><td><span id="prev_alt_havza"></span></td>
-            </tr>
-        </table>
-        
-        <!-- 3. Mühendis -->
-        <div class="font-bold mb-1 mt-1">3. Teknik Elemanın (Teknik Sorumlu)</div>
-        <table class="pdf-table text-[13px] -ml-1">
-            <tr><td class="w-[190px] pl-4">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_tek_ad"></span> <span class="float-right mr-10 text-gray-700">İmzası: .......................</span></td></tr>
-            <tr><td class="pl-4">b) TC Kimlik No</td><td class="pdf-colon">:</td><td><span id="prev_tek_tc"></span></td></tr>
-            <tr><td class="pl-4">c) Mesleği</td><td class="pdf-colon">:</td><td><span id="prev_tek_meslek"></span></td></tr>
-            <tr><td class="pl-4">d) Diploma-Oda Sicil No</td><td class="pdf-colon">:</td><td><span id="prev_tek_sicil"></span></td></tr>
-            <tr><td class="pl-4">e) Adresi</td><td class="pdf-colon">:</td><td><span id="prev_tek_adres"></span></td></tr>
-        </table>
-        
-        <!-- 4. Sondör -->
-        <div class="font-bold mb-1 mt-1">4. Sondör, Kuyucu, Galericinin</div>
-        <table class="pdf-table text-[13px] -ml-1">
-            <tr><td class="w-[190px] pl-4">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_son_ad"></span> <span class="float-right mr-10 text-gray-700">İmzası: .......................</span></td></tr>
-            <tr><td class="pl-4">b) TC Kimlik No</td><td class="pdf-colon">:</td><td><span id="prev_son_tc"></span></td></tr>
-            <tr><td class="pl-4 whitespace-nowrap">c) Yet. Belge dalı tarihi ve No</td><td class="pdf-colon">:</td><td><span id="prev_son_belge"></span></td></tr>
-            <tr><td class="pl-4">d) Adresi</td><td class="pdf-colon">:</td><td><span id="prev_son_adres"></span></td></tr>
-        </table>
-        
-        <!-- 5. Kuyu -->
-        <div class="font-bold mt-2 mb-1">5. Kuyunun</div>
-        <table class="pdf-table text-[13px] mb-3 -ml-1">
-            <tr>
-                <td class="w-[190px] pl-4">a) Tipi</td><td class="pdf-colon">:</td><td class="w-[140px]"><span id="prev_tipi"></span></td>
-                <td class="w-[145px]">d) Kesiti</td><td class="pdf-colon">:</td><td><span id="prev_kesit"></span></td>
-            </tr>
-            <tr>
-                <td class="pl-4">b) Delme usulü</td><td class="pdf-colon">:</td><td><span id="prev_usul"></span></td>
-                <td class="whitespace-nowrap">e) Teçhiz Malzemesi</td><td class="pdf-colon">:</td><td><span id="prev_techiz"></span></td>
-            </tr>
-            <tr>
-                <td class="pl-4">c) Adedi</td><td class="pdf-colon">:</td><td><span id="prev_adet"></span></td>
-                <td>f) Sondaj Çapı</td><td class="pdf-colon">:</td><td><span id="prev_cap"></span></td>
-            </tr>
-        </table>
-        
-        <!-- 6. Su Miktarı -->
-        <div class="mt-2 mb-2">
-            <span class="font-bold">6. Talep edilen su miktarı:</span> <span id="prev_su_gun"></span> m³/gün &nbsp;&nbsp; - &nbsp;&nbsp; <span id="prev_su_yil"></span> m³/yıl
-        </div>
+            <!-- 1. Müracaat -->
+            <table class="pdf-table -ml-1">
+                <tr><td class="font-bold w-[190px]">1. Müracaat Sahibi</td><td class="pdf-colon">:</td><td><span id="prev_muracaat" class="font-bold"></span></td></tr>
+                <tr><td class="pl-4">Vergi Dairesi-Vergi No</td><td class="pdf-colon">:</td><td><span id="prev_vergi"></span></td></tr>
+                <tr><td class="pl-4">Adresi</td><td class="pdf-colon">:</td><td><span id="prev_adres"></span></td></tr>
+            </table>
+            
+            <!-- 2. Arazi -->
+            <div class="font-bold mb-1 mt-1">2. Arazinin</div>
+            <table class="pdf-table text-[13px] -ml-1">
+                <tr>
+                    <td class="w-[190px] pl-4">a) İli</td><td class="pdf-colon">:</td><td class="w-[140px]"><span id="prev_il"></span></td>
+                    <td class="w-[110px]">f) Pafta</td><td class="pdf-colon">:</td><td><span id="prev_pafta"></span></td>
+                </tr>
+                <tr>
+                    <td class="pl-4">b) İlçesi</td><td class="pdf-colon">:</td><td><span id="prev_ilce"></span></td>
+                    <td>g) Yüzölçümü</td><td class="pdf-colon">:</td><td><span id="prev_yuzolcumu"></span></td>
+                </tr>
+                <tr>
+                    <td class="pl-4">c) Mahallesi</td><td class="pdf-colon">:</td><td><span id="prev_mahalle_2"></span></td>
+                    <td>h) Koordinatı</td><td class="pdf-colon">:</td><td><span id="prev_koordinat"></span></td>
+                </tr>
+                <tr>
+                    <td class="pl-4">d) Mevkii</td><td class="pdf-colon">:</td><td><span id="prev_mahalle"></span></td>
+                    <td>ı) Havza Adı</td><td class="pdf-colon">:</td><td><span id="prev_havza"></span></td>
+                </tr>
+                <tr>
+                    <td class="pl-4">e) Ada / Parsel</td><td class="pdf-colon">:</td><td><span id="prev_ada_parsel"></span></td>
+                    <td>i) Alt Havza Adı</td><td class="pdf-colon">:</td><td><span id="prev_alt_havza"></span></td>
+                </tr>
+            </table>
+            
+            <!-- 3. Mühendis -->
+            <div class="font-bold mb-1 mt-1">3. Teknik Elemanın (Teknik Sorumlu)</div>
+            <table class="pdf-table text-[13px] -ml-1">
+                <tr><td class="w-[190px] pl-4">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_tek_ad"></span> <span class="float-right mr-10 text-gray-700">İmzası: .......................</span></td></tr>
+                <tr><td class="pl-4">b) TC Kimlik No</td><td class="pdf-colon">:</td><td><span id="prev_tek_tc"></span></td></tr>
+                <tr><td class="pl-4">c) Mesleği</td><td class="pdf-colon">:</td><td><span id="prev_tek_meslek"></span></td></tr>
+                <tr><td class="pl-4">d) Diploma-Oda Sicil No</td><td class="pdf-colon">:</td><td><span id="prev_tek_sicil"></span></td></tr>
+                <tr><td class="pl-4">e) Adresi</td><td class="pdf-colon">:</td><td><span id="prev_tek_adres"></span></td></tr>
+            </table>
+            
+            <!-- 4. Sondör -->
+            <div class="font-bold mb-1 mt-1">4. Sondör, Kuyucu, Galericinin</div>
+            <table class="pdf-table text-[13px] -ml-1">
+                <tr><td class="w-[190px] pl-4">a) Adı Soyadı</td><td class="pdf-colon">:</td><td><span id="prev_son_ad"></span> <span class="float-right mr-10 text-gray-700">İmzası: .......................</span></td></tr>
+                <tr><td class="pl-4">b) TC Kimlik No</td><td class="pdf-colon">:</td><td><span id="prev_son_tc"></span></td></tr>
+                <tr><td class="pl-4 whitespace-nowrap">c) Yet. Belge dalı tarihi ve No</td><td class="pdf-colon">:</td><td><span id="prev_son_belge"></span></td></tr>
+                <tr><td class="pl-4">d) Adresi</td><td class="pdf-colon">:</td><td><span id="prev_son_adres"></span></td></tr>
+            </table>
+            
+            <!-- 5. Kuyu -->
+            <div class="font-bold mt-2 mb-1">5. Kuyunun</div>
+            <table class="pdf-table text-[13px] mb-3 -ml-1">
+                <tr>
+                    <td class="w-[190px] pl-4">a) Tipi</td><td class="pdf-colon">:</td><td class="w-[140px]"><span id="prev_tipi"></span></td>
+                    <td class="w-[145px]">d) Kesiti</td><td class="pdf-colon">:</td><td><span id="prev_kesit"></span></td>
+                </tr>
+                <tr>
+                    <td class="pl-4">b) Delme usulü</td><td class="pdf-colon">:</td><td><span id="prev_usul"></span></td>
+                    <td class="whitespace-nowrap">e) Teçhiz Malzemesi</td><td class="pdf-colon">:</td><td><span id="prev_techiz"></span></td>
+                </tr>
+                <tr>
+                    <td class="pl-4">c) Adedi</td><td class="pdf-colon">:</td><td><span id="prev_adet"></span></td>
+                    <td>f) Sondaj Çapı</td><td class="pdf-colon">:</td><td><span id="prev_cap"></span></td>
+                </tr>
+            </table>
+            
+            <!-- 6. Su Miktarı -->
+            <div class="mt-2 mb-2">
+                <span class="font-bold">6. Talep edilen su miktarı:</span> <span id="prev_su_gun"></span> m³/gün &nbsp;&nbsp; - &nbsp;&nbsp; <span id="prev_su_yil"></span> m³/yıl
+            </div>
 
-        <div class="text-justify mt-3 leading-snug">
-            Yukarıda belirtilen ve ilişikteki krokide sınırları gösterilen arazide <span id="prev_amaci" class="font-bold uppercase"></span> amacıyla yeraltı suyu aranmak istenmektedir. Bu hususta 167 sayılı Yeraltı Suları hakkındaki Kanunun 9'uncu maddesi gereğince tarafımıza bir yeraltı suyu arama belgesi verilmesini arz ederim.
-        </div>
-        
-        <div class="mt-4 text-[12px] font-normal">
-            Ek:<br>
-            1) A tipi belge için hidrojeoloji raporu (2 takım).<br>
-            2) Kuyu projesi (kuyu yeri krokili) (2 takım).<br>
-            3) Kuyu açılacak arazinin onaylı tapu fotokopisi.<br>
-            4) Su İhtiyaç belgesi.
-        </div>
-        
-        <!-- İmza -->
-        <div class="absolute bottom-[20mm] right-[20mm] text-center">
-            <span class="block mb-8 font-normal text-center">...../...../.....</span>
-            <span id="prev_imza_muracaat" class="block font-normal text-[14px] uppercase"></span>
+            <div class="text-justify mt-3 leading-snug">
+                Yukarıda belirtilen ve ilişikteki krokide sınırları gösterilen arazide <span id="prev_amaci" class="font-bold uppercase"></span> amacıyla yeraltı suyu aranmak istenmektedir. Bu hususta 167 sayılı Yeraltı Suları hakkındaki Kanunun 9'uncu maddesi gereğince tarafımıza bir yeraltı suyu arama belgesi verilmesini arz ederim.
+            </div>
+            
+            <div class="mt-4 text-[12px] font-normal">
+                Ek:<br>
+                1) A tipi belge için hidrojeoloji raporu (2 takım).<br>
+                2) Kuyu projesi (kuyu yeri krokili) (2 takım).<br>
+                3) Kuyu açılacak arazinin onaylı tapu fotokopisi.<br>
+                4) Su İhtiyaç belgesi.
+            </div>
+            
+            <!-- İmza -->
+            <div class="absolute bottom-[20mm] right-[20mm] text-center">
+                <span class="block mb-8 font-normal text-center">...../...../.....</span>
+                <span id="prev_imza_muracaat" class="block font-normal text-[14px] uppercase"></span>
+            </div>
         </div>
     </div>
     
