@@ -39,11 +39,13 @@
     <main class="max-w-4xl mx-auto px-4">
         <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
             
+            <!-- Firma ve Personel -->
             <div class="p-6 border-b border-slate-100 bg-slate-50">
                 <h2 class="text-lg font-bold text-slate-800 mb-1"><i class="fa-solid fa-building text-blue-500 mr-2"></i> Firma ve Personel Bilgileri</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <div><label class="block text-xs font-bold text-slate-500 mb-1">FİRMA ADI</label><input type="text" id="firm_name" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"></div>
+                    <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">FİRMA ADI</label><input type="text" id="firm_name" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"></div>
                     <div><label class="block text-xs font-bold text-slate-500 mb-1">SORUMLU MÜHENDİS</label><input type="text" id="f_tek_ad" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">MÜHENDİS TC KİMLİK</label><input type="text" id="f_tek_tc" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"></div>
                     <div><label class="block text-xs font-bold text-slate-500 mb-1">MÜHENDİS MESLEĞİ</label><input type="text" id="f_tek_meslek" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"></div>
                     <div><label class="block text-xs font-bold text-slate-500 mb-1">DİPLOMA / SİCİL NO</label><input type="text" id="f_tek_sicil" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"></div>
                     <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">MÜHENDİS ADRESİ</label><input type="text" id="f_tek_adres" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"></div>
@@ -57,18 +59,20 @@
                 </div>
             </div>
 
+            <!-- Müracaat -->
             <div class="p-6 border-b border-slate-100">
                 <h2 class="text-lg font-bold text-slate-800 mb-1"><i class="fa-solid fa-user-tie text-emerald-500 mr-2"></i> Müracaat ve Müşteri Bilgileri</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                     <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">MÜRACAAT SAHİBİ / MÜŞTERİ</label><input type="text" id="p_muracaat" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500"></div>
                     <div><label class="block text-xs font-bold text-slate-500 mb-1">VERGİ DAİRESİ/NO</label><input type="text" id="p_vergi" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500"></div>
                     <div class="md:col-span-3"><label class="block text-xs font-bold text-slate-500 mb-1">MÜŞTERİ ADRESİ</label><input type="text" id="p_adres" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500"></div>
-                    <div><label class="block text-xs font-bold text-slate-500 mb-1">DSİ BÖLGE NO</label><input type="text" id="p_dsi_bolge" placeholder="1. BÖLGE" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">DSİ BÖLGE NO</label><input type="number" id="p_dsi_bolge" placeholder="Örn: 1" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500"></div>
                     <div><label class="block text-xs font-bold text-slate-500 mb-1">DSİ KUYU NO</label><input type="text" id="p_dsi_no" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500"></div>
-                    <div><label class="block text-xs font-bold text-slate-500 mb-1">KULLANMA AMACI</label><input type="text" id="p_amaci" placeholder="Sulama" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">KULLANMA AMACI</label><input type="text" id="p_amaci" placeholder="Örn: Sulama" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500"></div>
                 </div>
             </div>
 
+            <!-- Lokasyon -->
             <div class="p-6 border-b border-slate-100 bg-slate-50">
                 <h2 class="text-lg font-bold text-slate-800 mb-1"><i class="fa-solid fa-map-location-dot text-amber-500 mr-2"></i> Lokasyon ve Havza</h2>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
@@ -82,17 +86,31 @@
                     <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">HAVZA ADI</label><input type="text" id="p_havza" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-amber-500"></div>
                     <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">OVA / ALT HAVZA</label><input type="text" id="p_alt_havza" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-amber-500"></div>
                     
-                    <div class="md:col-span-4 mt-2 p-3 border border-slate-200 rounded-lg">
-                        <label class="block text-xs font-bold text-slate-700 mb-2">KOORDİNAT BİLGİLERİ</label>
-                        <div class="grid grid-cols-5 gap-2">
-                            <div class="col-span-5"><span class="text-[10px] font-bold text-slate-400">YAZI FORMATI (ED50)</span><input type="text" id="p_koordinat" placeholder="630401 D-4464749 K" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-sm font-mono"></div>
-                            <input type="hidden" id="p_lat" value=""><input type="hidden" id="p_lon" value=""><input type="hidden" id="p_zone" value=""><input type="hidden" id="p_easting" value=""><input type="hidden" id="p_northing" value="">
+                    <!-- UTM Koordinat Girişi -->
+                    <div class="md:col-span-4 mt-2 p-4 border border-slate-200 rounded-lg bg-white shadow-sm">
+                        <label class="block text-xs font-bold text-slate-700 mb-3"><i class="fa-solid fa-crosshairs text-amber-500 mr-1"></i> KOORDİNAT BİLGİLERİ (UTM ED50)</label>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1">UTM DİLİMİ (ZONE)</label>
+                                <input type="number" id="p_zone" placeholder="Örn: 35" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-sm font-mono focus:border-amber-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1">SAĞA DEĞER (DOĞU - X)</label>
+                                <input type="number" id="p_easting" placeholder="Örn: 630401" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-sm font-mono focus:border-amber-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1">YUKARI DEĞER (KUZEY - Y)</label>
+                                <input type="number" id="p_northing" placeholder="Örn: 4464749" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-sm font-mono focus:border-amber-500 outline-none">
+                            </div>
+                            <input type="hidden" id="p_koordinat" value="">
+                            <input type="hidden" id="p_lat" value=""><input type="hidden" id="p_lon" value="">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="p-6">
+            <!-- Kuyu Teknik Verileri -->
+            <div class="p-6 border-b border-slate-100">
                 <h2 class="text-lg font-bold text-slate-800 mb-1"><i class="fa-solid fa-gear text-purple-500 mr-2"></i> Planlanan Kuyu Teknik Verileri</h2>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
                     <div><label class="block text-xs font-bold text-slate-500 mb-1">TARİH</label><input type="date" id="p_tarih" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-purple-500"></div>
@@ -103,8 +121,20 @@
                     <div><label class="block text-xs font-bold text-slate-500 mb-1">BORU ÇAPI</label><input type="text" id="tech_pipe_spec" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-purple-500"></div>
                     <div><label class="block text-xs font-bold text-slate-500 mb-1">TEÇHİZ MALZEMESİ</label><input type="text" id="t_techiz" placeholder="PVC" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-purple-500"></div>
                     <div><label class="block text-xs font-bold text-slate-500 mb-1">SONDAJ ÇAPI</label><input type="text" id="tech_hole_spec" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-purple-500"></div>
-                    <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">TALEP M³ / GÜN</label><input type="text" id="t_su_gun" class="w-full bg-purple-50 border border-purple-200 rounded-lg px-3 py-2 text-sm font-bold outline-none focus:border-purple-500"></div>
-                    <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">TALEP M³ / YIL</label><input type="text" id="t_su_yil" class="w-full bg-purple-50 border border-purple-200 rounded-lg px-3 py-2 text-sm font-bold outline-none focus:border-purple-500"></div>
+                    <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">TALEP M³ / GÜN</label><input type="text" id="t_su_gun" class="w-full bg-purple-50 border border-purple-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-purple-500"></div>
+                    <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">TALEP M³ / YIL</label><input type="text" id="t_su_yil" class="w-full bg-purple-50 border border-purple-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-purple-500"></div>
+                </div>
+            </div>
+
+            <!-- Pompaj ve Verim Bilgileri (YENİ) -->
+            <div class="p-6 bg-white">
+                <h2 class="text-lg font-bold text-slate-800 mb-1"><i class="fa-solid fa-water text-cyan-500 mr-2"></i> Pompaj ve Kuyu Verim Bilgileri</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">POMPAJLA VERİM (lt/sn)</label><input type="number" step="0.01" id="v_debi" class="w-full bg-cyan-50 border border-cyan-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-cyan-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">ARTEZYEN VERİMİ (lt/sn)</label><input type="number" step="0.01" id="v_artezyen" class="w-full bg-cyan-50 border border-cyan-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-cyan-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">STATİK SEVİYE (m)</label><input type="number" step="0.01" id="v_statik" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-cyan-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">DİNAMİK SEVİYE (m)</label><input type="number" step="0.01" id="v_dinamik" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-cyan-500"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1">POMPA ÇALIŞMA SÜRESİ (saat/gün)</label><input type="number" step="0.5" id="v_calisma" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-cyan-500"></div>
                 </div>
             </div>
 
@@ -115,11 +145,12 @@
 
     <script>
         const allIds = [
-            'firm_name', 'f_tek_ad', 'f_tek_meslek', 'f_tek_sicil', 'f_tek_adres', 'f_son_ad', 'f_son_tc', 'f_son_belge', 'f_son_adres',
+            'firm_name', 'f_tek_ad', 'f_tek_tc', 'f_tek_meslek', 'f_tek_sicil', 'f_tek_adres', 'f_son_ad', 'f_son_tc', 'f_son_belge', 'f_son_adres',
             'p_muracaat', 'p_vergi', 'p_adres', 'p_dsi_bolge', 'p_dsi_no', 'p_amaci',
             'p_il', 'p_ilce', 'p_mahalle', 'p_pafta', 'p_ada', 'p_parsel', 'p_yuzolcumu', 'p_koordinat', 'p_havza', 'p_alt_havza',
             'p_zone', 'p_easting', 'p_northing', 'p_lat', 'p_lon',
-            'p_tarih', 'p_derinlik', 't_tipi', 't_usul', 't_adet', 'tech_pipe_spec', 't_techiz', 'tech_hole_spec', 't_su_gun', 't_su_yil'
+            'p_tarih', 'p_derinlik', 't_tipi', 't_usul', 't_adet', 'tech_pipe_spec', 't_techiz', 'tech_hole_spec', 't_su_gun', 't_su_yil',
+            'v_debi', 'v_artezyen', 'v_statik', 'v_dinamik', 'v_calisma'
         ];
 
         let editMode = false;
@@ -165,6 +196,20 @@
         async function saveMasterProject() {
             if(!window.currentUser) { showToast("Lütfen ana sayfadan giriş yapın.", "error"); return; }
             
+            // UTM Koordinatlarını birleştir ve gizli inputa at
+            const zone = document.getElementById('p_zone') ? document.getElementById('p_zone').value.trim() : '';
+            const easting = document.getElementById('p_easting') ? document.getElementById('p_easting').value.trim() : '';
+            const northing = document.getElementById('p_northing') ? document.getElementById('p_northing').value.trim() : '';
+            
+            let d = [];
+            if(easting) d.push(easting + " D");
+            if(northing) d.push(northing + " K");
+            let dStr = d.join(" - ");
+            let finalCoord = zone ? (zone + " " + dStr).trim() : dStr;
+            
+            const coordEl = document.getElementById('p_koordinat');
+            if(coordEl) coordEl.value = finalCoord; // Sonucu diğer formların okuyabileceği formata dönüştürdük.
+
             if(!existingData.inputs) existingData.inputs = {};
             allIds.forEach(id => {
                 const el = document.getElementById(id);
