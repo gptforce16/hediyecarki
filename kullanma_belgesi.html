@@ -9,20 +9,24 @@
 <style>
 body { font-family: Arial, sans-serif; background: #e2e8f0; }
 @media print {
-    @page { size: A4 portrait; margin: 20mm; } /* Kenar boşlukları artırıldı */
-    body { background-color: white !important; }
-    header, #toast { display: none !important; }
+    /* Kenar boşluğunu sıfırlayıp padding ile tam kontrol sağlıyoruz */
+    @page { size: A4 portrait; margin: 0; } 
+    body { background-color: white !important; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    header, #errorBanner { display: none !important; }
     #pdf_container { 
         box-shadow: none !important; 
         border: none !important; 
-        width: 100% !important; 
-        height: 100% !important;
+        width: 210mm !important; 
+        height: 297mm !important;
         margin: 0 !important; 
-        padding: 0 !important; /* Yazdırmada kenar boşluğunu @page margin yönetecek */
+        padding: 20mm !important; /* Dengelemek için 20mm'ye çektik */
+        page-break-after: avoid;
+        page-break-before: avoid;
+        overflow: hidden !important; /* Taşmaları kesin engeller */
     }
 }
-.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
-.pdf-table td { padding: 3px 6px; vertical-align: top; border: none !important; }
+.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 6px; }
+.pdf-table td { padding: 2px 4px; vertical-align: top; border: none !important; }
 .pdf-colon { width: 10px; font-weight: bold; }
 </style>
 </head>
@@ -39,7 +43,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
     </div>
 
     <!-- A4 Container: 210x297mm -->
-    <div class="w-[210mm] h-[297mm] bg-white shadow-2xl p-[20mm] text-black text-[13px] relative mb-12" id="pdf_container">
+    <div class="w-[210mm] h-[297mm] bg-white shadow-2xl p-[25mm] text-black text-[13px] relative mb-12 box-border" id="pdf_container">
         
         <div class="text-center font-bold text-[15px] mb-2">YERALTI SUYU KULLANMA BELGESİ İSTEME FORMU</div>
         
@@ -128,42 +132,118 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
 
     <script>
         window.onload = function() {
-            let dataStr = sessionStorage.getItem('cloudLoadData');
-            
-            if (dataStr) {
-                const data = JSON.parse(dataStr);
-                if(data.inputs) {
-                    const ids = ['muracaat','vergi','adres','dsi_bolge','il','ilce','mahalle','dsi_no','koordinat','havza','alt_havza','tek_ad','tek_tc','tek_meslek','tek_sicil','tek_adres','son_ad','son_tc','son_belge','son_adres','amaci'];
-                    ids.forEach(key => {
-                        const el = document.getElementById('prev_'+key);
-                        let val = data.inputs['p_'+key] || data.inputs['f_'+key] || data.inputs['t_'+key];
-                        if(el && val) el.innerText = val;
-                    });
-                    
-                    document.getElementById('prev_dsi_il').innerText = (data.inputs.p_il || "").toUpperCase();
-                    document.getElementById('prev_amaci_metin').innerText = (data.inputs.p_amaci || "").toLowerCase();
-                    document.getElementById('prev_imza_muracaat').innerText = data.inputs.p_muracaat || "";
-                    
-                    // Hidrolik veriler
-                    document.getElementById('prev_debi').innerText = data.inputs.v_debi || "";
-                    document.getElementById('prev_artezyen').innerText = data.inputs.h_artezyen || "";
-                    document.getElementById('prev_statik').innerText = data.inputs.v_statik || "";
-                    document.getElementById('prev_dinamik').innerText = data.inputs.v_dinamik || "";
-                    document.getElementById('prev_cekilecek').innerText = data.inputs.h_cekilecek || "";
-                    document.getElementById('prev_enerji').innerText = data.inputs.h_enerji || "";
-                    document.getElementById('prev_sayac').innerText = data.inputs.h_sayac || "";
-
-                    const dateStr = data.inputs.p_tarih;
-                    if(dateStr) { 
-                        const [y, m, d] = dateStr.split('-'); 
-                        if(y && m && d) {
-                            document.getElementById('prev_tarih').innerText = `${d}.${m}.${y}`; 
+            // Veriyi bulmak için tüm hafızayı tarayan KESİN YÖNTEM
+            function findData() {
+                const storages = [sessionStorage, localStorage];
+                const targetKeys = ['p_muracaat', 'f_unvan', 'muracaat', 'p_il', 'il', 'v_debi', 'debi', 'f_dsi_bolge', 'p_tek_ad', 't_tek_ad'];
+                
+                for (let storage of storages) {
+                    for (let i = 0; i < storage.length; i++) {
+                        let key = storage.key(i);
+                        try {
+                            let val = storage.getItem(key);
+                            let parsed = JSON.parse(val);
+                            let dataToTest = parsed.inputs || parsed.form || parsed.data || parsed;
+                            
+                            // Hedef anahtarlardan en az biri varsa bu bizim verimizdir
+                            for(let t of targetKeys) {
+                                if(dataToTest[t]) {
+                                    return dataToTest;
+                                }
+                            }
+                        } catch(e) {
+                            // JSON değilse yoksay
                         }
                     }
                 }
+                return null;
+            }
+
+            const inputs = findData();
+
+            if (inputs) {
+                const setVal = (id, possibleFields) => {
+                    let el = document.getElementById(id);
+                    if (el) {
+                        for (let field of possibleFields) {
+                            if (inputs[field]) { 
+                                el.innerText = inputs[field]; 
+                                return; 
+                            }
+                        }
+                    }
+                };
+
+                // Genel Bilgiler
+                setVal('prev_muracaat', ['p_muracaat', 'muracaat', 'f_unvan']);
+                setVal('prev_vergi', ['p_vergi', 'vergi', 'f_vergi_no']);
+                setVal('prev_adres', ['p_adres', 'adres', 'f_adres']);
+                setVal('prev_dsi_bolge', ['p_dsi_bolge', 'dsi_bolge', 'f_dsi_bolge']);
+                setVal('prev_dsi_il', ['p_il', 'il', 'f_il']);
+                
+                // Kuyu Yeri Bilgileri
+                setVal('prev_il', ['p_il', 'il', 'f_il']);
+                setVal('prev_ilce', ['p_ilce', 'ilce', 'f_ilce']);
+                setVal('prev_mahalle', ['p_mahalle', 'mahalle', 'f_mahalle']);
+                setVal('prev_dsi_no', ['p_dsi_no', 'dsi_no', 'f_kuyu_no']);
+                setVal('prev_koordinat', ['p_koordinat', 'koordinat', 'f_koordinat_x']);
+                setVal('prev_havza', ['p_havza', 'havza', 'f_havza']);
+                setVal('prev_alt_havza', ['p_alt_havza', 'alt_havza', 'f_alt_havza']);
+
+                // Teknik Sorumlu
+                setVal('prev_tek_ad', ['t_tek_ad', 'tek_ad', 'p_tek_ad']);
+                setVal('prev_tek_tc', ['t_tek_tc', 'tek_tc', 'p_tek_tc']);
+                setVal('prev_tek_meslek', ['t_tek_meslek', 'tek_meslek', 'p_tek_meslek']);
+                setVal('prev_tek_sicil', ['t_tek_sicil', 'tek_sicil', 'p_tek_sicil']);
+                setVal('prev_tek_adres', ['t_tek_adres', 'tek_adres', 'p_tek_adres']);
+
+                // Sondör
+                setVal('prev_son_ad', ['t_son_ad', 'son_ad', 'p_son_ad']);
+                setVal('prev_son_tc', ['t_son_tc', 'son_tc', 'p_son_tc']);
+                setVal('prev_son_belge', ['t_son_belge', 'son_belge', 'p_son_belge']);
+                setVal('prev_son_adres', ['t_son_adres', 'son_adres', 'p_son_adres']);
+
+                // Hidrolik Veriler
+                setVal('prev_debi', ['v_debi', 'debi', 'h_debi']);
+                setVal('prev_artezyen', ['h_artezyen', 'artezyen', 'v_artezyen']);
+                setVal('prev_statik', ['v_statik', 'statik', 'h_statik']);
+                setVal('prev_dinamik', ['v_dinamik', 'dinamik', 'h_dinamik']);
+                setVal('prev_cekilecek', ['h_cekilecek', 'cekilecek', 'v_cekilecek']);
+                setVal('prev_enerji', ['h_enerji', 'enerji', 'v_enerji']);
+                setVal('prev_sayac', ['h_sayac', 'sayac', 'v_sayac']);
+                setVal('prev_amaci', ['p_amaci', 'amaci', 'f_amaci']);
+
+                // Özel Text Dönüşümleri
+                let amaciMetinEl = document.getElementById('prev_amaci_metin');
+                if(amaciMetinEl) {
+                    let amaciVal = inputs['p_amaci'] || inputs['amaci'] || inputs['f_amaci'] || "";
+                    amaciMetinEl.innerText = amaciVal.toLowerCase();
+                }
+
+                setVal('prev_imza_muracaat', ['p_muracaat', 'muracaat', 'f_unvan']);
+
+                // Tarih İşleme
+                const dateStr = inputs.p_tarih || inputs.tarih || inputs.f_tarih;
+                if(dateStr) { 
+                    const parts = dateStr.split('-'); 
+                    if(parts.length === 3) {
+                        const [y, m, d] = parts;
+                        document.getElementById('prev_tarih').innerText = `${d}.${m}.${y}`; 
+                    } else {
+                        document.getElementById('prev_tarih').innerText = dateStr;
+                    }
+                }
+                
+                // Form DSI İl kısmını büyük harfe çevirme
+                let prevDsiIl = document.getElementById('prev_dsi_il');
+                if(prevDsiIl && prevDsiIl.innerText) {
+                    prevDsiIl.innerText = prevDsiIl.innerText.toUpperCase();
+                }
+
             } else {
-                // Veri bulunamazsa kırmızı hata bandını göster
+                // Hiçbir storage alanında veri bulunamadıysa uyarı göster
                 document.getElementById('errorBanner').classList.remove('hidden');
+                console.error("Bulunamadı. Tarayıcı hafızasında beklenen anahtarlarda veri yok.");
             }
         }
     </script>
