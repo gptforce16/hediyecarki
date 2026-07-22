@@ -22,15 +22,32 @@
         document.addEventListener('DOMContentLoaded', () => {
             onAuthStateChanged(window.auth, user => {
                 window.currentUser = user;
-                const loggedOut = document.getElementById('loggedOutNav'); const loggedIn = document.getElementById('loggedInNav'); const emailDisp = document.getElementById('userEmailDisplay');
+                
+                const loggedOutNav = document.getElementById('loggedOutNav'); 
+                const loggedInNav = document.getElementById('loggedInNav'); 
+                const emailDisp = document.getElementById('userEmailDisplay');
+                const landingView = document.getElementById('landingView');
+                const appView = document.getElementById('appView');
+
                 if (user) {
-                    if (loggedOut) loggedOut.classList.add('hidden'); if (loggedIn) loggedIn.classList.remove('hidden');
+                    // Kullanıcı giriş yaptıysa
+                    if (loggedOutNav) loggedOutNav.classList.add('hidden'); 
+                    if (loggedInNav) loggedInNav.classList.remove('hidden');
                     if (emailDisp) emailDisp.innerText = user.displayName || user.email;
+                    
+                    if (landingView) landingView.classList.add('hidden');
+                    if (appView) appView.classList.remove('hidden');
+                    
+                    updateActiveProjectUI();
                 } else {
-                    if (loggedOut) loggedOut.classList.remove('hidden'); if (loggedIn) loggedIn.classList.add('hidden');
+                    // Kullanıcı çıkış yaptıysa
+                    if (loggedOutNav) loggedOutNav.classList.remove('hidden'); 
+                    if (loggedInNav) loggedInNav.classList.add('hidden');
+                    
+                    if (landingView) landingView.classList.remove('hidden');
+                    if (appView) appView.classList.add('hidden');
                 }
             });
-            updateActiveProjectUI();
         });
     </script>
 
@@ -52,9 +69,11 @@
 
 <body class="bg-slate-900 text-slate-800 flex flex-col min-h-screen relative overflow-x-hidden">
 
+    <!-- Arka Plan Efektleri -->
     <div class="fixed inset-0 bg-grid-pattern opacity-60 z-0 pointer-events-none"></div>
     <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[800px] md:h-[500px] bg-blue-600/10 blur-[100px] md:blur-[120px] rounded-full pointer-events-none z-0"></div>
 
+    <!-- Navigasyon Çubuğu -->
     <nav class="relative z-40 w-full py-6 px-4 flex justify-between items-center shrink-0 max-w-7xl mx-auto border-b border-white/10 mb-6">
         <div class="flex items-center gap-3 fade-in-up">
             <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-2.5 rounded-xl shadow-lg shadow-blue-900/40 text-white flex items-center justify-center border border-white/10">
@@ -64,108 +83,165 @@
         </div>
         
         <div class="flex items-center gap-3 fade-in-up delay-100">
+            <!-- Giriş Yapmamış Kullanıcı Menüsü -->
             <div id="loggedOutNav" class="flex items-center gap-2">
-                <button onclick="loginWithGoogle()" class="bg-white hover:bg-slate-100 text-slate-800 px-4 py-2 rounded-xl text-sm font-bold transition shadow flex items-center gap-2">
-                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-4 h-4" alt="Google"> Giriş Yap
-                </button>
+                <!-- Üst sağdaki giriş butonu kaldırıldı -->
             </div>
+            <!-- Giriş Yapmış Kullanıcı Menüsü -->
             <div id="loggedInNav" class="hidden flex items-center gap-3">
                 <span id="userEmailDisplay" class="text-xs font-bold text-slate-400 hidden md:inline"></span>
                 <button onclick="openDashboard()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-blue-500/30">
                     <i class="fa-solid fa-folder-open"></i> <span class="hidden md:inline">Projelerim</span>
                 </button>
-                <button onclick="logoutUser()" class="bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white px-3 py-2 rounded-xl text-sm transition"><i class="fa-solid fa-right-from-bracket"></i></button>
+                <button onclick="logoutUser()" class="bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white px-3 py-2 rounded-xl text-sm transition" title="Çıkış Yap"><i class="fa-solid fa-right-from-bracket"></i></button>
             </div>
         </div>
     </nav>
 
-    <main class="flex-grow w-full max-w-7xl mx-auto px-4 md:px-8 relative z-20">
+    <!-- ANA İÇERİK ALANI -->
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 md:px-8 relative z-20 flex flex-col items-center justify-center">
         
-        <!-- Aktif Proje Paneli -->
-        <div class="bg-slate-800/80 backdrop-blur border border-slate-700 rounded-2xl p-6 mb-10 flex flex-col md:flex-row justify-between items-center gap-4 fade-in-up">
-            <div class="flex items-center gap-4">
-                <div id="activeProjectIcon" class="bg-slate-700 text-slate-400 w-12 h-12 rounded-full flex items-center justify-center text-xl"><i class="fa-solid fa-folder"></i></div>
-                <div>
-                    <p class="text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">AKTİF PROJE</p>
-                    <h2 id="activeProjectName" class="text-xl font-bold text-white">Proje Seçilmedi</h2>
+        <!-- BÖLÜM 1: AÇILIŞ (LANDING) EKRANI (Sadece Giriş Yapılmadığında Görünür) -->
+        <div id="landingView" class="w-full flex flex-col items-center justify-center py-6 md:py-12 fade-in-up">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h1 class="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-6 leading-tight">
+                    Profesyonel <span class="text-gradient">Hidrojeolojik</span> Dokümantasyon
+                </h1>
+                <p class="text-lg md:text-xl text-slate-400 font-medium mb-10 leading-relaxed">
+                    DSİ standartlarında dokümantasyon analizlerinizi dakikalar içinde oluşturun. Projelerinizi bulutta güvenle yönetin.
+                </p>
+                <!-- Kullanıcı Girişi Butonu (Sadeleştirildi) -->
+                <button onclick="loginWithGoogle()" class="bg-blue-600 hover:bg-blue-500 text-white px-10 py-4 rounded-2xl text-lg font-bold transition shadow-2xl shadow-blue-600/40 flex items-center justify-center mx-auto transform hover:-translate-y-1">
+                    Kullanıcı Girişi
+                </button>
+            </div>
+
+            <!-- Yeni Uygulama Tanıtım Kartları -->
+            <div class="flex flex-wrap justify-center gap-6 w-full max-w-6xl fade-in-up delay-200">
+                <div class="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 p-6 rounded-3xl text-center w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                    <div class="bg-emerald-500/20 text-emerald-400 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"><i class="fa-solid fa-file-contract"></i></div>
+                    <h3 class="text-white text-lg font-bold mb-2">Arama Belgesi</h3>
+                    <p class="text-slate-400 text-sm">Yer altı suyu arama belgesi isteme formunu DSİ standartlarında eksiksiz oluşturun.</p>
+                </div>
+                <div class="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 p-6 rounded-3xl text-center w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                    <div class="bg-amber-500/20 text-amber-400 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"><i class="fa-solid fa-file-signature"></i></div>
+                    <h3 class="text-white text-lg font-bold mb-2">Kullanma Belgesi</h3>
+                    <p class="text-slate-400 text-sm">Kullanma belgesini hidrolik verilerinizle birlikte otomatik ve hatasız hazırlayın.</p>
+                </div>
+                <div class="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 p-6 rounded-3xl text-center w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                    <div class="bg-purple-500/20 text-purple-400 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <h3 class="text-white text-lg font-bold mb-2">Kuyu Yeri Krokisi</h3>
+                    <p class="text-slate-400 text-sm">Projenizin lokasyonunu ve detaylı konumunu akıllı uydu haritaları ile belirleyin.</p>
+                </div>
+                <div class="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 p-6 rounded-3xl text-center w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                    <div class="bg-slate-500/20 text-slate-300 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"><i class="fa-solid fa-layer-group"></i></div>
+                    <h3 class="text-white text-lg font-bold mb-2">Kuyu Logu Editörü</h3>
+                    <p class="text-slate-400 text-sm">Litolojik birimleri ve kuyu teçhizini görselleştirerek sondaj raporunuzu tamamlayın.</p>
+                </div>
+                <div class="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 p-6 rounded-3xl text-center w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                    <div class="bg-blue-500/20 text-blue-400 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"><i class="fa-solid fa-chart-line"></i></div>
+                    <h3 class="text-white text-lg font-bold mb-2">Düşüm Zaman Analizi</h3>
+                    <p class="text-slate-400 text-sm">Transmisivite (T) ve Hidrolik İletkenlik (K) parametrelerini otomatik hesaplatıp logaritmik grafiğini çizin.</p>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <button id="btnEditProject" onclick="editActiveProject()" class="hidden bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition border border-slate-600"><i class="fa-solid fa-pen-to-square mr-1"></i> Projeyi Düzenle</button>
-                <button id="btnClearProject" onclick="clearActiveProject()" class="hidden bg-rose-600/20 hover:bg-rose-600/40 text-rose-400 px-4 py-2 rounded-lg text-sm font-bold transition border border-rose-500/30"><i class="fa-solid fa-times mr-1"></i> Kapat</button>
-                <button onclick="createNewProject()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2 rounded-lg text-sm font-bold transition shadow-lg shadow-emerald-600/30 flex items-center gap-2"><i class="fa-solid fa-plus"></i> Yeni Proje Oluştur</button>
-            </div>
         </div>
 
-        <div class="text-center mb-8 fade-in-up delay-100">
-            <h1 class="text-3xl font-extrabold text-white tracking-tight mb-2">Uygulamalar</h1>
-            <p id="appInstruction" class="text-amber-400 text-sm font-medium">Uygulamaları kullanabilmek için yukarıdan bir proje seçin veya oluşturun.</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in-up delay-200">
+        <!-- BÖLÜM 2: ÇALIŞMA ALANI (DASHBOARD & APPS) (Sadece Giriş Yapıldığında Görünür) -->
+        <div id="appView" class="hidden w-full">
             
-            <a onclick="routeToApp('arama_belgesi.html')" class="app-card disabled-card bg-white rounded-3xl p-6 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group">
-                <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-emerald-50 rounded-full blur-3xl opacity-50 group-hover:bg-emerald-100 transition-colors pointer-events-none"></div>
-                <div class="icon-wrapper bg-emerald-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-md shadow-emerald-500/20 mb-4"><i class="fa-solid fa-file-contract text-white text-lg"></i></div>
-                <h2 class="text-lg font-bold text-slate-800 mb-2">Arama Belgesi</h2>
-                <p class="text-slate-500 text-sm leading-relaxed mb-4 flex-grow">Yer altı suyu arama belgesi isteme formunu DSİ standartlarında otomatik oluşturun.</p>
-            </a>
+            <!-- Aktif Proje Paneli -->
+            <div class="bg-slate-800/80 backdrop-blur border border-slate-700 rounded-3xl p-6 mb-10 flex flex-col md:flex-row justify-between items-center gap-6 fade-in-up">
+                <div class="flex items-center gap-4 w-full md:w-auto">
+                    <div id="activeProjectIcon" class="bg-slate-700 text-slate-400 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0"><i class="fa-solid fa-folder"></i></div>
+                    <div class="flex-1 overflow-hidden">
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">ŞU AN ÜZERİNDE ÇALIŞILAN PROJE</p>
+                        <h2 id="activeProjectName" class="text-xl md:text-2xl font-bold text-white truncate">Proje Seçilmedi</h2>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2 justify-center md:justify-end">
+                    <button id="btnEditProject" onclick="editActiveProject()" class="hidden bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl text-sm font-bold transition border border-slate-600 flex items-center gap-2"><i class="fa-solid fa-pen-to-square"></i> Düzenle</button>
+                    <button id="btnClearProject" onclick="clearActiveProject()" class="hidden bg-rose-600/20 hover:bg-rose-600/40 text-rose-400 px-4 py-2 rounded-xl text-sm font-bold transition border border-rose-500/30 flex items-center gap-2"><i class="fa-solid fa-times"></i> Kapat</button>
+                    <div class="w-px h-8 bg-slate-700 mx-1 hidden md:block"></div>
+                    <button onclick="createNewProject()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2 rounded-xl text-sm font-bold transition shadow-lg shadow-emerald-600/30 flex items-center gap-2"><i class="fa-solid fa-plus"></i> Yeni Proje</button>
+                </div>
+            </div>
 
-            <a onclick="routeToApp('kullanma_belgesi.html')" class="app-card disabled-card bg-white rounded-3xl p-6 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group">
-                <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-amber-50 rounded-full blur-3xl opacity-50 group-hover:bg-amber-100 transition-colors pointer-events-none"></div>
-                <div class="icon-wrapper bg-amber-500 w-12 h-12 rounded-xl flex items-center justify-center shadow-md shadow-amber-500/20 mb-4"><i class="fa-solid fa-file-signature text-white text-lg"></i></div>
-                <h2 class="text-lg font-bold text-slate-800 mb-2">Kullanma Belgesi</h2>
-                <p class="text-slate-500 text-sm leading-relaxed mb-4 flex-grow">Kullanma belgesini (Form 2.7.3) hazırlayın.</p>
-            </a>
+            <div class="text-center mb-8 fade-in-up delay-100">
+                <h1 class="text-3xl font-extrabold text-white tracking-tight mb-2">Uygulamalar</h1>
+                <p id="appInstruction" class="text-amber-400 text-sm font-medium">Uygulamaları kullanabilmek için yukarıdan bir proje seçin veya oluşturun.</p>
+            </div>
 
-            <a onclick="routeToApp('kroki_belgesi.html')" class="app-card disabled-card bg-white rounded-3xl p-6 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group">
-                <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-purple-50 rounded-full blur-3xl opacity-50 group-hover:bg-purple-100 transition-colors pointer-events-none"></div>
-                <div class="icon-wrapper bg-purple-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-md shadow-purple-500/20 mb-4"><i class="fa-solid fa-map-location-dot text-white text-lg"></i></div>
-                <h2 class="text-lg font-bold text-slate-800 mb-2">Kuyu Yeri Krokisi</h2>
-                <p class="text-slate-500 text-sm leading-relaxed mb-4 flex-grow">Ayrıntılı kuyu yeri krokisi oluşturun.</p>
-            </a>
+            <!-- Uygulama Kartları -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in-up delay-200">
+                
+                <a onclick="routeToApp('arama_belgesi.html')" class="app-card disabled-card bg-white rounded-3xl p-6 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-emerald-50 rounded-full blur-3xl opacity-50 group-hover:bg-emerald-100 transition-colors pointer-events-none"></div>
+                    <div class="icon-wrapper bg-emerald-600 w-14 h-14 rounded-2xl flex items-center justify-center shadow-md shadow-emerald-500/20 mb-4"><i class="fa-solid fa-file-contract text-white text-xl"></i></div>
+                    <h2 class="text-lg font-bold text-slate-800 mb-2">Arama Belgesi</h2>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-4 flex-grow">Yer altı suyu arama belgesi isteme formunu DSİ standartlarında otomatik oluşturun.</p>
+                </a>
 
-            <a onclick="routeToApp('kuyu_logu.html')" class="app-card disabled-card bg-white rounded-3xl p-6 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group lg:col-span-1 md:col-span-2">
-                <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-slate-100 rounded-full blur-3xl opacity-50 group-hover:bg-slate-200 transition-colors pointer-events-none"></div>
-                <div class="icon-wrapper bg-slate-800 w-12 h-12 rounded-xl flex items-center justify-center shadow-md mb-4"><i class="fa-solid fa-layer-group text-white text-lg"></i></div>
-                <h2 class="text-lg font-bold text-slate-800 mb-2">Kuyu Logu Editörü</h2>
-                <p class="text-slate-500 text-sm leading-relaxed mb-4 flex-grow">Litolojik birimleri ve kuyu teçhizini görselleştirerek raporunuzu tamamlayın.</p>
-            </a>
+                <a onclick="routeToApp('kullanma_belgesi.html')" class="app-card disabled-card bg-white rounded-3xl p-6 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-amber-50 rounded-full blur-3xl opacity-50 group-hover:bg-amber-100 transition-colors pointer-events-none"></div>
+                    <div class="icon-wrapper bg-amber-500 w-14 h-14 rounded-2xl flex items-center justify-center shadow-md shadow-amber-500/20 mb-4"><i class="fa-solid fa-file-signature text-white text-xl"></i></div>
+                    <h2 class="text-lg font-bold text-slate-800 mb-2">Kullanma Belgesi</h2>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-4 flex-grow">Kullanma belgesini hidrolik verilerinizle birlikte otomatik ve hatasız hazırlayın.</p>
+                </a>
+                
+                <a onclick="routeToApp('kroki_belgesi.html')" class="app-card disabled-card bg-white rounded-3xl p-6 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-purple-50 rounded-full blur-3xl opacity-50 group-hover:bg-purple-100 transition-colors pointer-events-none"></div>
+                    <div class="icon-wrapper bg-purple-600 w-14 h-14 rounded-2xl flex items-center justify-center shadow-md shadow-purple-500/20 mb-4"><i class="fa-solid fa-map-location-dot text-white text-xl"></i></div>
+                    <h2 class="text-lg font-bold text-slate-800 mb-2">Kuyu Yeri Krokisi</h2>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-4 flex-grow">Projenizin lokasyonunu ve detaylı konumunu akıllı uydu haritaları ile belirleyin.</p>
+                </a>
 
-            <a onclick="routeToApp('dusum_zaman.html')" class="app-card disabled-card bg-white rounded-3xl p-6 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group lg:col-span-2 md:col-span-2">
-                <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-blue-50 rounded-full blur-3xl opacity-50 group-hover:bg-blue-100 transition-colors pointer-events-none"></div>
-                <div class="icon-wrapper bg-blue-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/20 mb-4"><i class="fa-solid fa-chart-line text-white text-lg"></i></div>
-                <h2 class="text-lg font-bold text-slate-800 mb-2">Düşüm Zaman Analizi</h2>
-                <p class="text-slate-500 text-sm leading-relaxed mb-4 flex-grow">T ve K hidrolik parametrelerini otomatik hesaplatıp logaritmik eğriyi çizin.</p>
-            </a>
+                <a onclick="routeToApp('kuyu_logu.html')" class="app-card disabled-card bg-white rounded-3xl p-6 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-slate-100 rounded-full blur-3xl opacity-50 group-hover:bg-slate-200 transition-colors pointer-events-none"></div>
+                    <div class="icon-wrapper bg-slate-800 w-14 h-14 rounded-2xl flex items-center justify-center shadow-md mb-4"><i class="fa-solid fa-layer-group text-white text-xl"></i></div>
+                    <h2 class="text-lg font-bold text-slate-800 mb-2">Kuyu Logu Editörü</h2>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-4 flex-grow">Litolojik birimleri ve kuyu teçhizini görselleştirerek sondaj raporunuzu tamamlayın.</p>
+                </a>
 
+                <a onclick="routeToApp('dusum_zaman.html')" class="app-card disabled-card bg-white rounded-3xl p-6 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group lg:col-span-2">
+                    <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-blue-50 rounded-full blur-3xl opacity-50 group-hover:bg-blue-100 transition-colors pointer-events-none"></div>
+                    <div class="icon-wrapper bg-blue-600 w-14 h-14 rounded-2xl flex items-center justify-center shadow-md shadow-blue-500/20 mb-4"><i class="fa-solid fa-chart-line text-white text-xl"></i></div>
+                    <h2 class="text-lg font-bold text-slate-800 mb-2">Düşüm Zaman Analizi</h2>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-4 flex-grow">T ve K hidrolik parametrelerini otomatik hesaplatıp logaritmik düşüm grafiğini çizin.</p>
+                </a>
+
+            </div>
         </div>
     </main>
 
+    <!-- Footer -->
     <footer class="relative z-40 w-full border-t border-white/10 py-5 mt-auto flex items-center justify-center bg-slate-900/50 backdrop-blur-sm shrink-0">
         <div class="w-full px-4 md:px-8 flex justify-center items-center">
-            <p class="text-slate-500 text-xs md:text-sm text-center">&copy; 2026 | Emre Mermutlu | Tüm hakları saklıdır</p>
+            <p class="text-slate-500 text-xs md:text-sm text-center font-medium">&copy; 2026 | Emre Mermutlu | Tüm hakları saklıdır</p>
         </div>
     </footer>
 
-    <!-- Projelerim Modal -->
+    <!-- Projelerim Modal (Dashboard) -->
     <div id="dashboardModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
-        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-5xl flex flex-col max-h-[90vh] overflow-hidden transform scale-95 transition-transform duration-300" id="dashboardContent">
+        <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-5xl flex flex-col max-h-[90vh] overflow-hidden transform scale-95 transition-transform duration-300" id="dashboardContent">
             <div class="flex items-center justify-between border-b border-slate-200 p-5 bg-slate-50">
                 <div class="flex items-center gap-3">
-                    <div class="bg-blue-100 text-blue-600 p-2 rounded-lg"><i class="fa-solid fa-folder-open text-xl"></i></div>
+                    <div class="bg-blue-100 text-blue-600 p-2.5 rounded-xl"><i class="fa-solid fa-folder-open text-xl"></i></div>
                     <h2 class="text-xl font-bold text-slate-800">Bulut Projelerim</h2>
                 </div>
                 <div class="flex items-center gap-3">
-                    <button onclick="loadDashboardProjects()" class="bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-semibold transition shadow-sm"><i class="fa-solid fa-rotate-right"></i> Yenile</button>
-                    <button onclick="closeDashboard()" class="text-slate-400 hover:text-slate-700 transition p-2"><i class="fa-solid fa-times text-xl"></i></button>
+                    <button onclick="loadDashboardProjects()" class="bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 px-4 py-2 rounded-xl text-sm font-semibold transition shadow-sm flex items-center gap-2"><i class="fa-solid fa-rotate-right"></i> Yenile</button>
+                    <button onclick="closeDashboard()" class="text-slate-400 hover:text-slate-700 transition p-2"><i class="fa-solid fa-times text-2xl"></i></button>
                 </div>
             </div>
             <div class="p-5 overflow-y-auto flex-1 bg-white">
-                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                <div class="overflow-x-auto rounded-2xl border border-slate-200">
                     <table class="w-full text-left text-sm border-collapse">
-                        <thead class="bg-slate-100 text-slate-700 font-bold sticky top-0">
-                            <tr><th class="p-4 border-b border-slate-200">Proje Adı / Lokasyon</th><th class="p-4 border-b border-slate-200">Kayıt Tarihi</th><th class="p-4 border-b border-slate-200 text-right">İşlem</th></tr>
+                        <thead class="bg-slate-50 text-slate-600 font-bold sticky top-0">
+                            <tr>
+                                <th class="p-4 border-b border-slate-200">Proje Adı / Lokasyon</th>
+                                <th class="p-4 border-b border-slate-200">Kayıt Tarihi</th>
+                                <th class="p-4 border-b border-slate-200 text-right">İşlem</th>
+                            </tr>
                         </thead>
                         <tbody id="dashboardTableBody" class="divide-y divide-slate-100 bg-white"></tbody>
                     </table>
@@ -174,25 +250,42 @@
         </div>
     </div>
 
-    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-[150]"><span id="toastIcon"></span><span id="toastMessage" class="text-sm font-semibold"></span></div>
+    <!-- Bildirim (Toast) -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-[150]">
+        <span id="toastIcon" class="text-xl"></span>
+        <span id="toastMessage" class="text-sm font-semibold"></span>
+    </div>
 
     <script>
         function showToast(msg, type='info') {
             const t = document.getElementById('toast'), i = document.getElementById('toastIcon'), m = document.getElementById('toastMessage');
             m.innerText = msg;
-            i.innerHTML = type==='success' ? '<i class="fa-solid fa-check text-green-400"></i>' : (type==='error' ? '<i class="fa-solid fa-exclamation text-rose-400"></i>' : '<i class="fa-solid fa-info text-blue-400"></i>');
-            t.className = `fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-[150] border-l-4 ${type==='success'?'border-green-500':(type==='error'?'border-rose-500':'border-blue-500')}`;
+            i.innerHTML = type==='success' ? '<i class="fa-solid fa-circle-check text-green-400"></i>' : (type==='error' ? '<i class="fa-solid fa-triangle-exclamation text-rose-400"></i>' : '<i class="fa-solid fa-circle-info text-blue-400"></i>');
+            t.className = `fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-[150] border-l-4 ${type==='success'?'border-green-500':(type==='error'?'border-rose-500':'border-blue-500')}`;
             setTimeout(() => { t.classList.replace('translate-y-0', 'translate-y-20'); t.classList.replace('opacity-100', 'opacity-0'); }, 3000);
         }
 
-        async function loginWithGoogle() { try { await window.fsSignInWithPopup(window.auth, window.fsGoogleProvider); showToast("Giriş başarılı.", "success"); } catch(err) { showToast("Giriş hatası: " + err.message, "error"); } }
-        async function logoutUser() { await window.fsSignOut(window.auth); showToast("Çıkış yapıldı.", "info"); }
+        async function loginWithGoogle() { 
+            try { 
+                await window.fsSignInWithPopup(window.auth, window.fsGoogleProvider); 
+                showToast("Giriş başarılı.", "success"); 
+            } catch(err) { 
+                showToast("Giriş hatası: " + err.message, "error"); 
+            } 
+        }
+        
+        async function logoutUser() { 
+            await window.fsSignOut(window.auth); 
+            sessionStorage.removeItem('activeProject'); // Çıkışta aktif projeyi unut
+            showToast("Çıkış yapıldı.", "info"); 
+        }
 
         function openDashboard() {
             document.getElementById('dashboardModal').classList.remove('hidden');
             setTimeout(() => { document.getElementById('dashboardModal').classList.remove('opacity-0'); document.getElementById('dashboardContent').classList.remove('scale-95'); }, 10);
             loadDashboardProjects();
         }
+        
         function closeDashboard() {
             document.getElementById('dashboardModal').classList.add('opacity-0'); document.getElementById('dashboardContent').classList.add('scale-95');
             setTimeout(() => { document.getElementById('dashboardModal').classList.add('hidden'); }, 300);
@@ -200,28 +293,40 @@
 
         async function loadDashboardProjects() {
             const tbody = document.getElementById('dashboardTableBody');
-            if(!window.currentUser || !window.db) { tbody.innerHTML = '<tr><td colspan="3" class="p-8 text-center text-rose-500">Lütfen önce giriş yapın.</td></tr>'; return; }
-            tbody.innerHTML = '<tr><td colspan="3" class="p-8 text-center text-slate-500"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2 block"></i> Yükleniyor...</td></tr>';
+            if(!window.currentUser || !window.db) { tbody.innerHTML = '<tr><td colspan="3" class="p-8 text-center text-rose-500 font-medium">Lütfen önce giriş yapın.</td></tr>'; return; }
+            
+            tbody.innerHTML = '<tr><td colspan="3" class="p-8 text-center text-slate-500"><i class="fa-solid fa-spinner fa-spin text-2xl mb-3 block"></i> Veriler getiriliyor...</td></tr>';
+            
             try {
                 const q = window.fsQuery(window.fsCollection(window.db, "projects"), window.fsWhere("uid", "==", window.currentUser.uid), window.fsOrderBy("createdAt", "desc"));
                 const querySnapshot = await window.fsGetDocs(q);
                 tbody.innerHTML = '';
-                if(querySnapshot.empty) { tbody.innerHTML = '<tr><td colspan="3" class="p-8 text-center text-slate-500 italic">Bulutta henüz kaydedilmiş projeniz yok.</td></tr>'; return; }
+                
+                if(querySnapshot.empty) { 
+                    tbody.innerHTML = '<tr><td colspan="3" class="p-10 text-center text-slate-500"><i class="fa-solid fa-folder-open text-4xl mb-3 opacity-20 block"></i><span class="block font-medium">Bulutta henüz kaydedilmiş projeniz yok.</span></td></tr>'; 
+                    return; 
+                }
 
                 querySnapshot.forEach((doc) => {
-                    const p = doc.data(); const dateStr = p.createdAt ? new Date(p.createdAt.toDate()).toLocaleDateString('tr-TR') : "Yeni";
-                    const tr = document.createElement('tr'); tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                    const p = doc.data(); 
+                    const dateStr = p.createdAt ? new Date(p.createdAt.toDate()).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }) : "Yeni";
+                    const tr = document.createElement('tr'); 
+                    tr.className = "hover:bg-blue-50 transition border-b border-slate-100 group";
                     tr.innerHTML = `
-                        <td class="p-4 font-semibold text-slate-700">${p.name}</td>
-                        <td class="p-4 text-slate-500 text-sm">${dateStr}</td>
+                        <td class="p-4 font-bold text-slate-700">${p.name}</td>
+                        <td class="p-4 text-slate-500 text-sm font-medium">${dateStr}</td>
                         <td class="p-4 text-right whitespace-nowrap">
-                            <button onclick="selectProject('${doc.id}')" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-lg text-xs font-bold mr-2 shadow transition">Projeyi Seç</button>
-                            <button onclick="deleteProject('${doc.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold border border-rose-200 transition"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="selectProject('${doc.id}')" class="bg-blue-100 hover:bg-blue-600 text-blue-600 hover:text-white px-5 py-2 rounded-xl text-xs font-bold mr-2 transition shadow-sm">Projeyi Seç</button>
+                            <button onclick="deleteProject('${doc.id}')" class="bg-rose-50 hover:bg-rose-600 text-rose-500 hover:text-white px-3 py-2 rounded-xl text-sm transition shadow-sm"><i class="fa-solid fa-trash-can"></i></button>
                         </td>
                     `;
-                    tbody.appendChild(tr); window[`cloud_proj_${doc.id}`] = { id: doc.id, ...p };
+                    tbody.appendChild(tr); 
+                    window[`cloud_proj_${doc.id}`] = { id: doc.id, ...p };
                 });
-            } catch(e) { console.error(e); tbody.innerHTML = '<tr><td colspan="3" class="p-8 text-center text-rose-500">Projeler yüklenirken hata oluştu!</td></tr>'; }
+            } catch(e) { 
+                console.error(e); 
+                tbody.innerHTML = '<tr><td colspan="3" class="p-8 text-center text-rose-500 font-bold">Projeler yüklenirken hata oluştu!</td></tr>'; 
+            }
         }
 
         function selectProject(id) {
@@ -243,16 +348,18 @@
 
             if (activeStr) {
                 const proj = JSON.parse(activeStr);
-                icon.className = "bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl shadow-lg shadow-blue-500/30";
+                icon.className = "bg-blue-500 text-white w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-blue-500/40 shrink-0";
                 nameEl.innerText = proj.name;
                 btnEdit.classList.remove('hidden'); btnClear.classList.remove('hidden');
-                instruction.className = "text-emerald-400 text-sm font-medium"; instruction.innerText = "Modüller kullanıma hazır.";
+                instruction.className = "text-emerald-400 text-sm font-bold bg-emerald-900/30 inline-block px-4 py-1.5 rounded-full"; 
+                instruction.innerHTML = '<i class="fa-solid fa-check-circle mr-1"></i> Proje yüklendi. Modüller kullanıma hazır.';
                 cards.forEach(c => { c.classList.remove('disabled-card'); c.style.cursor = 'pointer'; });
             } else {
-                icon.className = "bg-slate-700 text-slate-400 w-12 h-12 rounded-full flex items-center justify-center text-xl";
+                icon.className = "bg-slate-700 text-slate-400 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0";
                 nameEl.innerText = "Proje Seçilmedi";
                 btnEdit.classList.add('hidden'); btnClear.classList.add('hidden');
-                instruction.className = "text-amber-400 text-sm font-medium"; instruction.innerText = "Uygulamaları kullanabilmek için yukarıdan bir proje seçin veya oluşturun.";
+                instruction.className = "text-amber-400 text-sm font-bold bg-amber-900/30 inline-block px-4 py-1.5 rounded-full"; 
+                instruction.innerHTML = '<i class="fa-solid fa-circle-exclamation mr-1"></i> Lütfen modülleri kullanmak için bir proje seçin veya oluşturun.';
                 cards.forEach(c => { c.classList.add('disabled-card'); c.style.cursor = 'not-allowed'; });
             }
         }
@@ -263,25 +370,33 @@
         }
 
         function routeToApp(url) {
-            if (sessionStorage.getItem('activeProject')) { window.location.href = url; } 
-            else { showToast("Lütfen önce bir proje seçin!", "error"); }
+            if (sessionStorage.getItem('activeProject')) { 
+                window.location.href = url; 
+            } else { 
+                showToast("Lütfen önce bir proje seçin veya yeni oluşturun!", "error"); 
+            }
         }
 
         function createNewProject() {
             sessionStorage.removeItem('activeProject');
-            window.location.href = 'proje_bilgileri.html?mode=new';
+            window.location.href = 'ana_proje_verileri.html?mode=new';
         }
 
         function editActiveProject() {
-            window.location.href = 'proje_bilgileri.html?mode=edit';
+            window.location.href = 'ana_proje_verileri.html?mode=edit';
         }
 
         async function deleteProject(docId) {
-            if(!confirm("Proje kalıcı olarak silinecek. Emin misiniz?")) return;
-            await window.fsDeleteDoc(window.fsDoc(window.db, "projects", docId)); 
-            const activeStr = sessionStorage.getItem('activeProject');
-            if(activeStr && JSON.parse(activeStr).id === docId) clearActiveProject();
-            loadDashboardProjects(); showToast("Proje silindi.", "info");
+            if(!confirm("Dikkat! Proje kalıcı olarak silinecek. Emin misiniz?")) return;
+            try {
+                await window.fsDeleteDoc(window.fsDoc(window.db, "projects", docId)); 
+                const activeStr = sessionStorage.getItem('activeProject');
+                if(activeStr && JSON.parse(activeStr).id === docId) clearActiveProject();
+                loadDashboardProjects(); 
+                showToast("Proje buluttan silindi.", "info");
+            } catch (e) {
+                showToast("Silme işlemi başarısız.", "error");
+            }
         }
     </script>
 </body>
