@@ -106,7 +106,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             </div>
 
             <!-- İmza Alanı -->
-            <div class="mt-auto flex justify-end px-10 pb-4">
+            <div class="mt-auto flex justify-end px-10 pb-12">
                 <div class="text-center w-[150px]">
                     <span class="block font-bold text-[13px] mb-2">Sorumlu Mühendis</span>
                     <span id="prev_imza_muhendis" class="block font-normal text-[13px] uppercase"></span>
@@ -120,6 +120,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
 
     <script>
         let activeProjectId = null;
+        let currentImageBase64 = null; // Yüklenen görseli geçici olarak bellekte tutmak için
 
         function showToast(msg, type='info') {
             const t = document.getElementById('toast'), i = document.getElementById('toastIcon'), m = document.getElementById('toastMessage');
@@ -170,9 +171,10 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                     }
                     document.getElementById('prev_ada_parsel_metin').innerText = metinStr;
 
-                    // Kroki görseli daha önce bu proje için yüklendiyse geri getir (sessionStorage'dan)
+                    // Kroki görseli bulutta kayıtlıysa getir
                     if(data.inputs.kroki_img_base64) {
-                        document.getElementById('prev_kroki_img').src = data.inputs.kroki_img_base64;
+                        currentImageBase64 = data.inputs.kroki_img_base64;
+                        document.getElementById('prev_kroki_img').src = currentImageBase64;
                         document.getElementById('prev_kroki_img').classList.remove('hidden');
                         document.getElementById('prev_kroki_placeholder').classList.add('hidden');
                     }
@@ -186,23 +188,15 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             const reader = new FileReader();
             reader.onload = function(e) {
                 const b64 = e.target.result;
+                currentImageBase64 = b64; // Görseli sadece belleğe al, henüz tarayıcıya/buluta kaydetme
+                
                 // Görseli UI'a aktar
                 document.getElementById('prev_kroki_img').src = b64;
                 document.getElementById('prev_kroki_img').classList.remove('hidden');
                 document.getElementById('prev_kroki_placeholder').classList.add('hidden');
                 
-                // Seçilen görseli aktif projeye (tarayıcı hafızasına) kaydet
-                const activeStr = sessionStorage.getItem('activeProject');
-                if(activeStr) {
-                    const activeProj = JSON.parse(activeStr);
-                    if(!activeProj.data) activeProj.data = {inputs:{}};
-                    if(!activeProj.data.inputs) activeProj.data.inputs = {};
-                    activeProj.data.inputs.kroki_img_base64 = b64;
-                    sessionStorage.setItem('activeProject', JSON.stringify(activeProj));
-                    
-                    // Kullanıcıyı uyar:
-                    showToast("Görsel eklendi. Kaybetmemek için Buluta Kaydet'e basın.", "info");
-                }
+                // Kullanıcıyı uyar:
+                showToast("Görsel eklendi. Kalıcı olması için lütfen 'Buluta Kaydet' butonuna basınız.", "info");
             };
             reader.readAsDataURL(file);
         }
@@ -217,11 +211,23 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             if(!activeStr) return;
             
             const activeProj = JSON.parse(activeStr);
-            const dataToSave = activeProj.data || {inputs:{}};
+            if(!activeProj.data) activeProj.data = {inputs:{}};
+            if(!activeProj.data.inputs) activeProj.data.inputs = {};
+            
+            // Eğer ekranda bir görsel varsa onu kayıt edilecek veriye ekle
+            if(currentImageBase64) {
+                activeProj.data.inputs.kroki_img_base64 = currentImageBase64;
+            }
+            
+            const dataToSave = activeProj.data;
             
             try {
                 showToast("Buluta kaydediliyor...", "info");
                 await window.fsUpdateDoc(window.fsDoc(window.db, "projects", activeProjectId), { data: dataToSave });
+                
+                // Bulut kaydı başarılı olunca, tarayıcı önbelleğini de güncelle ki diğer sekmelerde taze veri olsun
+                sessionStorage.setItem('activeProject', JSON.stringify(activeProj));
+                
                 showToast("Kroki görseli buluta başarıyla kaydedildi!", "success");
             } catch(e) { 
                 console.error(e); 
