@@ -73,8 +73,6 @@ body {
         
         <div class="flex flex-wrap items-center gap-2">
             <button onclick="saveProjectToCloud()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg font-semibold text-xs transition flex items-center gap-1.5 shadow"><i class="fa-solid fa-cloud-arrow-up"></i> Buluta Kaydet</button>
-            <div class="w-px h-6 bg-slate-600 mx-1 hidden md:block"></div>
-            <button onclick="clearAllData()" class="bg-rose-600 hover:bg-rose-500 text-white px-3 py-2 rounded-lg font-semibold text-xs transition flex items-center gap-1.5 shadow"><i class="fa-solid fa-eraser"></i> Grafiği Sıfırla</button>
         </div>
     </div>
 </header>
@@ -155,7 +153,8 @@ body {
 </main>
 
 <div id="print-area">
-    <div class="text-center font-bold text-[16px] mb-3 uppercase tracking-wider">SABİT SEVİYELİ DÜŞÜM DENEYİ</div>
+    <!-- Sayfanın en üstünden 1 satır (yaklaşık 16px/1rem) boşluk için mt-4 eklendi -->
+    <div class="text-center font-bold text-[16px] mb-3 uppercase tracking-wider mt-4">SABİT SEVİYELİ DÜŞÜM DENEYİ</div>
     <table class="w-full print-table text-[11px] font-bold bg-white text-left mb-6">
         <tbody>
             <tr><td class="w-[15%]">Adres</td><td id="pdf_adres" class="font-normal w-[35%]">-</td><td class="w-[20%] whitespace-nowrap">Sorumlu Mühendis</td><td id="pdf_muhendis" class="font-normal w-[30%] whitespace-nowrap">-</td></tr>
@@ -169,23 +168,42 @@ body {
                 <thead><tr class="bg-gray-100"><th class="py-1">Zaman (dk)</th><th class="py-1">Seviye (m)</th><th class="py-1">Düşüm (m)</th><th class="py-1">Debi (lt/sn)</th></tr></thead>
                 <tbody id="pdf_data_tbody"></tbody>
             </table>
-            <div class="border border-black p-3 flex flex-col items-center justify-end h-[25mm] shrink-0 w-full mt-auto"><div class="text-[11px] font-bold whitespace-nowrap">Sorumlu Mühendis</div><div id="pdf_imza_isim" class="text-[11px] mt-1 h-3"></div></div>
+            <!-- İmza kutusu eksiksiz çerçevelendirildi -->
+            <div class="p-3 flex flex-col items-center justify-end h-[25mm] shrink-0 w-full mt-auto" style="border: 1px solid #000; box-sizing: border-box;"><div class="text-[11px] font-bold whitespace-nowrap">Sorumlu Mühendis</div><div id="pdf_imza_isim" class="text-[11px] mt-1 h-3"></div></div>
         </div>
         <div class="w-[72%] flex flex-col gap-3">
-            <div class="border border-black flex flex-col w-full h-[105mm] shrink-0"><div class="text-center font-bold border-b border-black py-1 text-[12px] uppercase bg-gray-50">Düşüm - Zaman Grafiği</div><div class="flex-1 p-0 flex justify-center items-center overflow-hidden relative"><img id="pdf_chart_img" src="" class="w-full h-full object-contain absolute inset-0 p-1.5"></div></div>
-            <div class="border border-black flex flex-col bg-white flex-1" style="border: 1px solid #000; box-sizing: border-box;">
-                <table class="w-full text-[11px] font-bold bg-white text-left" style="border-collapse: collapse;">
+            <!-- Düşüm Zaman Grafiği Wrapper Çerçevesi Düzeltildi -->
+            <div class="flex flex-col w-full h-[105mm] shrink-0" style="border: 1px solid #000; box-sizing: border-box;">
+                <div class="text-center font-bold py-1 text-[12px] uppercase bg-gray-50" style="border-bottom: 1px solid #000;">Düşüm - Zaman Grafiği</div>
+                <div class="flex-1 p-0 flex justify-center items-center overflow-hidden relative"><img id="pdf_chart_img" src="" class="w-full h-full object-contain absolute inset-0 p-1.5"></div>
+            </div>
+            <div class="flex flex-col bg-white flex-1">
+                <!-- Statik/Dinamik tablo çerçeveleri print-table classı eklenerek tam olarak oluşturuldu -->
+                <table class="w-full print-table text-[11px] font-bold bg-white text-left" style="border-collapse: collapse; border: 1px solid #000;">
                     <tbody>
-                        <tr><td class="w-[25%] p-1.5 pl-2">Statik Seviye</td><td id="pdf_statik" class="w-[25%] p-1.5 font-normal">-</td><td class="w-[25%] p-1.5 pl-2">Akifer Kalınlığı (e)</td><td id="pdf_kalinlik" class="w-[25%] p-1.5 font-normal">-</td></tr>
-                        <tr><td class="p-1.5 pl-2 border-b border-black">Dinamik Seviye</td><td id="pdf_dinamik" class="p-1.5 font-normal border-b border-black">-</td><td class="p-1.5 pl-2 border-b border-black">Debi</td><td id="pdf_debi" class="p-1.5 font-normal border-b border-black">-</td></tr>
-                        <tr><td colspan="4" class="text-center font-bold text-[11px] uppercase tracking-widest pt-4 pb-2 border-b border-gray-300 bg-gray-50">Hidrolik Parametre Hesaplamaları</td></tr>
+                        <tr>
+                            <td class="w-[25%] p-1.5 pl-2">Statik Seviye</td>
+                            <td id="pdf_statik" class="w-[25%] p-1.5 font-normal">-</td>
+                            <td class="w-[25%] p-1.5 pl-2">Akifer Kalınlığı (e)</td>
+                            <td id="pdf_kalinlik" class="w-[25%] p-1.5 font-normal">-</td>
+                        </tr>
+                        <tr>
+                            <td class="p-1.5 pl-2">Dinamik Seviye</td>
+                            <td id="pdf_dinamik" class="p-1.5 font-normal">-</td>
+                            <td class="p-1.5 pl-2">Debi</td>
+                            <td id="pdf_debi" class="p-1.5 font-normal">-</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-center font-bold text-[11px] uppercase tracking-widest pt-3 pb-3 bg-gray-50">Hidrolik Parametre Hesaplamaları</td>
+                        </tr>
                     </tbody>
                 </table>
-                <div class="p-3 pb-4 flex flex-col justify-center gap-2 bg-white">
+                <!-- Hesaplama alanı sağ ve sol çerçeveleri style ataması ile sabitlendi -->
+                <div class="p-3 pb-4 flex flex-col justify-center gap-2 bg-white" style="border-left: 1px solid #000; border-right: 1px solid #000; border-bottom: 1px solid #000;">
                     <div class="text-[11px] leading-relaxed text-black"><span class="inline-block w-36 font-bold pl-2">Düşüm Farkı (Δd) :</span><span class="font-mono">Δd = <span id="pdf_eq_d2"></span> - <span id="pdf_eq_d1"></span> = <span id="pdf_eq_dd"></span> m</span></div>
                     <div class="text-[11px] leading-relaxed mt-1 text-black"><span class="inline-block w-36 font-bold pl-2">İletilebilirlik (T) :</span><span class="font-mono">T = (0.183 &times; Q) / Δd</span></div>
                     <div class="text-[11px] leading-relaxed pl-[150px] text-black"><span class="font-mono">T = (0.183 &times; <span id="pdf_eq_Q"></span>) / <span id="pdf_eq_dd_div"></span></span><br><span class="font-mono">T = <span id="pdf_res_T_msn"></span> m²/sn &nbsp;&nbsp;&nbsp;(&nbsp;<span id="pdf_res_T_mgun"></span> m²/gün&nbsp;)</span></div>
-                    <div class="text-[11px] leading-relaxed mt-2 pt-2 border-t border-gray-300 text-black"><span class="inline-block w-36 font-bold pl-2">Hidrolik İletkenlik (K) :</span><span class="font-mono">K = T / e</span></div>
+                    <div class="text-[11px] leading-relaxed mt-2 pt-2 text-black" style="border-top: 1px solid #000;"><span class="inline-block w-36 font-bold pl-2">Hidrolik İletkenlik (K) :</span><span class="font-mono">K = T / e</span></div>
                     <div class="text-[11px] leading-relaxed pl-[150px] text-black"><span class="font-mono">K = <span id="pdf_eq_T"></span> / <span id="pdf_eq_e"></span></span><br><span class="font-mono font-bold text-[13px] tracking-wide mt-1 inline-block">K = <span id="pdf_res_K"></span> m/sn</span></div>
                 </div>
             </div>
@@ -404,7 +422,7 @@ body {
                 lineBase: { type: 'line', xMin: t1, xMax: t2, yMin: d1, yMax: d1, borderColor: '#475569', borderWidth: 2, borderDash: [5, 5] }, 
                 lineHeight: { type: 'line', xMin: t2, xMax: t2, yMin: d1, yMax: d2, borderColor: '#475569', borderWidth: 2, borderDash: [5, 5] }, 
                 lineHypotenuse: { type: 'line', xMin: t1, xMax: t2, yMin: d1, yMax: d2, borderColor: '#475569', borderWidth: 1 }, 
-                labelBox: { type: 'label', xValue: t2, yValue: d1 + (deltaD/2), xAdjust: 45, content: `ΔD = ${Math.round(deltaD)}`, backgroundColor: 'white', borderWidth: 1, borderColor: '#000', color: '#000', font: { size: 14, weight: 'bold' } }
+                labelBox: { type: 'label', xValue: t2, yValue: d1 + (deltaD/2), xAdjust: 75, content: `ΔD = ${Math.round(d2)} - ${Math.round(d1)} = ${Math.round(deltaD)}`, backgroundColor: 'white', borderWidth: 1, borderColor: '#000', color: '#000', font: { size: 14, weight: 'bold' } }
             };
         }
 
