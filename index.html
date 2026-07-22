@@ -30,7 +30,6 @@
                 const appView = document.getElementById('appView');
 
                 if (user) {
-                    // Kullanıcı giriş yaptıysa
                     if (loggedOutNav) loggedOutNav.classList.add('hidden'); 
                     if (loggedInNav) loggedInNav.classList.remove('hidden');
                     if (emailDisp) emailDisp.innerText = user.displayName || user.email;
@@ -40,7 +39,6 @@
                     
                     updateActiveProjectUI();
                 } else {
-                    // Kullanıcı çıkış yaptıysa
                     if (loggedOutNav) loggedOutNav.classList.remove('hidden'); 
                     if (loggedInNav) loggedInNav.classList.add('hidden');
                     
@@ -69,12 +67,10 @@
 
 <body class="bg-slate-900 text-slate-800 flex flex-col min-h-screen relative overflow-x-hidden">
 
-    <!-- Arka Plan Efektleri -->
     <div class="fixed inset-0 bg-grid-pattern opacity-60 z-0 pointer-events-none"></div>
     <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[800px] md:h-[500px] bg-blue-600/10 blur-[100px] md:blur-[120px] rounded-full pointer-events-none z-0"></div>
 
-    <!-- Navigasyon Çubuğu -->
-    <nav class="relative z-40 w-full py-6 px-4 flex justify-between items-center shrink-0 max-w-7xl mx-auto border-b border-white/10 mb-6">
+    <nav class="relative z-40 w-full py-4 px-4 flex justify-between items-center shrink-0 max-w-7xl mx-auto border-b border-white/10 mb-4">
         <div class="flex items-center gap-3 fade-in-up">
             <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-2.5 rounded-xl shadow-lg shadow-blue-900/40 text-white flex items-center justify-center border border-white/10">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 2v13" /><path d="M9 15h6l-3 5-3-5z" fill="currentColor"/><path d="M3 9h18" /><path d="M4 14h4" /><path d="M16 14h4" /><path d="M5 19h3" /><path d="M16 19h3" /></svg>
@@ -83,11 +79,9 @@
         </div>
         
         <div class="flex items-center gap-3 fade-in-up delay-100">
-            <!-- Giriş Yapmamış Kullanıcı Menüsü -->
             <div id="loggedOutNav" class="flex items-center gap-2">
-                <!-- Üst sağdaki giriş butonu kaldırıldı -->
+                <!-- Üst sağdaki giriş butonu önceden kaldırılmıştı -->
             </div>
-            <!-- Giriş Yapmış Kullanıcı Menüsü -->
             <div id="loggedInNav" class="hidden flex items-center gap-3">
                 <span id="userEmailDisplay" class="text-xs font-bold text-slate-400 hidden md:inline"></span>
                 <button onclick="openDashboard()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-blue-500/30">
@@ -98,115 +92,110 @@
         </div>
     </nav>
 
-    <!-- ANA İÇERİK ALANI -->
     <main class="flex-grow w-full max-w-7xl mx-auto px-4 md:px-8 relative z-20 flex flex-col items-center justify-center">
         
-        <!-- BÖLÜM 1: AÇILIŞ (LANDING) EKRANI (Sadece Giriş Yapılmadığında Görünür) -->
-        <div id="landingView" class="w-full flex flex-col items-center justify-center py-6 md:py-12 fade-in-up">
-            <div class="text-center max-w-3xl mx-auto mb-16">
-                <h1 class="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-6 leading-tight">
+        <div id="landingView" class="w-full flex flex-col items-center justify-center py-4 fade-in-up">
+            <div class="text-center max-w-3xl mx-auto mb-8">
+                <h1 class="text-3xl md:text-5xl font-extrabold text-white tracking-tight mb-4 leading-tight">
                     Profesyonel <span class="text-gradient">Hidrojeolojik</span> Dokümantasyon
                 </h1>
-                <p class="text-lg md:text-xl text-slate-400 font-medium mb-10 leading-relaxed">
+                <p class="text-base md:text-lg text-slate-400 font-medium mb-8 leading-relaxed">
                     DSİ standartlarında dokümantasyon analizlerinizi dakikalar içinde oluşturun. Projelerinizi bulutta güvenle yönetin.
                 </p>
-                <!-- Kullanıcı Girişi Butonu -->
-                <button onclick="loginWithGoogle()" class="bg-blue-600 hover:bg-blue-500 text-white px-10 py-4 rounded-2xl text-lg font-bold transition shadow-2xl shadow-blue-600/40 flex items-center justify-center mx-auto transform hover:-translate-y-1">
+                <button onclick="loginWithGoogle()" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-2xl text-base font-bold transition shadow-2xl shadow-blue-600/40 flex items-center justify-center mx-auto transform hover:-translate-y-1">
                     Kullanıcı Girişi
                 </button>
             </div>
 
-            <!-- Yeni Uygulama Tanıtım Kartları -->
-            <div class="flex flex-wrap justify-center gap-6 w-full max-w-6xl fade-in-up delay-200">
-                <div class="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 p-6 rounded-3xl text-center w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
-                    <div class="bg-emerald-500/20 text-emerald-400 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"><i class="fa-solid fa-file-contract"></i></div>
-                    <h3 class="text-white text-lg font-bold mb-2">Arama Belgesi</h3>
-                    <p class="text-slate-400 text-sm">Yer altı suyu arama belgesi isteme formunu DSİ standartlarında eksiksiz oluşturun.</p>
+            <!-- Landing 5 Sütun Kartlar -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4 w-full max-w-7xl fade-in-up delay-200">
+                <div class="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 p-5 rounded-2xl text-center flex flex-col items-center">
+                    <div class="bg-emerald-500/20 text-emerald-400 w-12 h-12 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-file-contract"></i></div>
+                    <h3 class="text-white text-base font-bold mb-1">Arama Belgesi</h3>
+                    <p class="text-slate-400 text-xs">Arama belgesi formunu DSİ standartlarında eksiksiz oluşturun.</p>
                 </div>
-                <div class="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 p-6 rounded-3xl text-center w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
-                    <div class="bg-amber-500/20 text-amber-400 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"><i class="fa-solid fa-file-signature"></i></div>
-                    <h3 class="text-white text-lg font-bold mb-2">Kullanma Belgesi</h3>
-                    <p class="text-slate-400 text-sm">Kullanma belgesini hidrolik verilerinizle birlikte otomatik ve hatasız hazırlayın.</p>
+                <div class="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 p-5 rounded-2xl text-center flex flex-col items-center">
+                    <div class="bg-amber-500/20 text-amber-400 w-12 h-12 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-file-signature"></i></div>
+                    <h3 class="text-white text-base font-bold mb-1">Kullanma Belgesi</h3>
+                    <p class="text-slate-400 text-xs">Kullanma belgesini hidrolik verilerle hatasız hazırlayın.</p>
                 </div>
-                <div class="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 p-6 rounded-3xl text-center w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
-                    <div class="bg-purple-500/20 text-purple-400 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"><i class="fa-solid fa-map-location-dot"></i></div>
-                    <h3 class="text-white text-lg font-bold mb-2">Kuyu Yeri Krokisi</h3>
-                    <p class="text-slate-400 text-sm">Projenizin lokasyonunu ve detaylı konumunu akıllı uydu haritaları ile belirleyin.</p>
+                <div class="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 p-5 rounded-2xl text-center flex flex-col items-center">
+                    <div class="bg-purple-500/20 text-purple-400 w-12 h-12 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <h3 class="text-white text-base font-bold mb-1">Kuyu Yeri Krokisi</h3>
+                    <p class="text-slate-400 text-xs">Lokasyonu akıllı uydu haritaları ile anında belirleyin.</p>
                 </div>
-                <div class="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 p-6 rounded-3xl text-center w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
-                    <div class="bg-slate-500/20 text-slate-300 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"><i class="fa-solid fa-layer-group"></i></div>
-                    <h3 class="text-white text-lg font-bold mb-2">Kuyu Logu Editörü</h3>
-                    <p class="text-slate-400 text-sm">Litolojik birimleri ve kuyu teçhizini görselleştirerek sondaj raporunuzu tamamlayın.</p>
+                <div class="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 p-5 rounded-2xl text-center flex flex-col items-center">
+                    <div class="bg-slate-500/20 text-slate-300 w-12 h-12 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-layer-group"></i></div>
+                    <h3 class="text-white text-base font-bold mb-1">Kuyu Logu Editörü</h3>
+                    <p class="text-slate-400 text-xs">Litoloji ve kuyu teçhizini görselleştirerek raporlayın.</p>
                 </div>
-                <div class="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 p-6 rounded-3xl text-center w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
-                    <div class="bg-blue-500/20 text-blue-400 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"><i class="fa-solid fa-chart-line"></i></div>
-                    <h3 class="text-white text-lg font-bold mb-2">Düşüm Zaman Analizi</h3>
-                    <p class="text-slate-400 text-sm">Transmisivite (T) ve Hidrolik İletkenlik (K) parametrelerini otomatik hesaplatıp logaritmik grafiğini çizin.</p>
+                <div class="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 p-5 rounded-2xl text-center flex flex-col items-center">
+                    <div class="bg-blue-500/20 text-blue-400 w-12 h-12 rounded-xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-chart-line"></i></div>
+                    <h3 class="text-white text-base font-bold mb-1">Düşüm Zaman</h3>
+                    <p class="text-slate-400 text-xs">T ve K parametreleriyle logaritmik düşüm grafiğini çizin.</p>
                 </div>
             </div>
         </div>
 
-        <!-- BÖLÜM 2: ÇALIŞMA ALANI (DASHBOARD & APPS) (Sadece Giriş Yapıldığında Görünür) -->
         <div id="appView" class="hidden w-full">
             
-            <!-- Aktif Proje Paneli -->
-            <div class="bg-slate-800/80 backdrop-blur border border-slate-700 rounded-3xl p-6 mb-10 flex flex-col md:flex-row justify-between items-center gap-6 fade-in-up">
+            <div class="bg-slate-800/80 backdrop-blur border border-slate-700 rounded-2xl p-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 fade-in-up">
                 <div class="flex items-center gap-4 w-full md:w-auto">
-                    <div id="activeProjectIcon" class="bg-slate-700 text-slate-400 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0"><i class="fa-solid fa-folder"></i></div>
+                    <div id="activeProjectIcon" class="bg-slate-700 text-slate-400 w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-folder"></i></div>
                     <div class="flex-1 overflow-hidden">
-                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">ŞU AN ÜZERİNDE ÇALIŞILAN PROJE</p>
-                        <h2 id="activeProjectName" class="text-xl md:text-2xl font-bold text-white truncate">Proje Seçilmedi</h2>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-0.5">ŞU AN ÜZERİNDE ÇALIŞILAN PROJE</p>
+                        <h2 id="activeProjectName" class="text-xl font-bold text-white truncate">Proje Seçilmedi</h2>
                     </div>
                 </div>
                 <div class="flex flex-wrap gap-2 justify-center md:justify-end">
                     <button id="btnEditProject" onclick="editActiveProject()" class="hidden bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl text-sm font-bold transition border border-slate-600 flex items-center gap-2"><i class="fa-solid fa-pen-to-square"></i> Düzenle</button>
-                    <button id="btnClearProject" onclick="clearActiveProject()" class="hidden bg-rose-600/20 hover:bg-rose-600/40 text-rose-400 px-4 py-2 rounded-xl text-sm font-bold transition border border-rose-500/30 flex items-center gap-2"><i class="fa-solid fa-times"></i> Kapat</button>
+                    <!-- Kapat butonu tamamen kaldırıldı -->
                     <div class="w-px h-8 bg-slate-700 mx-1 hidden md:block"></div>
-                    <button onclick="createNewProject()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2 rounded-xl text-sm font-bold transition shadow-lg shadow-emerald-600/30 flex items-center gap-2"><i class="fa-solid fa-plus"></i> Yeni Proje</button>
+                    <button onclick="createNewProject()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm font-bold transition shadow-lg shadow-emerald-600/30 flex items-center gap-2"><i class="fa-solid fa-plus"></i> Yeni Proje</button>
                 </div>
             </div>
 
-            <div class="text-center mb-8 fade-in-up delay-100">
-                <h1 class="text-3xl font-extrabold text-white tracking-tight mb-2">Uygulamalar</h1>
-                <p id="appInstruction" class="text-amber-400 text-sm font-medium">Uygulamaları kullanabilmek için yukarıdan bir proje seçin veya oluşturun.</p>
+            <div class="text-center mb-4 fade-in-up delay-100">
+                <h1 class="text-2xl font-extrabold text-white tracking-tight mb-1">Uygulamalar</h1>
+                <p id="appInstruction" class="text-amber-400 text-xs font-medium">Uygulamaları kullanabilmek için yukarıdan bir proje seçin veya oluşturun.</p>
             </div>
 
-            <!-- Uygulama Kartları -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in-up delay-200">
+            <!-- Aktif 5 Sütun Uygulama Kartları -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 fade-in-up delay-200">
                 
-                <a onclick="routeToApp('arama_belgesi.html')" class="app-card disabled-card bg-white rounded-3xl p-6 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-emerald-50 rounded-full blur-3xl opacity-50 group-hover:bg-emerald-100 transition-colors pointer-events-none"></div>
-                    <div class="icon-wrapper bg-emerald-600 w-14 h-14 rounded-2xl flex items-center justify-center shadow-md shadow-emerald-500/20 mb-4"><i class="fa-solid fa-file-contract text-white text-xl"></i></div>
-                    <h2 class="text-lg font-bold text-slate-800 mb-2">Arama Belgesi</h2>
-                    <p class="text-slate-500 text-sm leading-relaxed mb-4 flex-grow">Yer altı suyu arama belgesi isteme formunu DSİ standartlarında otomatik oluşturun.</p>
+                <a onclick="routeToApp('arama_belgesi.html')" class="app-card disabled-card bg-white rounded-2xl p-5 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-emerald-50 rounded-full blur-2xl opacity-50 group-hover:bg-emerald-100 transition-colors pointer-events-none"></div>
+                    <div class="icon-wrapper bg-emerald-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-md shadow-emerald-500/20 mb-3"><i class="fa-solid fa-file-contract text-white text-lg"></i></div>
+                    <h2 class="text-base font-bold text-slate-800 mb-1">Arama Belgesi</h2>
+                    <p class="text-slate-500 text-xs leading-relaxed mb-0 flex-grow">Arama belgesi isteme formunu DSİ standartlarında oluşturun.</p>
                 </a>
 
-                <a onclick="routeToApp('kullanma_belgesi.html')" class="app-card disabled-card bg-white rounded-3xl p-6 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-amber-50 rounded-full blur-3xl opacity-50 group-hover:bg-amber-100 transition-colors pointer-events-none"></div>
-                    <div class="icon-wrapper bg-amber-500 w-14 h-14 rounded-2xl flex items-center justify-center shadow-md shadow-amber-500/20 mb-4"><i class="fa-solid fa-file-signature text-white text-xl"></i></div>
-                    <h2 class="text-lg font-bold text-slate-800 mb-2">Kullanma Belgesi</h2>
-                    <p class="text-slate-500 text-sm leading-relaxed mb-4 flex-grow">Kullanma belgesini hidrolik verilerinizle birlikte otomatik ve hatasız hazırlayın.</p>
+                <a onclick="routeToApp('kullanma_belgesi.html')" class="app-card disabled-card bg-white rounded-2xl p-5 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-amber-50 rounded-full blur-2xl opacity-50 group-hover:bg-amber-100 transition-colors pointer-events-none"></div>
+                    <div class="icon-wrapper bg-amber-500 w-12 h-12 rounded-xl flex items-center justify-center shadow-md shadow-amber-500/20 mb-3"><i class="fa-solid fa-file-signature text-white text-lg"></i></div>
+                    <h2 class="text-base font-bold text-slate-800 mb-1">Kullanma Belgesi</h2>
+                    <p class="text-slate-500 text-xs leading-relaxed mb-0 flex-grow">Kullanma belgesini hidrolik verilerinizle hatasız hazırlayın.</p>
                 </a>
                 
-                <a onclick="routeToApp('kroki_belgesi.html')" class="app-card disabled-card bg-white rounded-3xl p-6 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-purple-50 rounded-full blur-3xl opacity-50 group-hover:bg-purple-100 transition-colors pointer-events-none"></div>
-                    <div class="icon-wrapper bg-purple-600 w-14 h-14 rounded-2xl flex items-center justify-center shadow-md shadow-purple-500/20 mb-4"><i class="fa-solid fa-map-location-dot text-white text-xl"></i></div>
-                    <h2 class="text-lg font-bold text-slate-800 mb-2">Kuyu Yeri Krokisi</h2>
-                    <p class="text-slate-500 text-sm leading-relaxed mb-4 flex-grow">Projenizin lokasyonunu ve detaylı konumunu akıllı uydu haritaları ile belirleyin.</p>
+                <a onclick="routeToApp('kroki_belgesi.html')" class="app-card disabled-card bg-white rounded-2xl p-5 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-purple-50 rounded-full blur-2xl opacity-50 group-hover:bg-purple-100 transition-colors pointer-events-none"></div>
+                    <div class="icon-wrapper bg-purple-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-md shadow-purple-500/20 mb-3"><i class="fa-solid fa-map-location-dot text-white text-lg"></i></div>
+                    <h2 class="text-base font-bold text-slate-800 mb-1">Kuyu Yeri Krokisi</h2>
+                    <p class="text-slate-500 text-xs leading-relaxed mb-0 flex-grow">Projenizin detaylı konumunu akıllı haritalarla belirleyin.</p>
                 </a>
 
-                <a onclick="routeToApp('kuyu_logu.html')" class="app-card disabled-card bg-white rounded-3xl p-6 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-slate-100 rounded-full blur-3xl opacity-50 group-hover:bg-slate-200 transition-colors pointer-events-none"></div>
-                    <div class="icon-wrapper bg-slate-800 w-14 h-14 rounded-2xl flex items-center justify-center shadow-md mb-4"><i class="fa-solid fa-layer-group text-white text-xl"></i></div>
-                    <h2 class="text-lg font-bold text-slate-800 mb-2">Kuyu Logu Editörü</h2>
-                    <p class="text-slate-500 text-sm leading-relaxed mb-4 flex-grow">Litolojik birimleri ve kuyu teçhizini görselleştirerek sondaj raporunuzu tamamlayın.</p>
+                <a onclick="routeToApp('kuyu_logu.html')" class="app-card disabled-card bg-white rounded-2xl p-5 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-slate-100 rounded-full blur-2xl opacity-50 group-hover:bg-slate-200 transition-colors pointer-events-none"></div>
+                    <div class="icon-wrapper bg-slate-800 w-12 h-12 rounded-xl flex items-center justify-center shadow-md mb-3"><i class="fa-solid fa-layer-group text-white text-lg"></i></div>
+                    <h2 class="text-base font-bold text-slate-800 mb-1">Kuyu Logu Editörü</h2>
+                    <p class="text-slate-500 text-xs leading-relaxed mb-0 flex-grow">Litoloji ve teçhizatı görselleştirerek sondaj raporunu hazırlayın.</p>
                 </a>
 
-                <a onclick="routeToApp('dusum_zaman.html')" class="app-card disabled-card bg-white rounded-3xl p-6 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-blue-50 rounded-full blur-3xl opacity-50 group-hover:bg-blue-100 transition-colors pointer-events-none"></div>
-                    <div class="icon-wrapper bg-blue-600 w-14 h-14 rounded-2xl flex items-center justify-center shadow-md shadow-blue-500/20 mb-4"><i class="fa-solid fa-chart-line text-white text-xl"></i></div>
-                    <h2 class="text-lg font-bold text-slate-800 mb-2">Düşüm Zaman Analizi</h2>
-                    <p class="text-slate-500 text-sm leading-relaxed mb-4 flex-grow">T ve K hidrolik parametrelerini otomatik hesaplatıp logaritmik düşüm grafiğini çizin.</p>
+                <a onclick="routeToApp('dusum_zaman.html')" class="app-card disabled-card bg-white rounded-2xl p-5 shadow-xl border border-slate-200/60 flex flex-col relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-blue-50 rounded-full blur-2xl opacity-50 group-hover:bg-blue-100 transition-colors pointer-events-none"></div>
+                    <div class="icon-wrapper bg-blue-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/20 mb-3"><i class="fa-solid fa-chart-line text-white text-lg"></i></div>
+                    <h2 class="text-base font-bold text-slate-800 mb-1">Düşüm Zaman</h2>
+                    <p class="text-slate-500 text-xs leading-relaxed mb-0 flex-grow">T ve K hidrolik parametreleriyle logaritmik düşüm grafiği çizin.</p>
                 </a>
 
             </div>
@@ -214,15 +203,14 @@
     </main>
 
     <!-- Footer -->
-    <footer class="relative z-40 w-full border-t border-white/10 py-5 mt-auto flex items-center justify-center bg-slate-900/50 backdrop-blur-sm shrink-0">
+    <footer class="relative z-40 w-full border-t border-white/10 py-3 mt-auto flex items-center justify-center bg-slate-900/50 backdrop-blur-sm shrink-0">
         <div class="w-full px-4 md:px-8 flex justify-center items-center">
-            <p class="text-slate-500 text-xs md:text-sm text-center font-medium">&copy; 2026 | Emre Mermutlu | Tüm hakları saklıdır</p>
+            <p class="text-slate-500 text-[10px] md:text-xs text-center font-medium">&copy; 2026 | Emre Mermutlu | Tüm hakları saklıdır</p>
         </div>
     </footer>
 
-    <!-- Projelerim Modal (Dashboard) -->
     <div id="dashboardModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
-        <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-5xl flex flex-col max-h-[90vh] overflow-hidden transform scale-95 transition-transform duration-300" id="dashboardContent">
+        <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-6xl flex flex-col h-[85vh] overflow-hidden transform scale-95 transition-transform duration-300" id="dashboardContent">
             <div class="flex items-center justify-between border-b border-slate-200 p-5 bg-slate-50">
                 <div class="flex items-center gap-3">
                     <div class="bg-blue-100 text-blue-600 p-2.5 rounded-xl"><i class="fa-solid fa-folder-open text-xl"></i></div>
@@ -276,7 +264,7 @@
         
         async function logoutUser() { 
             await window.fsSignOut(window.auth); 
-            sessionStorage.removeItem('activeProject'); // Çıkışta aktif projeyi unut
+            sessionStorage.removeItem('activeProject');
             showToast("Çıkış yapıldı.", "info"); 
         }
 
@@ -343,22 +331,21 @@
             const icon = document.getElementById('activeProjectIcon');
             const nameEl = document.getElementById('activeProjectName');
             const btnEdit = document.getElementById('btnEditProject');
-            const btnClear = document.getElementById('btnClearProject');
             const instruction = document.getElementById('appInstruction');
 
             if (activeStr) {
                 const proj = JSON.parse(activeStr);
-                icon.className = "bg-blue-500 text-white w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-blue-500/40 shrink-0";
+                icon.className = "bg-blue-500 text-white w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-lg shadow-blue-500/40 shrink-0";
                 nameEl.innerText = proj.name;
-                btnEdit.classList.remove('hidden'); btnClear.classList.remove('hidden');
-                instruction.className = "text-emerald-400 text-sm font-bold bg-emerald-900/30 inline-block px-4 py-1.5 rounded-full"; 
+                btnEdit.classList.remove('hidden'); 
+                instruction.className = "text-emerald-400 text-xs font-bold bg-emerald-900/30 inline-block px-3 py-1 rounded-full"; 
                 instruction.innerHTML = '<i class="fa-solid fa-check-circle mr-1"></i> Proje yüklendi. Modüller kullanıma hazır.';
                 cards.forEach(c => { c.classList.remove('disabled-card'); c.style.cursor = 'pointer'; });
             } else {
-                icon.className = "bg-slate-700 text-slate-400 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0";
+                icon.className = "bg-slate-700 text-slate-400 w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0";
                 nameEl.innerText = "Proje Seçilmedi";
-                btnEdit.classList.add('hidden'); btnClear.classList.add('hidden');
-                instruction.className = "text-amber-400 text-sm font-bold bg-amber-900/30 inline-block px-4 py-1.5 rounded-full"; 
+                btnEdit.classList.add('hidden'); 
+                instruction.className = "text-amber-400 text-xs font-bold bg-amber-900/30 inline-block px-3 py-1 rounded-full"; 
                 instruction.innerHTML = '<i class="fa-solid fa-circle-exclamation mr-1"></i> Lütfen modülleri kullanmak için bir proje seçin veya oluşturun.';
                 cards.forEach(c => { c.classList.add('disabled-card'); c.style.cursor = 'not-allowed'; });
             }
