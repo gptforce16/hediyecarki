@@ -13,11 +13,11 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     const firebaseConfig = { apiKey: "AIzaSyA8JR_mh0FaU_ZT16h6MRZICvYIlHdbZ78", authDomain: "geologpro-3aa61.firebaseapp.com", projectId: "geologpro-3aa61", storageBucket: "geologpro-3aa61.firebasestorage.app", messagingSenderId: "738819989330", appId: "1:738819989330:web:29a446953726300c11e48b", measurementId: "G-2P79TH49YB" };
     const app = initializeApp(firebaseConfig); window.db = getFirestore(app); window.auth = getAuth(app);
-    window.fsDoc = doc; window.fsUpdateDoc = updateDoc;
+    window.fsDoc = doc; window.fsUpdateDoc = updateDoc; window.fsGetDoc = getDoc;
 
     document.addEventListener('DOMContentLoaded', () => { onAuthStateChanged(window.auth, user => { window.currentUser = user; }); });
 </script>
@@ -130,55 +130,79 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             setTimeout(() => { t.classList.replace('translate-y-0', 'translate-y-20'); t.classList.replace('opacity-100', 'opacity-0'); }, 3000);
         }
 
+        function renderKrokiData(data) {
+            if(!data || !data.inputs) return;
+            
+            ['muracaat','il','ilce','mahalle','pafta'].forEach(key => {
+                const el = document.getElementById('prev_'+key);
+                let val = data.inputs['p_'+key];
+                if(el && val) el.innerText = val;
+            });
+            
+            const il = data.inputs['p_il'] || "";
+            const ilce = data.inputs['p_ilce'] || "";
+            document.getElementById('prev_il_ilce').innerText = [il, ilce].filter(Boolean).join(" / ") || "..................";
+            
+            document.getElementById('prev_mevkii_bilgi').innerText = data.inputs['p_mahalle'] || "..................";
+            document.getElementById('prev_imza_muhendis').innerText = data.inputs['f_tek_ad'] || "";
+
+            const ada = data.inputs['p_ada'] || "";
+            const parsel = data.inputs['p_parsel'] || "";
+            document.getElementById('prev_ada_parsel').innerText = [ada, parsel].filter(val => val !== "").join(" / ") || "..................";
+
+            let metinStr = "....... ada / ....... parselde";
+            if (ada !== "" && parsel !== "") {
+                metinStr = `${ada} ada / ${parsel} parselde`;
+            } else if (ada !== "") {
+                metinStr = `${ada} adada`;
+            } else if (parsel !== "") {
+                metinStr = `${parsel} parselde`;
+            }
+            document.getElementById('prev_ada_parsel_metin').innerText = metinStr;
+
+            if(data.inputs.kroki_img_base64) {
+                currentImageBase64 = data.inputs.kroki_img_base64;
+                document.getElementById('prev_kroki_img').src = currentImageBase64;
+                document.getElementById('prev_kroki_img').classList.remove('hidden');
+                document.getElementById('prev_kroki_placeholder').classList.add('hidden');
+            } else {
+                currentImageBase64 = null;
+                document.getElementById('prev_kroki_img').src = "";
+                document.getElementById('prev_kroki_img').classList.add('hidden');
+                document.getElementById('prev_kroki_placeholder').classList.remove('hidden');
+            }
+        }
+
+        async function fetchFreshDataFromCloud() {
+            if(!activeProjectId || !window.db || !window.fsGetDoc) return;
+            try {
+                const docRef = window.fsDoc(window.db, "projects", activeProjectId);
+                const docSnap = await window.fsGetDoc(docRef);
+                if (docSnap.exists()) {
+                    const freshData = docSnap.data();
+                    const activeProj = JSON.parse(sessionStorage.getItem('activeProject') || "{}");
+                    activeProj.data = freshData.data; 
+                    sessionStorage.setItem('activeProject', JSON.stringify(activeProj));
+                    renderKrokiData(freshData.data);
+                }
+            } catch(e) {
+                console.error("Buluttan güncel veri çekilemedi:", e);
+            }
+        }
+
         window.onload = function() {
-            // Ana sistemden "Aktif Proje"yi çekiyoruz.
             const activeStr = sessionStorage.getItem('activeProject');
             
             if (activeStr) {
                 document.getElementById('noDataOverlay').classList.add('hidden');
                 const activeProj = JSON.parse(activeStr);
                 activeProjectId = activeProj.id;
-                const data = activeProj.data || {inputs:{}};
                 
-                if(data.inputs) {
-                    ['muracaat','il','ilce','mahalle','pafta'].forEach(key => {
-                        const el = document.getElementById('prev_'+key);
-                        let val = data.inputs['p_'+key];
-                        if(el && val) el.innerText = val;
-                    });
-                    
-                    // Ekstra Birleştirilmiş Alanlar
-                    const il = data.inputs['p_il'] || "";
-                    const ilce = data.inputs['p_ilce'] || "";
-                    document.getElementById('prev_il_ilce').innerText = [il, ilce].filter(Boolean).join(" / ") || "..................";
-                    
-                    document.getElementById('prev_mevkii_bilgi').innerText = data.inputs['p_mahalle'] || "..................";
-                    document.getElementById('prev_imza_muhendis').innerText = data.inputs['f_tek_ad'] || "";
-
-                    // Ada / Parsel hesaplaması ve basımı
-                    const ada = data.inputs['p_ada'] || "";
-                    const parsel = data.inputs['p_parsel'] || "";
-                    const adaParselStr = [ada, parsel].filter(Boolean).join(" / ");
-                    document.getElementById('prev_ada_parsel').innerText = adaParselStr || "..................";
-
-                    let metinStr = "....... ada / ....... parselde";
-                    if (ada && parsel) {
-                        metinStr = `${ada} ada / ${parsel} parselde`;
-                    } else if (ada) {
-                        metinStr = `${ada} adada`;
-                    } else if (parsel) {
-                        metinStr = `${parsel} parselde`;
-                    }
-                    document.getElementById('prev_ada_parsel_metin').innerText = metinStr;
-
-                    // Kroki görseli bulutta kayıtlıysa getir
-                    if(data.inputs.kroki_img_base64) {
-                        currentImageBase64 = data.inputs.kroki_img_base64;
-                        document.getElementById('prev_kroki_img').src = currentImageBase64;
-                        document.getElementById('prev_kroki_img').classList.remove('hidden');
-                        document.getElementById('prev_kroki_placeholder').classList.add('hidden');
-                    }
-                }
+                // 1. Önce tarayıcı hafızasındaki veriyi hızlıca ekrana bas
+                renderKrokiData(activeProj.data);
+                
+                // 2. Arka planda Firebase'e bağlanıp, başka cihazda güncellenmiş olabilecek EN YENİ veriyi çek
+                setTimeout(fetchFreshDataFromCloud, 800); 
             }
         }
 
