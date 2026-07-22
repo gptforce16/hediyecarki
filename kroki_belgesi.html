@@ -9,6 +9,19 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <!-- FontAwesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    const firebaseConfig = { apiKey: "AIzaSyA8JR_mh0FaU_ZT16h6MRZICvYIlHdbZ78", authDomain: "geologpro-3aa61.firebaseapp.com", projectId: "geologpro-3aa61", storageBucket: "geologpro-3aa61.firebasestorage.app", messagingSenderId: "738819989330", appId: "1:738819989330:web:29a446953726300c11e48b", measurementId: "G-2P79TH49YB" };
+    const app = initializeApp(firebaseConfig); window.db = getFirestore(app); window.auth = getAuth(app);
+    window.fsDoc = doc; window.fsUpdateDoc = updateDoc;
+
+    document.addEventListener('DOMContentLoaded', () => { onAuthStateChanged(window.auth, user => { window.currentUser = user; }); });
+</script>
+
 <style>
 body { font-family: Arial, sans-serif; background: #e2e8f0; }
 @media print {
@@ -37,13 +50,16 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
     <header class="w-full bg-purple-900 text-white p-4 text-center shadow-md mb-6 sticky top-0 z-50 flex justify-between px-8">
         <button onclick="window.location.href='index.html'" class="bg-slate-800 px-4 py-2 rounded text-sm hover:bg-slate-700 transition"><i class="fa-solid fa-arrow-left"></i> Geri Dön</button>
         <span class="font-bold text-lg"><i class="fa-solid fa-map-location-dot"></i> Kuyu Yeri Krokisi Önizleme</span>
-        <button onclick="window.print()" class="bg-purple-500 hover:bg-purple-400 text-slate-900 px-6 py-2 rounded font-bold shadow transition"><i class="fa-solid fa-print"></i> Yazdır (PDF)</button>
+        <div class="flex gap-2">
+            <button onclick="saveProjectToCloud()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded font-bold shadow transition flex items-center gap-2"><i class="fa-solid fa-cloud-arrow-up"></i> <span class="hidden md:inline">Buluta Kaydet</span></button>
+            <button onclick="window.print()" class="bg-purple-500 hover:bg-purple-400 text-slate-900 px-6 py-2 rounded font-bold shadow transition"><i class="fa-solid fa-print"></i> Yazdır (PDF)</button>
+        </div>
     </header>
 
     <div id="upload_controls" class="w-full max-w-[210mm] px-4 lg:px-0 mb-6 flex gap-4">
         <input type="file" id="kroki_upload" accept="image/*" onchange="handleImageUpload(event)" class="hidden">
         <button onclick="document.getElementById('kroki_upload').click()" class="flex-1 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-lg shadow-md transition">
-            <i class="fa-solid fa-cloud-arrow-up text-purple-600 mr-2"></i> Bilgisayardan Kroki Görseli Seç (Otomatik Oturur)
+            <i class="fa-solid fa-cloud-arrow-up text-purple-600 mr-2"></i> Görsel Yükle
         </button>
     </div>
 
@@ -63,14 +79,14 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             </div>
             
             <!-- Lokasyon Bilgileri -->
-            <div class="flex justify-between items-end font-bold text-[14px] mb-6 px-2">
+            <div class="flex justify-between items-end font-bold text-[13px] mb-6 px-2">
                 <div class="flex flex-col gap-1">
                     <span>İli / İlçesi : <span id="prev_il_ilce" class="font-normal">..................</span></span>
                     <span>Mahallesi : <span id="prev_mevkii_bilgi" class="font-normal">..................</span></span>
                 </div>
                 <div class="flex flex-col gap-1 text-right">
-                    <span>Pafta : <span id="prev_pafta" class="font-normal">..................</span></span>
                     <span>Ada / Parsel : <span id="prev_ada_parsel" class="font-normal">..................</span></span>
+                    <span>Pafta : <span id="prev_pafta" class="font-normal">..................</span></span>
                 </div>
             </div>
 
@@ -85,14 +101,14 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             </div>
 
             <!-- Metin Alanı -->
-            <div class="text-justify leading-relaxed font-medium text-[13px] px-2 mb-4">
-                Yukarıdaki krokide gösterilen arazide açılacak kuyu; <span id="prev_il" class="font-bold">...........</span> İli, <span id="prev_ilce" class="font-bold">...........</span> İlçesi, <span id="prev_mahalle" class="font-bold">...........</span> Mahallesi, <span id="prev_ada_parsel_metin" class="font-bold">.......</span> ada / parselde <span id="prev_muracaat" class="font-bold">...........................</span>'ne ait olup, açılacak olan kuyulardan etkilenebilecek mesafede başka bir kuyu, kaynak, kaptaj vb. tesisler bulunmamaktadır.
+            <div class="text-justify leading-snug font-normal text-[13px] px-2 mb-4">
+                Yukarıdaki krokide gösterilen arazide açılacak kuyu; <span id="prev_il" class="font-bold">...........</span> İli, <span id="prev_ilce" class="font-bold">...........</span> İlçesi, <span id="prev_mahalle" class="font-bold">...........</span> Mahallesi, <span id="prev_ada_parsel_metin" class="font-bold">....... ada / ....... parselde</span> <span id="prev_muracaat" class="font-bold">...........................</span>'ne ait olup, açılacak olan kuyulardan etkilenebilecek mesafede başka bir kuyu, kaynak, kaptaj vb. tesisler bulunmamaktadır.
             </div>
 
             <!-- İmza Alanı -->
             <div class="mt-auto flex justify-end px-10 pb-4">
-                <div class="text-center">
-                    <span class="block font-bold text-[13px] mb-6">Sorumlu Mühendis</span>
+                <div class="text-center w-[150px]">
+                    <span class="block font-bold text-[13px] mb-2">Sorumlu Mühendis</span>
                     <span id="prev_imza_muhendis" class="block font-normal text-[13px] uppercase"></span>
                 </div>
             </div>
@@ -100,7 +116,19 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
         </div>
     </div>
 
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-[150]"><span id="toastIcon"></span><span id="toastMessage" class="text-sm font-semibold"></span></div>
+
     <script>
+        let activeProjectId = null;
+
+        function showToast(msg, type='info') {
+            const t = document.getElementById('toast'), i = document.getElementById('toastIcon'), m = document.getElementById('toastMessage');
+            m.innerText = msg;
+            i.innerHTML = type==='success' ? '<i class="fa-solid fa-check text-green-400"></i>' : (type==='error' ? '<i class="fa-solid fa-exclamation text-rose-400"></i>' : '<i class="fa-solid fa-info text-blue-400"></i>');
+            t.className = `fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-[150] border-l-4 ${type==='success'?'border-green-500':(type==='error'?'border-rose-500':'border-blue-500')}`;
+            setTimeout(() => { t.classList.replace('translate-y-0', 'translate-y-20'); t.classList.replace('opacity-100', 'opacity-0'); }, 3000);
+        }
+
         window.onload = function() {
             // Ana sistemden "Aktif Proje"yi çekiyoruz.
             const activeStr = sessionStorage.getItem('activeProject');
@@ -108,6 +136,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             if (activeStr) {
                 document.getElementById('noDataOverlay').classList.add('hidden');
                 const activeProj = JSON.parse(activeStr);
+                activeProjectId = activeProj.id;
                 const data = activeProj.data || {inputs:{}};
                 
                 if(data.inputs) {
@@ -130,7 +159,16 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                     const parsel = data.inputs['p_parsel'] || "";
                     const adaParselStr = [ada, parsel].filter(Boolean).join(" / ");
                     document.getElementById('prev_ada_parsel').innerText = adaParselStr || "..................";
-                    document.getElementById('prev_ada_parsel_metin').innerText = adaParselStr || ".......";
+
+                    let metinStr = "....... ada / ....... parselde";
+                    if (ada && parsel) {
+                        metinStr = `${ada} ada / ${parsel} parselde`;
+                    } else if (ada) {
+                        metinStr = `${ada} adada`;
+                    } else if (parsel) {
+                        metinStr = `${parsel} parselde`;
+                    }
+                    document.getElementById('prev_ada_parsel_metin').innerText = metinStr;
 
                     // Kroki görseli daha önce bu proje için yüklendiyse geri getir (sessionStorage'dan)
                     if(data.inputs.kroki_img_base64) {
@@ -161,9 +199,34 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                     if(!activeProj.data.inputs) activeProj.data.inputs = {};
                     activeProj.data.inputs.kroki_img_base64 = b64;
                     sessionStorage.setItem('activeProject', JSON.stringify(activeProj));
+                    
+                    // Kullanıcıyı uyar:
+                    showToast("Görsel eklendi. Kaybetmemek için Buluta Kaydet'e basın.", "info");
                 }
             };
             reader.readAsDataURL(file);
+        }
+
+        async function saveProjectToCloud() {
+            if(!window.currentUser || !activeProjectId) { 
+                showToast("Lütfen giriş yapın ve ana sayfadan bir proje seçin.", "error"); 
+                return; 
+            }
+            
+            const activeStr = sessionStorage.getItem('activeProject');
+            if(!activeStr) return;
+            
+            const activeProj = JSON.parse(activeStr);
+            const dataToSave = activeProj.data || {inputs:{}};
+            
+            try {
+                showToast("Buluta kaydediliyor...", "info");
+                await window.fsUpdateDoc(window.fsDoc(window.db, "projects", activeProjectId), { data: dataToSave });
+                showToast("Kroki görseli buluta başarıyla kaydedildi!", "success");
+            } catch(e) { 
+                console.error(e); 
+                showToast("Kayıt sırasında hata oluştu.", "error"); 
+            }
         }
     </script>
 </body>
