@@ -92,11 +92,11 @@
                                 <input type="number" id="p_zone" placeholder="Örn: 35" class="w-full bg-white border border-slate-300 rounded px-3 py-2 text-sm font-mono focus:border-amber-500 outline-none">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-500 mb-1">SAĞA DEĞER (DOĞU-Y)</label>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1">SAĞA DEĞER (DOĞU - Y)</label>
                                 <input type="number" id="p_easting" placeholder="Örn: 630401" class="w-full bg-white border border-slate-300 rounded px-3 py-2 text-sm font-mono focus:border-amber-500 outline-none">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-500 mb-1">YUKARI DEĞER (KUZEY-X)</label>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1">YUKARI DEĞER (KUZEY - X)</label>
                                 <input type="number" id="p_northing" placeholder="Örn: 4464749" class="w-full bg-white border border-slate-300 rounded px-3 py-2 text-sm font-mono focus:border-amber-500 outline-none">
                             </div>
                             <input type="hidden" id="p_koordinat" value="">
@@ -219,8 +219,17 @@
                 if(el) existingData.inputs[id] = el.value;
             });
             
-            let nameStr = [document.getElementById('p_ilce').value, document.getElementById('p_mahalle').value, document.getElementById('p_ada').value, document.getElementById('p_parsel').value].filter(Boolean).join(" ");
-            if(!nameStr.trim()) nameStr = document.getElementById('p_muracaat').value || "İsimsiz Yeni Proje";
+            // İSİM FORMATI (İznik Elbeyli 0/134 Şeklinde)
+            let ilce = document.getElementById('p_ilce') ? document.getElementById('p_ilce').value.trim() : '';
+            let mahalle = document.getElementById('p_mahalle') ? document.getElementById('p_mahalle').value.trim() : '';
+            let ada = document.getElementById('p_ada') ? document.getElementById('p_ada').value.trim() : '';
+            let parsel = document.getElementById('p_parsel') ? document.getElementById('p_parsel').value.trim() : '';
+            
+            let adaParsel = [ada, parsel].filter(Boolean).join("/");
+            let nameStr = [ilce, mahalle, adaParsel].filter(Boolean).join(" ");
+            
+            if(!nameStr.trim()) nameStr = document.getElementById('p_muracaat') ? document.getElementById('p_muracaat').value : "İsimsiz Yeni Proje";
+            if(!nameStr) nameStr = "İsimsiz Yeni Proje";
 
             try {
                 showToast("Proje buluta kaydediliyor...", "info");
