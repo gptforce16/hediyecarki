@@ -13,10 +13,24 @@
 body { font-family: Arial, sans-serif; background: #e2e8f0; }
 @media print {
     @page { size: A4 portrait; margin: 0; }
-    body { background-color: white !important; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    html, body { background-color: white !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; height: 100vh !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     header, #noDataOverlay { display: none !important; }
+    /* Mobil wrapper'ın yazdırmayı bozmaması için kurallar */
+    .print-wrapper { display: block !important; overflow: visible !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+    
     /* İkinci sayfaya taşmayı engellemek için yükseklik ve kenar boşlukları ayarlandı */
-    #pdf_container { box-shadow: none !important; border: none !important; width: 210mm !important; height: 296mm !important; margin: 0 !important; padding: 20mm !important; overflow: hidden !important; page-break-inside: avoid; }
+    #pdf_container { 
+        box-shadow: none !important; 
+        border: none !important; 
+        width: 210mm !important; 
+        height: 296mm !important; 
+        max-height: 296mm !important;
+        margin: 0 auto !important; 
+        padding: 20mm !important; 
+        overflow: hidden !important; 
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
+    }
 }
 .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 6px; } 
 .pdf-table td { padding: 3px 6px; vertical-align: top; }
@@ -33,7 +47,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
     </header>
 
     <!-- Mobil Uyumlu Yatay Kaydırma (Scroll) Sarmalayıcı -->
-    <div class="w-full max-w-full overflow-x-auto flex justify-start lg:justify-center px-4 lg:px-0 mb-4 pb-4">
+    <div class="w-full max-w-full overflow-x-auto flex justify-start lg:justify-center px-4 lg:px-0 mb-4 pb-4 print-wrapper">
         <!-- A4 Konteyner: 210x296mm, padding 20mm -->
         <div class="w-[210mm] min-w-[210mm] h-[296mm] bg-white shadow-2xl px-[20mm] pt-[12mm] pb-[20mm] text-black text-[12px] leading-snug relative flex flex-col shrink-0" id="pdf_container">
             
@@ -118,7 +132,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             </div>
 
             <!-- İmza (Sayfanın sağ altına hizalandı, fontlar inceltildi) -->
-            <div class="absolute bottom-[25mm] right-[20mm] text-center">
+            <div class="absolute bottom-[30mm] right-[20mm] text-center">
                 <span class="block mb-8 font-normal text-center">...../...../.....</span>
                 <span id="prev_imza_muracaat" class="block font-normal text-[13px] uppercase"></span>
             </div>
