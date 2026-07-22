@@ -57,18 +57,24 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                 <p class="text-sm text-slate-500 mt-2">Lütfen Ana Sayfadan "Projelerim" menüsünü kullanarak bir proje seçin.</p>
             </div>
 
+            <!-- Başlık Alanı -->
             <div class="border-b-2 border-black pb-2 mb-6 mt-4">
-                <div class="text-center font-extrabold text-[20px] tracking-widest">AYRINTILI KUYU YERİ KROKİSİ</div>
+                <div class="text-center font-normal text-[20px] tracking-widest">AYRINTILI KUYU YERİ KROKİSİ</div>
             </div>
             
+            <!-- Lokasyon Bilgileri -->
             <div class="flex justify-between items-end font-bold text-[14px] mb-6 px-2">
                 <div class="flex flex-col gap-1">
                     <span>İli / İlçesi : <span id="prev_il_ilce" class="font-normal">..................</span></span>
-                    <span>Mevkii : <span id="prev_mevkii_bilgi" class="font-normal">..................</span></span>
+                    <span>Mahallesi : <span id="prev_mevkii_bilgi" class="font-normal">..................</span></span>
                 </div>
-                <div>Pafta : <span id="prev_pafta" class="font-normal">..................</span></div>
+                <div class="flex flex-col gap-1 text-right">
+                    <span>Pafta : <span id="prev_pafta" class="font-normal">..................</span></span>
+                    <span>Ada / Parsel : <span id="prev_ada_parsel" class="font-normal">..................</span></span>
+                </div>
             </div>
 
+            <!-- Kroki Çerçevesi -->
             <div class="w-full h-[150mm] border-2 border-black bg-gray-50 mb-8 overflow-hidden relative flex items-center justify-center rounded-sm">
                 <!-- object-cover ile çerçevenin içi tam olarak doldurulur, object-center ile ortalanır -->
                 <img id="prev_kroki_img" src="" class="absolute inset-0 w-full h-full object-cover object-center hidden">
@@ -78,18 +84,15 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                 </span>
             </div>
 
+            <!-- Metin Alanı -->
             <div class="text-justify leading-relaxed font-medium text-[13px] px-2 mb-4">
-                Yukarıdaki krokide gösterilen arazide açılacak kuyu; <span id="prev_il" class="font-bold">...........</span> İli, <span id="prev_ilce" class="font-bold">...........</span> İlçesi, <span id="prev_mahalle" class="font-bold">...........</span> Mevkii'nde, <span id="prev_muracaat" class="font-bold">...........................</span>'ne ait olup, açılacak olan kuyulardan etkilenebilecek mesafede başka bir kuyu, kaynak, kaptaj vb. tesisler bulunmamaktadır.
+                Yukarıdaki krokide gösterilen arazide açılacak kuyu; <span id="prev_il" class="font-bold">...........</span> İli, <span id="prev_ilce" class="font-bold">...........</span> İlçesi, <span id="prev_mahalle" class="font-bold">...........</span> Mahallesi, <span id="prev_ada_parsel_metin" class="font-bold">.......</span> ada / parselde <span id="prev_muracaat" class="font-bold">...........................</span>'ne ait olup, açılacak olan kuyulardan etkilenebilecek mesafede başka bir kuyu, kaynak, kaptaj vb. tesisler bulunmamaktadır.
             </div>
 
             <!-- İmza Alanı -->
-            <div class="mt-auto flex justify-between px-10 pb-4">
+            <div class="mt-auto flex justify-end px-10 pb-4">
                 <div class="text-center">
-                    <span class="block font-bold text-[13px] mb-12">Kuyu Sahibi</span>
-                    <span id="prev_imza_sahip" class="block font-normal text-[13px] uppercase"></span>
-                </div>
-                <div class="text-center">
-                    <span class="block font-bold text-[13px] mb-12">Sorumlu Mühendis</span>
+                    <span class="block font-bold text-[13px] mb-6">Sorumlu Mühendis</span>
                     <span id="prev_imza_muhendis" class="block font-normal text-[13px] uppercase"></span>
                 </div>
             </div>
@@ -120,8 +123,14 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                     document.getElementById('prev_il_ilce').innerText = [il, ilce].filter(Boolean).join(" / ") || "..................";
                     
                     document.getElementById('prev_mevkii_bilgi').innerText = data.inputs['p_mahalle'] || "..................";
-                    document.getElementById('prev_imza_sahip').innerText = data.inputs['p_muracaat'] || "";
                     document.getElementById('prev_imza_muhendis').innerText = data.inputs['f_tek_ad'] || "";
+
+                    // Ada / Parsel hesaplaması ve basımı
+                    const ada = data.inputs['p_ada'] || "";
+                    const parsel = data.inputs['p_parsel'] || "";
+                    const adaParselStr = [ada, parsel].filter(Boolean).join(" / ");
+                    document.getElementById('prev_ada_parsel').innerText = adaParselStr || "..................";
+                    document.getElementById('prev_ada_parsel_metin').innerText = adaParselStr || ".......";
 
                     // Kroki görseli daha önce bu proje için yüklendiyse geri getir (sessionStorage'dan)
                     if(data.inputs.kroki_img_base64) {
