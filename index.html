@@ -110,7 +110,7 @@
                 <p class="text-lg md:text-xl text-slate-400 font-medium mb-10 leading-relaxed">
                     DSİ standartlarında dokümantasyon analizlerinizi dakikalar içinde oluşturun. Projelerinizi bulutta güvenle yönetin.
                 </p>
-                <!-- Kullanıcı Girişi Butonu (Sadeleştirildi) -->
+                <!-- Kullanıcı Girişi Butonu -->
                 <button onclick="loginWithGoogle()" class="bg-blue-600 hover:bg-blue-500 text-white px-10 py-4 rounded-2xl text-lg font-bold transition shadow-2xl shadow-blue-600/40 flex items-center justify-center mx-auto transform hover:-translate-y-1">
                     Kullanıcı Girişi
                 </button>
@@ -379,11 +379,11 @@
 
         function createNewProject() {
             sessionStorage.removeItem('activeProject');
-            window.location.href = 'ana_proje_verileri.html?mode=new';
+            window.location.href = 'proje_bilgileri.html?mode=new';
         }
 
         function editActiveProject() {
-            window.location.href = 'ana_proje_verileri.html?mode=edit';
+            window.location.href = 'proje_bilgileri.html?mode=edit';
         }
 
         async function deleteProject(docId) {
