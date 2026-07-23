@@ -64,57 +64,73 @@ header, main, #toast { display: none !important; }
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
 <div class="lg:col-span-8 flex flex-col gap-6">
-<div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
-<div class="absolute top-0 right-0 bg-blue-100 text-blue-600 text-[10px] font-bold px-3 py-1 rounded-bl-lg">ANA PROJEDEN AKTARILDI</div>
-<div class="flex items-center gap-2 border-b border-slate-100 pb-3 mb-4"><i class="fa-solid fa-building text-slate-600 text-lg"></i><h2 class="text-base font-bold text-slate-800">Kuyu Künyesi</h2></div>
-
-<div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4">
-<div class="md:col-span-4"><label class="block text-xs font-bold text-slate-500 mb-1">FİRMA ADI</label><input type="text" id="firm_name" value="" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-<div class="md:col-span-3"><label class="block text-xs font-bold text-slate-500 mb-1">SORUMLU MÜHENDİS</label><input type="text" id="firm_engineer" value="" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-<div class="md:col-span-3"><label class="block text-xs font-bold text-slate-500 mb-1">MÜHENDİS MESLEĞİ</label><input type="text" id="eng_profession" value="" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-<div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">SONDÖR</label><input type="text" id="driller_name" value="" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-</div>
-
-<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-<div><label class="block text-xs font-bold text-slate-500 mb-1">KUYU SAHİBİ</label><input type="text" id="p_client" value="" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-<div><label class="block text-xs font-bold text-slate-500 mb-1">İL</label><input type="text" id="p_il" value="" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-<div><label class="block text-xs font-bold text-slate-500 mb-1">İLÇE</label><input type="text" id="p_ilce" value="" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-<div><label class="block text-xs font-bold text-slate-500 mb-1">MAHALLE</label><input type="text" id="p_mahalle" value="" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-</div>
-
-<div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-<div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">ADA</label><input type="text" id="p_ada" value="" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-<div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">PARSEL</label><input type="text" id="p_parsel" value="" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-<div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">TARİHİ</label><input type="date" id="p_tarih" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-<div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">DERİNLİK (m)</label><input type="number" id="p_derinlik" value="" placeholder="Örn: 160" oninput="autoGenerateBoringDesign()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-<div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">DSİ NO</label><input type="text" id="p_dsi_no" value="" placeholder="Örn: BRS.09.123" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-<div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">AÇILIŞ GAYESİ</label><input type="text" id="p_amaci" value="" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-</div>
-
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-<div><label class="block text-xs font-bold text-slate-500 mb-1">UTM DİLİMİ (ZONE)</label><input type="number" id="p_zone" value="" oninput="updateMapFromUtm()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-<div><label class="block text-xs font-bold text-slate-500 mb-1">SAĞA DEĞER (DOĞU / Y)</label><input type="number" id="p_easting" value="" oninput="updateMapFromUtm()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-<div><label class="block text-xs font-bold text-slate-500 mb-1">YUKARI DEĞER (KUZEY / X)</label><input type="number" id="p_northing" value="" oninput="updateMapFromUtm()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-</div>
+<!-- Kuyu Künyesi (Kompakt Tasarım) -->
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 relative overflow-hidden">
+    <div class="absolute top-0 right-0 bg-blue-100 text-blue-600 text-[9px] font-bold px-2 py-0.5 rounded-bl-lg">ANA PROJEDEN AKTARILDI</div>
+    <div class="flex items-center gap-2 border-b border-slate-100 pb-2 mb-3"><i class="fa-solid fa-building text-slate-600"></i><h2 class="text-sm font-bold text-slate-800">Kuyu Künyesi</h2></div>
+    
+    <div class="space-y-2.5">
+        <!-- Satır 1: Firma & Personel -->
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-2">
+            <div class="md:col-span-2"><label class="block text-[9px] font-bold text-slate-500 mb-0.5">FİRMA ADI</label><input type="text" id="firm_name" value="" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs outline-none cursor-not-allowed text-slate-600 truncate"></div>
+            <div class="md:col-span-2"><label class="block text-[9px] font-bold text-slate-500 mb-0.5">SORUMLU MÜHENDİS</label><input type="text" id="firm_engineer" value="" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs outline-none cursor-not-allowed text-slate-600 truncate"></div>
+            <div><label class="block text-[9px] font-bold text-slate-500 mb-0.5">MESLEĞİ</label><input type="text" id="eng_profession" value="" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs outline-none cursor-not-allowed text-slate-600 truncate"></div>
+            <div><label class="block text-[9px] font-bold text-slate-500 mb-0.5">SONDÖR</label><input type="text" id="driller_name" value="" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs outline-none cursor-not-allowed text-slate-600 truncate"></div>
+        </div>
+        <!-- Satır 2: Lokasyon -->
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-2">
+            <div class="md:col-span-2"><label class="block text-[9px] font-bold text-slate-500 mb-0.5">KUYU SAHİBİ</label><input type="text" id="p_client" value="" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs outline-none cursor-not-allowed text-slate-600 truncate"></div>
+            <div><label class="block text-[9px] font-bold text-slate-500 mb-0.5">İL</label><input type="text" id="p_il" value="" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs outline-none cursor-not-allowed text-slate-600 truncate"></div>
+            <div><label class="block text-[9px] font-bold text-slate-500 mb-0.5">İLÇE</label><input type="text" id="p_ilce" value="" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs outline-none cursor-not-allowed text-slate-600 truncate"></div>
+            <div class="md:col-span-2"><label class="block text-[9px] font-bold text-slate-500 mb-0.5">MAHALLE</label><input type="text" id="p_mahalle" value="" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs outline-none cursor-not-allowed text-slate-600 truncate"></div>
+        </div>
+        <!-- Satır 3: Kuyu Detayları -->
+        <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
+            <div><label class="block text-[9px] font-bold text-slate-500 mb-0.5">ADA</label><input type="text" id="p_ada" value="" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs outline-none cursor-not-allowed text-slate-600 truncate"></div>
+            <div><label class="block text-[9px] font-bold text-slate-500 mb-0.5">PARSEL</label><input type="text" id="p_parsel" value="" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs outline-none cursor-not-allowed text-slate-600 truncate"></div>
+            <div><label class="block text-[9px] font-bold text-slate-500 mb-0.5">TARİHİ</label><input type="date" id="p_tarih" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-[11px] outline-none cursor-not-allowed text-slate-600"></div>
+            <div><label class="block text-[9px] font-bold text-slate-500 mb-0.5">DERİNLİK(m)</label><input type="number" id="p_derinlik" value="" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs outline-none cursor-not-allowed text-slate-600"></div>
+            <div><label class="block text-[9px] font-bold text-slate-500 mb-0.5">DSİ NO</label><input type="text" id="p_dsi_no" value="" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs outline-none cursor-not-allowed text-slate-600 truncate"></div>
+            <div><label class="block text-[9px] font-bold text-slate-500 mb-0.5">GAYESİ</label><input type="text" id="p_amaci" value="" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs outline-none cursor-not-allowed text-slate-600 truncate"></div>
+        </div>
+        <!-- Satır 4: Koordinat -->
+        <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
+            <div class="md:col-span-2"><label class="block text-[9px] font-bold text-slate-500 mb-0.5">UTM DİLİMİ (ZONE)</label><input type="number" id="p_zone" value="" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs outline-none cursor-not-allowed text-slate-600 font-mono"></div>
+            <div class="md:col-span-2"><label class="block text-[9px] font-bold text-slate-500 mb-0.5">SAĞA DEĞER (DOĞU / Y)</label><input type="number" id="p_easting" value="" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs outline-none cursor-not-allowed text-slate-600 font-mono"></div>
+            <div class="md:col-span-2"><label class="block text-[9px] font-bold text-slate-500 mb-0.5">YUKARI DEĞER (KUZEY / X)</label><input type="number" id="p_northing" value="" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs outline-none cursor-not-allowed text-slate-600 font-mono"></div>
+        </div>
+    </div>
 </div>
 
 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
 <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
 <div class="flex items-center gap-2"><i class="fa-solid fa-map-location-dot text-slate-600 text-lg"></i><h2 class="text-base font-bold text-slate-800">Kuyu Yeri Krokisi</h2></div>
-<span class="text-xs bg-slate-100 text-slate-600 border border-slate-200 px-2.5 py-1 rounded-full font-bold">Uydu Görüntüsü</span>
+<span id="mapLayerLabel" class="text-xs bg-slate-100 text-slate-600 border border-slate-200 px-2.5 py-1 rounded-full font-bold">Google Uydu</span>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
 <input type="hidden" id="p_lat" value=""><input type="hidden" id="p_lon" value="">
-<div class="md:col-span-12"><div id="map" class="w-full h-[240px] rounded-xl border border-slate-300 shadow-inner overflow-hidden"></div><div class="flex justify-between items-center mt-1.5 text-[10px] text-slate-500"><span>* Pin sürüklenebilir. Gerçek zamanlı uydu görüntüsü altlığı (Esri) kullanılmaktadır.</span><span class="font-bold text-slate-600 cursor-pointer hover:underline" onclick="toggleMapLayer()">Harita Stilini Değiştir</span></div></div></div></div>
-
-<div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-<div class="flex items-center gap-2 border-b border-slate-100 pb-3 mb-4"><i class="fa-solid fa-droplet text-slate-600 text-lg"></i><h2 class="text-base font-bold text-slate-800">Su Verim Tecrübesi</h2></div>
-<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-<div><label class="block text-xs font-bold text-slate-600 mb-1">KUYU VERİMİ (lt/sn)</label><input type="number" step="0.1" id="v_debi" value="" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-<div><label class="block text-xs font-bold text-slate-600 mb-1">STATİK SEVİYE (m)</label><input type="number" step="0.1" id="v_statik" value="" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-<div><label class="block text-xs font-bold text-slate-600 mb-1">DİNAMİK SEVİYE (m)</label><input type="number" step="0.1" id="v_dinamik" value="" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
-<div><label class="block text-xs font-bold text-slate-600 mb-1">ÇALIŞMA SÜRESİ (Saat)</label><input type="number" step="1" id="v_sure" value="" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none"></div>
+<div class="md:col-span-12">
+    <div id="map" class="w-full h-[240px] rounded-xl border border-slate-300 shadow-inner overflow-hidden"></div>
+    <div class="flex justify-between items-center mt-1.5 text-[10px] text-slate-500">
+        <span>* Harita konumu, projenin koordinatlarına göre otomatik belirlenmektedir.</span>
+        <select onchange="changeMapLayer(this.value)" class="bg-white border border-slate-300 rounded px-2 py-0.5 text-slate-700 font-bold outline-none cursor-pointer">
+            <option value="sat">Google Uydu</option>
+            <option value="ter">Google Fiziki</option>
+            <option value="topo">OpenTopoMap</option>
+        </select>
+    </div>
 </div>
+</div></div>
+
+<!-- Su Verim Tecrübesi (Kompakt Tasarım) -->
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+    <div class="flex items-center gap-2 border-b border-slate-100 pb-2 mb-3"><i class="fa-solid fa-droplet text-slate-600 text-sm"></i><h2 class="text-sm font-bold text-slate-800">Su Verim Tecrübesi</h2></div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <div><label class="block text-[9px] font-bold text-slate-500 mb-0.5">KUYU VERİMİ (lt/sn)</label><input type="number" step="0.1" id="v_debi" value="" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs outline-none cursor-not-allowed text-slate-600"></div>
+        <div><label class="block text-[9px] font-bold text-slate-500 mb-0.5">STATİK SEVİYE (m)</label><input type="number" step="0.1" id="v_statik" value="" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs outline-none cursor-not-allowed text-slate-600"></div>
+        <div><label class="block text-[9px] font-bold text-slate-500 mb-0.5">DİNAMİK SEVİYE (m)</label><input type="number" step="0.1" id="v_dinamik" value="" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs outline-none cursor-not-allowed text-slate-600"></div>
+        <div><label class="block text-[9px] font-bold text-slate-500 mb-0.5">ÇALIŞMA SÜRESİ (Saat)</label><input type="number" step="1" id="v_sure" value="" readonly class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs outline-none cursor-not-allowed text-slate-600"></div>
+    </div>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -212,7 +228,7 @@ header, main, #toast { display: none !important; }
 <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-[150]"><span id="toastIcon"></span><span id="toastMessage" class="text-sm font-semibold"></span></div>
 
 <script>
-let lithologies = []; let techLayers = []; let map; let kuyuMarker; let isSatellite = true; let activeProjectId = null;
+let lithologies = []; let techLayers = []; let map; let kuyuMarker; let activeProjectId = null;
 
 const inputIdsToSave = [
     'firm_name', 'firm_engineer', 'eng_profession', 'driller_name', 'p_client', 'p_il', 'p_ilce', 'p_mahalle', 
@@ -221,8 +237,9 @@ const inputIdsToSave = [
     'v_dinamik', 'v_sure', 'tech_pipe_spec', 'tech_hole_spec', 'filterDepthsInput'
 ];
 
-const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles © Esri', crossOrigin: 'anonymous' });
-const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap', crossOrigin: 'anonymous' });
+const googleSat = L.tileLayer('http://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}', { attribution: '© Google', crossOrigin: 'anonymous' });
+const googleTer = L.tileLayer('http://mt0.google.com/vt/lyrs=p&hl=en&x={x}&y={y}&z={z}', { attribution: '© Google', crossOrigin: 'anonymous' });
+const openTopo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { attribution: '© OpenTopoMap', crossOrigin: 'anonymous' });
 
 function getProjectData() { let data = { inputs: {}, lithologies: lithologies }; inputIdsToSave.forEach(id => { data.inputs[id] = document.getElementById(id).value; }); return data; }
 
@@ -266,19 +283,27 @@ function initMap() {
     const startWgs84 = proj4(ed50Proj, proj4.WGS84, [671036, 4453273]);
     if (!document.getElementById('p_lat').value) { document.getElementById('p_lat').value = startWgs84[1].toFixed(6); document.getElementById('p_lon').value = startWgs84[0].toFixed(6); }
     const currentLat = parseFloat(document.getElementById('p_lat').value); const currentLon = parseFloat(document.getElementById('p_lon').value);
-    map = L.map('map', { center: [currentLat, currentLon], zoom: 15, layers: [satelliteLayer], fadeAnimation: false, zoomAnimation: false });
-    kuyuMarker = L.marker([currentLat, currentLon], {draggable: true}).addTo(map);
-    kuyuMarker.on('dragend', function (e) { const position = kuyuMarker.getLatLng(); document.getElementById('p_lat').value = position.lat.toFixed(6); document.getElementById('p_lon').value = position.lng.toFixed(6); convertToUtm(); showToast("Kuyu konumu haritadan güncellendi.", "info"); });
-    setTimeout(() => { map.invalidateSize(); }, 500); // Harita Fix
+    map = L.map('map', { center: [currentLat, currentLon], zoom: 15, layers: [googleSat], fadeAnimation: false, zoomAnimation: false });
+    kuyuMarker = L.marker([currentLat, currentLon], {draggable: false}).addTo(map);
+    setTimeout(() => { map.invalidateSize(); }, 500); 
 }
+
+window.changeMapLayer = function(type) {
+    map.removeLayer(googleSat);
+    map.removeLayer(googleTer);
+    map.removeLayer(openTopo);
+    let label = "Google Uydu";
+    if(type === 'sat') { map.addLayer(googleSat); label = "Google Uydu"; }
+    if(type === 'ter') { map.addLayer(googleTer); label = "Google Fiziki"; }
+    if(type === 'topo') { map.addLayer(openTopo); label = "OpenTopoMap"; }
+    document.getElementById('mapLayerLabel').innerText = label;
+}
+
 function updateMapFromInputs() {
     const lat = parseFloat(document.getElementById('p_lat').value); const lon = parseFloat(document.getElementById('p_lon').value);
     if (!isNaN(lat) && !isNaN(lon)) { const latlng = L.latLng(lat, lon); if(kuyuMarker) kuyuMarker.setLatLng(latlng); if(map) map.panTo(latlng); convertToUtm(); }
 }
-function toggleMapLayer() {
-    if (isSatellite) { map.removeLayer(satelliteLayer); map.addLayer(streetLayer); isSatellite = false; showToast("Sokak haritası moduna geçildi.", "info"); } 
-    else { map.removeLayer(streetLayer); map.addLayer(satelliteLayer); isSatellite = true; showToast("Uydu görüntüsü moduna geçildi.", "info"); }
-}
+
 function convertToUtm() {
     const lat = parseFloat(document.getElementById('p_lat').value); const lon = parseFloat(document.getElementById('p_lon').value);
     if(isNaN(lat) || isNaN(lon)) return;
@@ -295,7 +320,7 @@ function updateMapFromUtm() {
 
 function addLithologyLayer() {
     const type = document.getElementById('litType').value; const start = parseFloat(document.getElementById('litStartD').value); const end = parseFloat(document.getElementById('litEndD').value); const totalDepth = parseFloat(document.getElementById('p_derinlik').value);
-    if (isNaN(totalDepth) || totalDepth <= 0) { showToast("Önce kuyu derinliğini girmelisiniz!", "error"); return; }
+    if (isNaN(totalDepth) || totalDepth <= 0) { showToast("Ana projeden kuyu derinliği girilmelidir!", "error"); return; }
     if (isNaN(start) || isNaN(end) || start >= end) { showToast("Üst sınır alt sınırdan küçük olmalıdır!", "error"); return; }
     if (end > totalDepth) { showToast(`Katman, kuyu tabanından (${totalDepth} m) daha derine gidemez.`, "error"); return; }
     let overlap = lithologies.some(l => (start < l.end && end > l.start)); if (overlap) { showToast("Bu aralıkta zaten ekli başka bir katman bulunuyor!", "error"); return; }
@@ -324,11 +349,6 @@ function updateLitoTable() {
     tbody.innerHTML = lithologies.map((l, index) => `<tr class="hover:bg-slate-50 transition border-b border-slate-100"><td class="p-2 text-slate-700 font-mono text-xs">${l.start} - ${l.end}m</td><td class="p-2"><i class="fa-solid fa-layer-group text-slate-400 mr-1.5 text-[10px]"></i><strong class="text-slate-800 text-xs">${l.type}</strong></td><td class="p-2 text-center"><button onclick="deleteLito(${index})" class="text-rose-500 hover:text-rose-700" title="Sil"><i class="fa-solid fa-xmark"></i></button></td></tr>`).join('');
 }
 function deleteLito(index) { lithologies.splice(index, 1); updateLitoTable(); drawCanvasLog(); }
-function clearAllData() {
-    lithologies = []; techLayers = []; document.getElementById('litStartD').value = "0"; document.getElementById('filterDepthsInput').value = "";
-    inputIdsToSave.forEach(id => { const el = document.getElementById(id); if(el) el.value = ""; });
-    updateLitoTable(); autoGenerateBoringDesign(); showToast("Tüm veriler temizlendi.", "info");
-}
 
 function createHatchPattern(ctx, type) {
     const tempCanvas = document.createElement('canvas'); const tCtx = tempCanvas.getContext('2d'); tempCanvas.width = 20; tempCanvas.height = 20;
@@ -374,7 +394,7 @@ function drawCanvasLog() {
     ctx.scale(scaleFactor, scaleFactor); const totalDepth = parseFloat(document.getElementById('p_derinlik').value);
     if (isNaN(totalDepth) || totalDepth <= 0) {
         document.getElementById('canvasDepthIndicator').innerText = "0 m"; ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, cssWidth, cssHeight);
-        ctx.fillStyle = '#94a3b8'; ctx.font = '14px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText("Lütfen Kuyu Derinliğini Giriniz", cssWidth / 2, cssHeight / 2); return;
+        ctx.fillStyle = '#94a3b8'; ctx.font = '14px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText("Lütfen Ana Projeden Derinlik Giriniz", cssWidth / 2, cssHeight / 2); return;
     }
     document.getElementById('canvasDepthIndicator').innerText = totalDepth + " m";
     const padding = 35; const drawHeight = cssHeight - (padding + 5); const scale = drawHeight / totalDepth;
@@ -518,31 +538,6 @@ async function saveProjectToCloud() {
         if(activeStr) { let p = JSON.parse(activeStr); p.data = fullProjectData; sessionStorage.setItem('activeProject', JSON.stringify(p)); }
         showToast("Değişiklikler projeye kaydedildi!", "success");
     } catch(e) { console.error(e); showToast("Kayıt hatası.", "error"); }
-}
-
-function getFormattedFileName() {
-    const ilce = document.getElementById('p_ilce').value.trim(); const mahalle = document.getElementById('p_mahalle').value.trim(); const ada = document.getElementById('p_ada').value.trim(); const parsel = document.getElementById('p_parsel').value.trim();
-    const parts = [ilce, mahalle, ada, parsel].filter(p => p !== ''); if (parts.length > 0) return parts.join('_').replace(/\s+/g, '_'); return "Kuyu_Logu";
-}
-
-function downloadProject() {
-    const data = getProjectData(); const jsonStr = JSON.stringify(data, null, 2); const blob = new Blob([jsonStr], { type: "application/json" }); const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = getFormattedFileName() + ".geolog"; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); showToast("Kuyu projesi bilgisayara kaydedildi.", "success");
-}
-
-function handleFileUpload(event) {
-    const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
-    reader.onload = function(e) {
-        try { const data = JSON.parse(e.target.result); if(setProjectData(data)) { showToast("Kuyu projesi başarıyla yüklendi.", "success"); } else { showToast("Geçersiz veya bozuk proje dosyası!", "error"); } } 
-        catch (err) { showToast("Dosya okuma hatası!", "error"); }
-        event.target.value = ""; 
-    }; reader.readAsText(file);
-}
-
-function clearAllData() {
-    lithologies = []; techLayers = []; document.getElementById('litStartD').value = "0"; document.getElementById('filterDepthsInput').value = "";
-    inputIdsToSave.forEach(id => { const el = document.getElementById(id); if(el) el.value = ""; });
-    updateLitoTable(); autoGenerateBoringDesign(); showToast("Tüm veriler temizlendi.", "info");
 }
 </script>
 </body>
