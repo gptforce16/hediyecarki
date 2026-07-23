@@ -82,35 +82,37 @@ body {
 
         <div class="lg:col-span-4 flex flex-col gap-6">
             
+            <!-- Proje Künyesi (Readonly) -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
                 <div class="absolute top-0 right-0 bg-blue-100 text-blue-600 text-[10px] font-bold px-3 py-1 rounded-bl-lg">ANA PROJEDEN AKTARILDI</div>
                 <div class="flex items-center gap-2 border-b border-slate-100 pb-3 mb-4"><i class="fa-solid fa-circle-info text-slate-600 text-lg"></i><h2 class="text-base font-bold text-slate-800">Proje Künyesi</h2></div>
                 <div class="space-y-3">
                     <div class="grid grid-cols-3 gap-2">
-                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">İL</label><input type="text" id="p_il" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none focus:border-blue-500" placeholder="İl"></div>
-                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">İLÇE</label><input type="text" id="p_ilce" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none focus:border-blue-500" placeholder="İlçe"></div>
-                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">MAHALLE</label><input type="text" id="p_mahalle" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none focus:border-blue-500" placeholder="Mahalle"></div>
+                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">İL</label><input type="text" id="p_il" readonly class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none cursor-not-allowed text-slate-600" placeholder="İl"></div>
+                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">İLÇE</label><input type="text" id="p_ilce" readonly class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none cursor-not-allowed text-slate-600" placeholder="İlçe"></div>
+                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">MAHALLE</label><input type="text" id="p_mahalle" readonly class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none cursor-not-allowed text-slate-600" placeholder="Mahalle"></div>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
-                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">ADA</label><input type="text" id="p_ada" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none focus:border-blue-500" placeholder="Örn: 102"></div>
-                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">PARSEL</label><input type="text" id="p_parsel" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none focus:border-blue-500" placeholder="Örn: 13"></div>
+                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">ADA</label><input type="text" id="p_ada" readonly class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none cursor-not-allowed text-slate-600" placeholder="Örn: 102"></div>
+                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">PARSEL</label><input type="text" id="p_parsel" readonly class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none cursor-not-allowed text-slate-600" placeholder="Örn: 13"></div>
                     </div>
-                    <div><label class="block text-[11px] font-bold text-slate-500 mb-1">KUYU SAHİBİ</label><input type="text" id="p_sahip" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none focus:border-blue-500"></div>
-                    <div><label class="block text-[11px] font-bold text-slate-500 mb-1">SORUMLU MÜHENDİS</label><input type="text" id="p_muhendis" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none focus:border-blue-500"></div>
+                    <div><label class="block text-[11px] font-bold text-slate-500 mb-1">KUYU SAHİBİ</label><input type="text" id="p_sahip" readonly class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none cursor-not-allowed text-slate-600"></div>
+                    <div><label class="block text-[11px] font-bold text-slate-500 mb-1">SORUMLU MÜHENDİS</label><input type="text" id="p_muhendis" readonly class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none cursor-not-allowed text-slate-600"></div>
                     <div class="grid grid-cols-2 gap-2">
-                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">DSİ BELGE NO</label><input type="text" id="p_dsi" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none focus:border-blue-500"></div>
-                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">TARİH</label><input type="text" id="p_tarih" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none focus:border-blue-500"></div>
+                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">DSİ BELGE NO</label><input type="text" id="p_dsi" readonly class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none cursor-not-allowed text-slate-600"></div>
+                        <div><label class="block text-[11px] font-bold text-slate-500 mb-1">TARİH</label><input type="text" id="p_tarih" readonly class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm outline-none cursor-not-allowed text-slate-600"></div>
                     </div>
                 </div>
             </div>
 
+            <!-- Akifer Parametreleri (Readonly except Interval) -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4"><div class="flex items-center gap-2"><i class="fa-solid fa-water text-blue-600 text-lg"></i><h2 class="text-base font-bold text-slate-800">Akifer Parametreleri</h2></div></div>
                 <div class="grid grid-cols-2 gap-3 mb-4">
-                    <div><label class="block text-[11px] font-bold text-slate-500 mb-1">STATİK SEVİYE (m)</label><input type="number" step="1" id="p_statik" value="21" onchange="generateData()" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm font-bold outline-none focus:border-blue-500"></div>
-                    <div><label class="block text-[11px] font-bold text-slate-500 mb-1">DEBİ - Q (lt/sn)</label><input type="number" step="1" id="p_debi" value="8" onchange="generateData()" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm font-bold outline-none focus:border-blue-500"></div>
-                    <div><label class="block text-[11px] font-bold text-slate-500 mb-1">AKİFER KALINLIĞI (e)</label><input type="number" step="1" id="p_kalinlik" value="120" oninput="calculateResults()" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm font-bold outline-none focus:border-blue-500"></div>
-                    <div><label class="block text-[11px] font-bold text-slate-500 mb-1">DİNAMİK SEVİYE (m)</label><input type="number" step="1" id="p_dinamik" value="47" onchange="generateData()" placeholder="Zorunlu" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm font-bold outline-none focus:border-blue-500"></div>
+                    <div><label class="block text-[11px] font-bold text-slate-500 mb-1">STATİK SEVİYE (m)</label><input type="number" step="1" id="p_statik" value="21" readonly class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm font-bold outline-none cursor-not-allowed text-slate-600"></div>
+                    <div><label class="block text-[11px] font-bold text-slate-500 mb-1">DEBİ - Q (lt/sn)</label><input type="number" step="1" id="p_debi" value="8" readonly class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm font-bold outline-none cursor-not-allowed text-slate-600"></div>
+                    <div><label class="block text-[11px] font-bold text-slate-500 mb-1">AKİFER KALINLIĞI (e)</label><input type="number" step="1" id="p_kalinlik" value="120" readonly class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm font-bold outline-none cursor-not-allowed text-slate-600"></div>
+                    <div><label class="block text-[11px] font-bold text-slate-500 mb-1">DİNAMİK SEVİYE (m)</label><input type="number" step="1" id="p_dinamik" value="47" readonly placeholder="Zorunlu" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-sm font-bold outline-none cursor-not-allowed text-slate-600"></div>
                 </div>
 
                 <div class="p-3 bg-blue-50/50 rounded-lg border border-blue-100">
@@ -153,7 +155,6 @@ body {
 </main>
 
 <div id="print-area">
-    <!-- Sayfanın en üstünden 1 satır (yaklaşık 16px/1rem) boşluk için mt-4 eklendi -->
     <div class="text-center font-bold text-[16px] mb-3 uppercase tracking-wider mt-4">SABİT SEVİYELİ DÜŞÜM DENEYİ</div>
     <table class="w-full print-table text-[11px] font-bold bg-white text-left mb-6">
         <tbody>
@@ -168,17 +169,14 @@ body {
                 <thead><tr class="bg-gray-100"><th class="py-1">Zaman (dk)</th><th class="py-1">Seviye (m)</th><th class="py-1">Düşüm (m)</th><th class="py-1">Debi (lt/sn)</th></tr></thead>
                 <tbody id="pdf_data_tbody"></tbody>
             </table>
-            <!-- İmza kutusu eksiksiz çerçevelendirildi -->
             <div class="p-3 flex flex-col items-center justify-end h-[25mm] shrink-0 w-full mt-auto" style="border: 1px solid #000; box-sizing: border-box;"><div class="text-[11px] font-bold whitespace-nowrap">Sorumlu Mühendis</div><div id="pdf_imza_isim" class="text-[11px] mt-1 h-3"></div></div>
         </div>
         <div class="w-[72%] flex flex-col gap-3">
-            <!-- Düşüm Zaman Grafiği Wrapper Çerçevesi Düzeltildi -->
             <div class="flex flex-col w-full h-[105mm] shrink-0" style="border: 1px solid #000; box-sizing: border-box;">
                 <div class="text-center font-bold py-1 text-[12px] uppercase bg-gray-50" style="border-bottom: 1px solid #000;">Düşüm - Zaman Grafiği</div>
                 <div class="flex-1 p-0 flex justify-center items-center overflow-hidden relative"><img id="pdf_chart_img" src="" class="w-full h-full object-contain absolute inset-0 p-1.5"></div>
             </div>
             <div class="flex flex-col bg-white flex-1">
-                <!-- Statik/Dinamik tablo çerçeveleri print-table classı eklenerek tam olarak oluşturuldu -->
                 <table class="w-full print-table text-[11px] font-bold bg-white text-left" style="border-collapse: collapse; border: 1px solid #000;">
                     <tbody>
                         <tr>
@@ -198,7 +196,6 @@ body {
                         </tr>
                     </tbody>
                 </table>
-                <!-- Hesaplama alanı sağ ve sol çerçeveleri style ataması ile sabitlendi -->
                 <div class="p-3 pb-4 flex flex-col justify-center gap-2 bg-white flex-1" style="border-left: 1px solid #000; border-right: 1px solid #000; border-bottom: 1px solid #000;">
                     <div class="text-[11px] leading-relaxed text-black"><span class="inline-block w-36 font-bold pl-2">Düşüm Farkı (Δd) :</span><span class="font-mono">Δd = <span id="pdf_eq_d2"></span> - <span id="pdf_eq_d1"></span> = <span id="pdf_eq_dd"></span> m</span></div>
                     <div class="text-[11px] leading-relaxed mt-1 text-black"><span class="inline-block w-36 font-bold pl-2">İletilebilirlik (T) :</span><span class="font-mono">T = (0.183 &times; Q) / Δd</span></div>
