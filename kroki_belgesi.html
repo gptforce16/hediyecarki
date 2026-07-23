@@ -66,6 +66,9 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
         <button onclick="document.getElementById('kroki_upload').click()" class="flex-1 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-lg shadow-md transition">
             <i class="fa-solid fa-cloud-arrow-up text-purple-600 mr-2"></i> Görsel Yükle
         </button>
+        <button onclick="removeImage()" id="btn_remove_image" class="hidden flex-1 bg-white border border-rose-300 hover:bg-rose-50 text-rose-600 font-bold py-3 rounded-lg shadow-md transition">
+            <i class="fa-solid fa-trash-can mr-2"></i> Görseli Kaldır
+        </button>
     </div>
 
     <div class="w-full max-w-full overflow-x-auto flex justify-start lg:justify-center px-4 lg:px-0 mb-4 pb-4 print-wrapper">
@@ -88,6 +91,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                 <div class="flex flex-col gap-1">
                     <span>İli / İlçesi : <span id="prev_il_ilce" class="font-normal">..................</span></span>
                     <span>Mahallesi : <span id="prev_mevkii_bilgi" class="font-normal">..................</span></span>
+                    <span>Koordinat : <span id="prev_koordinat" class="font-normal font-mono">..................</span></span>
                 </div>
                 <div class="flex flex-col gap-1 text-right">
                     <span>Ada / Parsel : <span id="prev_ada_parsel" class="font-normal">..................</span></span>
@@ -190,6 +194,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             document.getElementById('prev_il_ilce').innerText = [il, ilce].filter(Boolean).join(" / ") || "..................";
             
             document.getElementById('prev_mevkii_bilgi').innerText = data.inputs['p_mahalle'] || "..................";
+            document.getElementById('prev_koordinat').innerText = data.inputs['p_koordinat'] || "..................";
             document.getElementById('prev_imza_muhendis').innerText = data.inputs['f_tek_ad'] || "";
 
             const ada = data.inputs['p_ada'] || "";
@@ -214,6 +219,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                 currentImageBase64 = data.inputs.kroki_img_base64;
                 document.getElementById('prev_kroki_img').src = currentImageBase64;
                 document.getElementById('prev_kroki_img').classList.remove('hidden');
+                document.getElementById('btn_remove_image').classList.remove('hidden');
                 
                 const customPin = document.getElementById('custom_pin');
                 customPin.style.left = data.inputs.kroki_pin_left || '50%';
@@ -224,6 +230,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                 document.getElementById('prev_kroki_img').src = "";
                 document.getElementById('prev_kroki_img').classList.add('hidden');
                 document.getElementById('custom_pin').classList.add('hidden');
+                document.getElementById('btn_remove_image').classList.add('hidden');
             }
         }
 
@@ -294,6 +301,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                     // UI'a Aktar
                     document.getElementById('prev_kroki_img').src = b64;
                     document.getElementById('prev_kroki_img').classList.remove('hidden');
+                    document.getElementById('btn_remove_image').classList.remove('hidden');
                     
                     // Görsel pinini merkeze oturt ve görünür yap
                     const pin = document.getElementById('custom_pin');
@@ -312,6 +320,29 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             reader.readAsDataURL(file);
         }
 
+        function removeImage() {
+            currentImageBase64 = null;
+            document.getElementById('prev_kroki_img').src = "";
+            document.getElementById('prev_kroki_img').classList.add('hidden');
+            document.getElementById('custom_pin').classList.add('hidden');
+            document.getElementById('btn_remove_image').classList.add('hidden');
+            document.getElementById('kroki_upload').value = ""; 
+
+            // sessionStorage'daki aktif projeden de kaldırıyoruz ki anında kaybolsun. 
+            // Kalıcı olarak buluttan silinmesi için Buluta Kaydet'e basılması gerekecek.
+            const activeStr = sessionStorage.getItem('activeProject');
+            if(activeStr) {
+                const activeProj = JSON.parse(activeStr);
+                if(activeProj.data && activeProj.data.inputs) {
+                    delete activeProj.data.inputs.kroki_img_base64;
+                    delete activeProj.data.inputs.kroki_pin_left;
+                    delete activeProj.data.inputs.kroki_pin_top;
+                    sessionStorage.setItem('activeProject', JSON.stringify(activeProj));
+                }
+            }
+            showToast("Görsel kaldırıldı. Değişikliğin kalıcı olması için 'Buluta Kaydet'e basın.", "info");
+        }
+
         async function saveProjectToCloud() {
             if(!window.currentUser || !activeProjectId) { 
                 showToast("Lütfen giriş yapın ve ana sayfadan bir proje seçin.", "error"); 
@@ -325,12 +356,16 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             if(!activeProj.data) activeProj.data = {inputs:{}};
             if(!activeProj.data.inputs) activeProj.data.inputs = {};
             
-            // Görseli ve Görselin üzerindeki Pin Konumunu Kaydet
+            // Görseli ve Görselin üzerindeki Pin Konumunu Kaydet VEYA Sil
             if(currentImageBase64) {
                 activeProj.data.inputs.kroki_img_base64 = currentImageBase64;
                 const customPin = document.getElementById('custom_pin');
                 activeProj.data.inputs.kroki_pin_left = customPin.style.left;
                 activeProj.data.inputs.kroki_pin_top = customPin.style.top;
+            } else {
+                delete activeProj.data.inputs.kroki_img_base64;
+                delete activeProj.data.inputs.kroki_pin_left;
+                delete activeProj.data.inputs.kroki_pin_top;
             }
             
             const dataToSave = activeProj.data;
