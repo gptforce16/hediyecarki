@@ -2,13 +2,17 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<!-- Mobil uyumluluk için viewport -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GeoLog Pro - Kuyu Yeri Krokisi</title>
 <!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com"></script>
 <!-- FontAwesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Leaflet Map CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<!-- Proj4js (Precision Coordinate Transformation) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.js"></script>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -29,6 +33,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
     html, body { background-color: white !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; height: 100vh !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     header, #upload_controls, #noDataOverlay { display: none !important; }
     .print-wrapper { display: block !important; overflow: visible !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+    .leaflet-control-container { display: none !important; }
     
     #pdf_container { 
         box-shadow: none !important; 
@@ -90,14 +95,18 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                 </div>
             </div>
 
-            <!-- Kroki Çerçevesi -->
-            <div class="w-full h-[150mm] border-2 border-black bg-gray-50 mb-8 overflow-hidden relative flex items-center justify-center rounded-sm">
-                <!-- object-cover ile çerçevenin içi tam olarak doldurulur, object-center ile ortalanır -->
-                <img id="prev_kroki_img" src="" class="absolute inset-0 w-full h-full object-cover object-center hidden">
-                <span id="prev_kroki_placeholder" class="text-gray-400 font-bold flex flex-col items-center">
-                    <i class="fa-solid fa-map-location-dot text-5xl block text-center mb-3 text-gray-300"></i>
-                    <span>Kroki Görseli Bekleniyor</span>
-                </span>
+            <!-- Kroki Çerçevesi (Harita ve Sürüklenebilir Özel Pin) -->
+            <div id="kroki_wrapper" class="w-full h-[150mm] border-2 border-black bg-gray-50 mb-8 overflow-hidden relative flex items-center justify-center rounded-sm">
+                <!-- Otomatik Google Uydu Haritası (Z-0) -->
+                <div id="map" class="absolute inset-0 w-full h-full z-0"></div>
+                
+                <!-- Kullanıcı Görsel Yüklerse Üzerine Kapanacak Resim Katmanı (Z-[2000]) -->
+                <img id="prev_kroki_img" src="" class="absolute inset-0 w-full h-full object-cover object-center bg-white z-[2000] hidden">
+                
+                <!-- Görsel Yüklenirse Aktifleşen Sürüklenebilir Pin (Z-[2001]) -->
+                <div id="custom_pin" class="absolute z-[2001] hidden cursor-move text-rose-600 text-[40px] drop-shadow-md" style="top: 50%; left: 50%; transform: translate(-50%, -100%); text-shadow: 2px 2px 0 #fff, -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff;">
+                    <i class="fa-solid fa-location-dot"></i>
+                </div>
             </div>
 
             <!-- Metin Alanı -->
@@ -120,7 +129,12 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
 
     <script>
         let activeProjectId = null;
-        let currentImageBase64 = null; // Yüklenen görseli geçici olarak bellekte tutmak için
+        let currentImageBase64 = null;
+        
+        // Harita Değişkenleri
+        let map;
+        let kuyuMarker;
+        const googleSat = L.tileLayer('http://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}', { attribution: '© Google', crossOrigin: 'anonymous' });
 
         function showToast(msg, type='info') {
             const t = document.getElementById('toast'), i = document.getElementById('toastIcon'), m = document.getElementById('toastMessage');
@@ -128,6 +142,38 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             i.innerHTML = type==='success' ? '<i class="fa-solid fa-check text-green-400"></i>' : (type==='error' ? '<i class="fa-solid fa-exclamation text-rose-400"></i>' : '<i class="fa-solid fa-info text-blue-400"></i>');
             t.className = `fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-[150] border-l-4 ${type==='success'?'border-green-500':(type==='error'?'border-rose-500':'border-blue-500')}`;
             setTimeout(() => { t.classList.replace('translate-y-0', 'translate-y-20'); t.classList.replace('opacity-100', 'opacity-0'); }, 3000);
+        }
+
+        // Harita Başlatma Fonksiyonu
+        function initMap(dataInputs) {
+            let lat = 39.9334; // Varsayılan: Ankara
+            let lon = 32.8597;
+            
+            if (dataInputs['p_lat'] && dataInputs['p_lon']) {
+                lat = parseFloat(dataInputs['p_lat']);
+                lon = parseFloat(dataInputs['p_lon']);
+            } else if (dataInputs['p_zone'] && dataInputs['p_easting'] && dataInputs['p_northing']) {
+                const zone = parseInt(dataInputs['p_zone']);
+                const easting = parseFloat(dataInputs['p_easting']);
+                const northing = parseFloat(dataInputs['p_northing']);
+                if (!isNaN(zone) && !isNaN(easting) && !isNaN(northing)) {
+                    const ed50Proj = `+proj=utm +zone=${zone} +ellps=intl +towgs84=-84,-95,-130,0,0,0,0 +units=m +no_defs`;
+                    const latlngArray = proj4(ed50Proj, proj4.WGS84, [easting, northing]);
+                    if (latlngArray && !isNaN(latlngArray[0]) && !isNaN(latlngArray[1])) {
+                        lon = latlngArray[0];
+                        lat = latlngArray[1];
+                    }
+                }
+            }
+            
+            if (!map) {
+                map = L.map('map', { center: [lat, lon], zoom: 15, layers: [googleSat], fadeAnimation: false, zoomAnimation: false, zoomControl: false });
+                kuyuMarker = L.marker([lat, lon], {draggable: false}).addTo(map); // Haritada pin SÜRÜKLENEMEZ
+                setTimeout(() => { map.invalidateSize(); }, 500);
+            } else {
+                map.setView([lat, lon], 15);
+                if (kuyuMarker) kuyuMarker.setLatLng([lat, lon]);
+            }
         }
 
         function renderKrokiData(data) {
@@ -160,16 +206,24 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             }
             document.getElementById('prev_ada_parsel_metin').innerText = metinStr;
 
+            // Haritayı Koordinata Göre Kur
+            initMap(data.inputs);
+
+            // Görsel Varsa Haritanın Üstüne Aç, Görsel Pinini Yerleştir
             if(data.inputs.kroki_img_base64) {
                 currentImageBase64 = data.inputs.kroki_img_base64;
                 document.getElementById('prev_kroki_img').src = currentImageBase64;
                 document.getElementById('prev_kroki_img').classList.remove('hidden');
-                document.getElementById('prev_kroki_placeholder').classList.add('hidden');
+                
+                const customPin = document.getElementById('custom_pin');
+                customPin.style.left = data.inputs.kroki_pin_left || '50%';
+                customPin.style.top = data.inputs.kroki_pin_top || '50%';
+                customPin.classList.remove('hidden');
             } else {
                 currentImageBase64 = null;
                 document.getElementById('prev_kroki_img').src = "";
                 document.getElementById('prev_kroki_img').classList.add('hidden');
-                document.getElementById('prev_kroki_placeholder').classList.remove('hidden');
+                document.getElementById('custom_pin').classList.add('hidden');
             }
         }
 
@@ -198,10 +252,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                 const activeProj = JSON.parse(activeStr);
                 activeProjectId = activeProj.id;
                 
-                // 1. Önce tarayıcı hafızasındaki veriyi hızlıca ekrana bas
                 renderKrokiData(activeProj.data);
-                
-                // 2. Arka planda Firebase'e bağlanıp, başka cihazda güncellenmiş olabilecek EN YENİ veriyi çek
                 setTimeout(fetchFreshDataFromCloud, 800); 
             }
         }
@@ -209,18 +260,54 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if(!file) return;
+
+            // 2 MB Sınırı Kontrolü (Bilgi amaçlı)
+            const isLarge = file.size > (2 * 1024 * 1024);
+            
             const reader = new FileReader();
             reader.onload = function(e) {
-                const b64 = e.target.result;
-                currentImageBase64 = b64; // Görseli sadece belleğe al, henüz tarayıcıya/buluta kaydetme
-                
-                // Görseli UI'a aktar
-                document.getElementById('prev_kroki_img').src = b64;
-                document.getElementById('prev_kroki_img').classList.remove('hidden');
-                document.getElementById('prev_kroki_placeholder').classList.add('hidden');
-                
-                // Kullanıcıyı uyar:
-                showToast("Görsel eklendi. Kalıcı olması için lütfen 'Buluta Kaydet' butonuna basınız.", "info");
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    // Boyutları küçült (Maksimum 1200px)
+                    const max_dimension = 1200;
+                    if (width > height && width > max_dimension) {
+                        height *= max_dimension / width;
+                        width = max_dimension;
+                    } else if (height > max_dimension) {
+                        width *= max_dimension / height;
+                        height = max_dimension;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Jpeg formatında ve %85 kalitede sıkıştırarak Base64 üret (2MB sorununu çözer)
+                    const b64 = canvas.toDataURL('image/jpeg', 0.85);
+                    currentImageBase64 = b64;
+                    
+                    // UI'a Aktar
+                    document.getElementById('prev_kroki_img').src = b64;
+                    document.getElementById('prev_kroki_img').classList.remove('hidden');
+                    
+                    // Görsel pinini merkeze oturt ve görünür yap
+                    const pin = document.getElementById('custom_pin');
+                    pin.style.left = '50%';
+                    pin.style.top = '50%';
+                    pin.classList.remove('hidden');
+                    
+                    if (isLarge) {
+                        showToast("Görsel 2 MB'tan büyük olduğu için kalitesi bozulmadan otomatik küçültüldü. Lütfen 'Buluta Kaydet'e basın.", "success");
+                    } else {
+                        showToast("Görsel eklendi. Kalıcı olması için lütfen 'Buluta Kaydet' butonuna basınız.", "info");
+                    }
+                };
+                img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
@@ -238,9 +325,12 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             if(!activeProj.data) activeProj.data = {inputs:{}};
             if(!activeProj.data.inputs) activeProj.data.inputs = {};
             
-            // Eğer ekranda bir görsel varsa onu kayıt edilecek veriye ekle
+            // Görseli ve Görselin üzerindeki Pin Konumunu Kaydet
             if(currentImageBase64) {
                 activeProj.data.inputs.kroki_img_base64 = currentImageBase64;
+                const customPin = document.getElementById('custom_pin');
+                activeProj.data.inputs.kroki_pin_left = customPin.style.left;
+                activeProj.data.inputs.kroki_pin_top = customPin.style.top;
             }
             
             const dataToSave = activeProj.data;
@@ -248,16 +338,58 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             try {
                 showToast("Buluta kaydediliyor...", "info");
                 await window.fsUpdateDoc(window.fsDoc(window.db, "projects", activeProjectId), { data: dataToSave });
-                
-                // Bulut kaydı başarılı olunca, tarayıcı önbelleğini de güncelle ki diğer sekmelerde taze veri olsun
                 sessionStorage.setItem('activeProject', JSON.stringify(activeProj));
-                
-                showToast("Kroki görseli buluta başarıyla kaydedildi!", "success");
+                showToast("Kroki buluta başarıyla kaydedildi!", "success");
             } catch(e) { 
                 console.error(e); 
                 showToast("Kayıt sırasında hata oluştu.", "error"); 
             }
         }
+
+        // --- GÖRSEL PİNİNİ SÜRÜKLEME MANTIĞI (Vannilla JS) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const pin = document.getElementById('custom_pin');
+            const wrapper = document.getElementById('kroki_wrapper');
+            let isDragging = false;
+
+            const startDrag = (e) => {
+                if(e.target.closest('#custom_pin')) {
+                    isDragging = true;
+                    e.preventDefault();
+                }
+            };
+
+            const onDrag = (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const rect = wrapper.getBoundingClientRect();
+                
+                let clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                let clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                
+                let x = clientX - rect.left;
+                let y = clientY - rect.top;
+                
+                // Pinin dışarı çıkmasını engelle
+                x = Math.max(0, Math.min(x, rect.width));
+                y = Math.max(0, Math.min(y, rect.height));
+                
+                pin.style.left = (x / rect.width * 100) + '%';
+                pin.style.top = (y / rect.height * 100) + '%';
+            };
+
+            const stopDrag = () => { isDragging = false; };
+
+            // Mouse Eventleri
+            pin.addEventListener('mousedown', startDrag);
+            document.addEventListener('mousemove', onDrag, {passive: false});
+            document.addEventListener('mouseup', stopDrag);
+
+            // Dokunmatik (Mobil) Eventleri
+            pin.addEventListener('touchstart', startDrag, {passive: false});
+            document.addEventListener('touchmove', onDrag, {passive: false});
+            document.addEventListener('touchend', stopDrag);
+        });
     </script>
 </body>
 </html>
