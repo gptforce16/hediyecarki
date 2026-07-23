@@ -61,16 +61,32 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
         </div>
     </header>
 
-    <div id="upload_controls" class="w-full max-w-[210mm] px-4 lg:px-0 mb-6 flex gap-4">
+    <!-- Kontrol Paneli -->
+    <div id="upload_controls" class="w-full max-w-[210mm] px-4 lg:px-0 mb-6 flex flex-col sm:flex-row gap-4">
         <input type="file" id="kroki_upload" accept="image/*" onchange="handleImageUpload(event)" class="hidden">
-        <button onclick="document.getElementById('kroki_upload').click()" class="flex-1 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-lg shadow-md transition">
-            <i class="fa-solid fa-cloud-arrow-up text-purple-600 mr-2"></i> Görsel Yükle
-        </button>
-        <button onclick="removeImage()" id="btn_remove_image" class="hidden flex-1 bg-white border border-rose-300 hover:bg-rose-50 text-rose-600 font-bold py-3 rounded-lg shadow-md transition">
-            <i class="fa-solid fa-trash-can mr-2"></i> Görseli Kaldır
-        </button>
+        
+        <!-- Görsel Yükle / Kaldır Butonları -->
+        <div class="flex-1 flex gap-4">
+            <button onclick="document.getElementById('kroki_upload').click()" class="flex-1 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-lg shadow-md transition flex items-center justify-center">
+                <i class="fa-solid fa-cloud-arrow-up text-purple-600 mr-2"></i> Görsel Yükle
+            </button>
+            <button onclick="removeImage()" id="btn_remove_image" class="hidden flex-1 bg-white border border-rose-300 hover:bg-rose-50 text-rose-600 font-bold py-3 rounded-lg shadow-md transition flex items-center justify-center">
+                <i class="fa-solid fa-trash-can mr-2"></i> Görseli Kaldır
+            </button>
+        </div>
+
+        <!-- Harita Seçici -->
+        <div id="map_layer_selector" class="flex-1 bg-white border border-slate-300 py-3 px-4 rounded-lg shadow-md flex items-center gap-3">
+            <i class="fa-solid fa-layer-group text-slate-500"></i>
+            <select onchange="changeMapLayer(this.value)" class="text-sm font-bold text-slate-700 outline-none cursor-pointer bg-transparent w-full">
+                <option value="sat">Google Uydu</option>
+                <option value="ter">Google Fiziki</option>
+                <option value="topo">OpenTopoMap</option>
+            </select>
+        </div>
     </div>
 
+    <!-- Yazdırılabilir A4 Bölümü -->
     <div class="w-full max-w-full overflow-x-auto flex justify-start lg:justify-center px-4 lg:px-0 mb-4 pb-4 print-wrapper">
         <div class="w-[210mm] min-w-[210mm] h-[296mm] shrink-0 bg-white shadow-2xl p-[20mm] text-black text-[13px] leading-snug relative flex flex-col overflow-hidden" id="pdf_container">
             
@@ -115,7 +131,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
 
             <!-- Metin Alanı -->
             <div class="text-justify leading-snug font-normal text-[13px] px-2 mb-4">
-                Yukarıdaki krokide gösterilen arazide açılacak kuyu; <span id="prev_il" class="font-bold">...........</span> İli, <span id="prev_ilce" class="font-bold">...........</span> İlçesi, <span id="prev_mahalle" class="font-bold">...........</span> Mahallesi, <span id="prev_ada_parsel_metin" class="font-bold">....... ada / ....... parselde</span> <span id="prev_muracaat" class="font-bold">...........................</span>'ne ait olup, açılacak olan kuyulardan etkilenebilecek mesafede başka bir kuyu, kaynak, kaptaj vb. tesisler bulunmamaktadır.
+                Yukarıdaki krokide gösterilen arazide açılacak kuyu; <span id="prev_il" class="font-bold">...........</span> İli, <span id="prev_ilce" class="font-bold">...........</span> İlçesi, <span id="prev_mahalle" class="font-bold">...........</span> Mahallesi, <span id="prev_ada_parsel_metin" class="font-bold">....... ada / ....... parselde</span> <span id="prev_muracaat" class="font-bold">...........................</span> adına olup, açılacak olan kuyulardan etkilenebilecek mesafede başka bir kuyu, kaynak, kaptaj vb. tesisler bulunmamaktadır.
             </div>
 
             <!-- İmza Alanı -->
@@ -135,10 +151,12 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
         let activeProjectId = null;
         let currentImageBase64 = null;
         
-        // Harita Değişkenleri
+        // Harita Değişkenleri ve Katman Tanımları
         let map;
         let kuyuMarker;
         const googleSat = L.tileLayer('http://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}', { attribution: '© Google', crossOrigin: 'anonymous' });
+        const googleTer = L.tileLayer('http://mt0.google.com/vt/lyrs=p&hl=en&x={x}&y={y}&z={z}', { attribution: '© Google', crossOrigin: 'anonymous' });
+        const openTopo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { attribution: '© OpenTopoMap', crossOrigin: 'anonymous' });
 
         function showToast(msg, type='info') {
             const t = document.getElementById('toast'), i = document.getElementById('toastIcon'), m = document.getElementById('toastMessage');
@@ -178,6 +196,18 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                 map.setView([lat, lon], 15);
                 if (kuyuMarker) kuyuMarker.setLatLng([lat, lon]);
             }
+        }
+
+        // Harita Katmanı Değiştirme Fonksiyonu
+        window.changeMapLayer = function(type) {
+            if(!map) return;
+            map.removeLayer(googleSat);
+            map.removeLayer(googleTer);
+            map.removeLayer(openTopo);
+            
+            if(type === 'sat') map.addLayer(googleSat);
+            if(type === 'ter') map.addLayer(googleTer);
+            if(type === 'topo') map.addLayer(openTopo);
         }
 
         function renderKrokiData(data) {
@@ -220,6 +250,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                 document.getElementById('prev_kroki_img').src = currentImageBase64;
                 document.getElementById('prev_kroki_img').classList.remove('hidden');
                 document.getElementById('btn_remove_image').classList.remove('hidden');
+                document.getElementById('map_layer_selector').classList.add('hidden'); // Harita gizlendiği için seçiciyi de gizle
                 
                 const customPin = document.getElementById('custom_pin');
                 customPin.style.left = data.inputs.kroki_pin_left || '50%';
@@ -231,6 +262,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                 document.getElementById('prev_kroki_img').classList.add('hidden');
                 document.getElementById('custom_pin').classList.add('hidden');
                 document.getElementById('btn_remove_image').classList.add('hidden');
+                document.getElementById('map_layer_selector').classList.remove('hidden');
             }
         }
 
@@ -302,6 +334,7 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
                     document.getElementById('prev_kroki_img').src = b64;
                     document.getElementById('prev_kroki_img').classList.remove('hidden');
                     document.getElementById('btn_remove_image').classList.remove('hidden');
+                    document.getElementById('map_layer_selector').classList.add('hidden');
                     
                     // Görsel pinini merkeze oturt ve görünür yap
                     const pin = document.getElementById('custom_pin');
@@ -326,10 +359,9 @@ body { font-family: Arial, sans-serif; background: #e2e8f0; }
             document.getElementById('prev_kroki_img').classList.add('hidden');
             document.getElementById('custom_pin').classList.add('hidden');
             document.getElementById('btn_remove_image').classList.add('hidden');
+            document.getElementById('map_layer_selector').classList.remove('hidden');
             document.getElementById('kroki_upload').value = ""; 
 
-            // sessionStorage'daki aktif projeden de kaldırıyoruz ki anında kaybolsun. 
-            // Kalıcı olarak buluttan silinmesi için Buluta Kaydet'e basılması gerekecek.
             const activeStr = sessionStorage.getItem('activeProject');
             if(activeStr) {
                 const activeProj = JSON.parse(activeStr);
