@@ -14,7 +14,13 @@
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, getDocs, doc, deleteDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyA8JR_mh0FaU_ZT16h6MRZICvYIlHdbZ78", authDomain: "geologpro-3aa61.firebaseapp.com", projectId: "geologpro-3aa61", storageBucket: "geologpro-3aa61.firebasestorage.app", messagingSenderId: "738819989330", appId: "1:738819989330:web:29a446953726300c11e48b", measurementId: "G-2P79TH49YB" };
+        const firebaseConfig = { apiKey: "AIzaSyBbuIVVKTARDGQ9uIx8Qk3HtArxqFCdSxg",
+    authDomain: "geologpro-4a97f.firebaseapp.com",
+    projectId: "geologpro-4a97f",
+    storageBucket: "geologpro-4a97f.firebasestorage.app",
+    messagingSenderId: "286133460845",
+    appId: "1:286133460845:web:9ee3b84917767bf2a8c464",
+    measurementId: "G-BCDR2LBDRZ" };
         const app = initializeApp(firebaseConfig); window.db = getFirestore(app); window.auth = getAuth(app);
         window.currentUser = null; window.fsCollection = collection; window.fsGetDocs = getDocs; window.fsDoc = doc; window.fsDeleteDoc = deleteDoc; window.fsQuery = query; window.fsWhere = where; window.fsOrderBy = orderBy;
         
